@@ -1,47 +1,1395 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en-GB">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RobAJobBob — Career &amp; Travel Planner</title>
-  <meta name="description" content="A personal career and 5-year working-holiday travel planner." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌏</text></svg>" />
-  <link rel="stylesheet" href="css/styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RobAJobBob — Career &amp; Travel Planner</title>
+<meta name="description" content="A personal career-and-5-year-working-holiday planner, built for one specific person.">
+<meta name="theme-color" id="themeColorMeta" content="#182338">
+<meta name="color-scheme" content="light">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RobAJobBob">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="application-name" content="RobAJobBob">
+<link rel="icon" href="robajobbob-icon.png">
+<link rel="apple-touch-icon" href="robajobbob-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&amp;family=Work+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
+<style>
+  /* ---------- base tokens (overwritten at runtime by the colour engine below;
+     these are just the first-paint fallback, set to the default "Sunrise" look) --------- */
+  :root {
+    --paper: hsl(6 34% 97%); --paper-raised: hsl(6 44% 99%); --paper-sunk: hsl(6 29% 93%);
+    --line: hsl(6 27% 85%);
+    --ink: hsl(6 29% 16%); --ink-soft: hsl(6 17% 38%); --ink-faint: hsl(6 11% 55%);
+    --coral: hsl(6 78% 54%); --coral-ink: hsl(6 70% 34%); --coral-tint: hsl(6 65% 93%);
+    --teal: hsl(156 50% 32%); --teal-ink: hsl(156 50% 24%); --teal-tint: hsl(156 42% 90%);
+    --mustard: hsl(51 70% 45%); --mustard-ink: hsl(51 60% 30%); --mustard-tint: hsl(51 58% 90%);
+    --sky: hsl(306 52% 45%); --sky-ink: hsl(306 52% 30%); --sky-tint: hsl(306 48% 91%);
+
+    --shadow-sm: 0 2px 10px -4px rgba(24,35,56,0.18);
+    --shadow-md: 0 12px 28px -12px rgba(24,35,56,0.28);
+    --radius-l: 20px; --radius-m: 14px; --radius-s: 9px;
+    --font-display: 'Fraunces', ui-serif, Georgia, serif;
+    --font-body: 'Work Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    --bright: 1;
+
+    /* The hero band and the settings cog are a deliberately-fixed dark surface —
+       they do not change with the chosen colour theme, the same way a passport
+       cover stays the same colour no matter what's inside it. */
+    --hero-bg: #182338; --hero-fg: #FAF6EE;
+    --hero-fg-soft: rgba(250, 246, 238, 0.82); --hero-accent: #F2B75C;
+  }
+  html{background:var(--paper)}
+  html.raj-dimmed{filter:brightness(var(--bright))}
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: var(--font-body); line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  }
+  img, svg { max-width: 100%; display: block; }
+  button, input, textarea, select { font-family: inherit; color: inherit; }
+  a { color: var(--teal-ink); }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 650; letter-spacing: -0.01em; text-wrap: balance; margin: 0; }
+  .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+  .skip-link{position:fixed;top:-60px;left:12px;z-index:100;background:var(--coral);color:#fff;font-family:var(--font-display);font-size:14px;padding:10px 16px;border-radius:0 0 10px 10px;text-decoration:none;transition:top .15s ease}
+  .skip-link:focus{top:0}
+  @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior:auto!important; } }
+  /* iPhone/Safari hardening: 16px stops Safari zooming in on focus */
+  input:not([type="checkbox"]):not([type="range"]),textarea,select{font-size:16px!important}
+
+  .icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.75; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+  /* ---------------- phone frame ----------------
+     Rob mostly opens this on an iPhone, so it always presents as a phone-width
+     app — edge to edge on an actual phone, and a phone-shaped column with a
+     visible frame everywhere wider, rather than stretching to fill a desktop. */
+  .app-frame {
+    max-width: 460px; margin: 0 auto; min-height: 100vh; min-height: 100dvh;
+    background: var(--paper); position: relative;
+  }
+  @media (min-width: 560px) {
+    body { background: var(--paper-sunk); display: flex; justify-content: center; padding: 28px 0; }
+    .app-frame { min-height: min(920px, 92vh); border-radius: 34px; box-shadow: var(--shadow-md), 0 0 0 10px var(--hero-bg); overflow: hidden; }
+  }
+
+  /* ---------------- top strip ---------------- */
+  .topstrip {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .topstrip-inner { display: flex; align-items: center; gap: 10px; padding: 14px 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+  .brand-mark { width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0; overflow: hidden; background: var(--hero-bg); }
+  .brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+  .brand-name { font-family: var(--font-display); font-weight: 650; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand-sub { font-size: 0.7rem; color: var(--ink-faint); letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .topbtn {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--paper-raised); color: var(--ink-soft); border: 1px solid var(--line); box-shadow: var(--shadow-sm);
+  }
+  .topbtn:hover { border-color: var(--coral); color: var(--coral-ink); }
+  .topbtn.refresh { border-color: var(--mustard); color: var(--mustard-ink); background: var(--mustard-tint); }
+  .topbtn.refresh[hidden] { display: none; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    background: var(--coral-tint); color: var(--coral-ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+    overflow: hidden; border: 1.5px solid var(--line);
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ---------------- layout ---------------- */
+  main { padding: 20px 18px 40px; }
+  .view { display: none; }
+  .view.active { display: block; animation: rise 0.28s ease; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 6px; display: flex; align-items: center; gap: 6px; }
+  .page-title { font-size: 1.6rem; margin-bottom: 6px; }
+  .page-lede { color: var(--ink-soft); margin: 0 0 22px; max-width: 54ch; font-size: 0.95rem; }
+
+  section + section { margin-top: 32px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+  .section-head h2 { font-size: 1.15rem; }
+
+  /* ---------------- hero ---------------- */
+  .hero { background: var(--hero-bg); color: var(--hero-fg); border-radius: var(--radius-l); padding: 24px 22px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+  .hero::after { content: ""; position: absolute; right: -40px; top: -40px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, #FF5A4E 0%, transparent 70%); opacity: 0.55; }
+  .hero-eyebrow { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--hero-accent); position: relative; }
+  .hero h1 { font-size: clamp(1.4rem, 6vw, 1.75rem); margin: 6px 0 10px; position: relative; color: var(--hero-fg); }
+  .hero p { margin: 0; color: var(--hero-fg-soft); font-size: 0.93rem; max-width: 46ch; position: relative; }
+  .hero-stats { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; position: relative; }
+  .hero-stat { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.16); color: var(--hero-fg); border-radius: 999px; padding: 6px 13px; font-size: 0.78rem; font-weight: 600; }
+
+  /* ---------------- callout ---------------- */
+  .callout { border-radius: var(--radius-m); padding: 16px 18px; display: flex; gap: 12px; border: 1px solid var(--line); font-size: 0.9rem; }
+  .callout .icon { margin-top: 2px; }
+  .callout h3 { font-size: 0.96rem; margin-bottom: 4px; }
+  .callout p { margin: 0; color: var(--ink-soft); }
+  .callout.mustard { background: var(--mustard-tint); border-color: var(--mustard); }
+  .callout.mustard .icon, .callout.mustard h3 { color: var(--mustard-ink); }
+  .callout.teal { background: var(--teal-tint); border-color: var(--teal); }
+  .callout.teal .icon, .callout.teal h3 { color: var(--teal-ink); }
+  .callout.sky { background: var(--sky-tint); border-color: var(--sky); }
+  .callout.sky .icon, .callout.sky h3 { color: var(--sky-ink); }
+
+  /* ---------------- nav grid (home) ---------------- */
+  .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .nav-card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-m); padding: 16px; text-align: left; cursor: pointer; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 8px; }
+  .nav-card:active { transform: scale(0.98); }
+  .nav-card .icon { width: 22px; height: 22px; color: var(--coral-ink); }
+  .nav-card strong { font-family: var(--font-display); font-size: 1rem; font-weight: 650; }
+  .nav-card span { font-size: 0.8rem; color: var(--ink-soft); }
+
+  .card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-m); padding: 18px; box-shadow: var(--shadow-sm); }
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+
+  .bridge-row { display: grid; grid-template-columns: 1fr; gap: 4px; background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 12px 14px; font-size: 0.86rem; }
+  .bridge-row .from { color: var(--ink); font-weight: 500; }
+  .bridge-row .to { color: var(--teal-ink); font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 0.83rem; }
+  .bridge-row .to .icon { width: 15px; height: 15px; }
+
+  .path-card { display: flex; flex-direction: column; gap: 10px; }
+  .path-top { display: flex; align-items: center; gap: 10px; }
+  .path-badge { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--paper-sunk); color: var(--ink); font-size: 1.2rem; }
+  .path-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 650; }
+  .path-time { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-faint); }
+  .path-why { font-size: 0.86rem; color: var(--ink-soft); font-style: italic; }
+  .path-body p { font-size: 0.86rem; color: var(--ink-soft); margin: 0; }
+  details.disclose { border-top: 1px dashed var(--line); padding-top: 10px; margin-top: 2px; }
+  details.disclose summary { cursor: pointer; font-weight: 600; font-size: 0.84rem; color: var(--coral-ink); list-style: none; display: flex; align-items: center; gap: 6px; }
+  details.disclose summary::-webkit-details-marker { display: none; }
+  details.disclose summary .icon { width: 14px; height: 14px; transition: transform 0.2s ease; }
+  details.disclose[open] summary .icon { transform: rotate(90deg); }
+  details.disclose ol { margin: 10px 0 0; padding-left: 20px; font-size: 0.85rem; color: var(--ink-soft); }
+  details.disclose li { margin-bottom: 6px; }
+
+  .route-line { position: relative; margin-top: 8px; }
+  .route-line::before { content: ""; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 2px; background: repeating-linear-gradient(180deg, var(--line) 0 6px, transparent 6px 12px); }
+  .ticket-wrap { position: relative; padding-left: 40px; margin-bottom: 20px; }
+  .route-dot { position: absolute; left: 6px; top: 22px; width: 20px; height: 20px; border-radius: 50%; background: var(--paper-raised); border: 3px solid var(--ink-faint); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; }
+  .ticket-wrap.current .route-dot { border-color: var(--coral); box-shadow: 0 0 0 4px var(--coral-tint); }
+  .ticket-wrap.past .route-dot { border-color: var(--line); }
+  .ticket { position: relative; background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-m); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+  .ticket::before, .ticket::after { content: ""; position: absolute; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; border-radius: 50%; background: var(--paper); border: 1px solid var(--line); }
+  .ticket::before { left: -9px; } .ticket::after { right: -9px; }
+  .ticket-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+  .ticket-title { font-family: var(--font-display); font-weight: 650; font-size: 1.02rem; }
+  .ticket-dates { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-faint); white-space: nowrap; text-align: right; }
+  .ticket-status { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
+  .ticket-status.upcoming { background: var(--sky-tint); color: var(--sky-ink); }
+  .ticket-status.current { background: var(--coral-tint); color: var(--coral-ink); }
+  .ticket-status.past { background: var(--paper-sunk); color: var(--ink-faint); }
+  .ticket p.focus { font-size: 0.88rem; color: var(--ink-soft); margin: 0 0 10px; }
+  .ticket .link-note { display: flex; gap: 8px; font-size: 0.82rem; background: var(--teal-tint); color: var(--teal-ink); border-radius: var(--radius-s); padding: 9px 12px; }
+  .ticket .link-note .icon { width: 15px; height: 15px; margin-top: 1px; }
+  .age-note { display: flex; gap: 8px; font-size: 0.82rem; background: var(--mustard-tint); color: var(--mustard-ink); border-radius: var(--radius-s); padding: 9px 12px; margin-top: 8px; }
+  .age-note .icon { width: 15px; height: 15px; margin-top: 1px; }
+  .progress { height: 6px; border-radius: 999px; background: var(--paper-sunk); overflow: hidden; margin-top: 10px; }
+  .progress > span { display: block; height: 100%; background: var(--coral); }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 0.7rem; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; }
+  .field label .hint { text-transform: none; font-weight: 400; letter-spacing: 0; }
+  .field input, .field select, .field textarea { border: 1.5px solid var(--line); border-radius: var(--radius-s); padding: 10px 12px; font-size: 0.94rem; background: var(--paper); color: var(--ink); }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--coral); }
+  .field-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 420px) { .field-grid.two { grid-template-columns: 1fr 1fr; } }
+
+  .btn { border: none; border-radius: 999px; padding: 11px 20px; font-weight: 650; font-size: 0.88rem; cursor: pointer; background: var(--coral); color: #fff; box-shadow: var(--shadow-sm); display: inline-flex; align-items: center; gap: 6px; }
+  .btn:active { transform: scale(0.97); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); box-shadow: none; }
+  .btn.small { padding: 7px 14px; font-size: 0.8rem; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+
+  .visa-card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-m); padding: 16px; }
+  .visa-card h4 { font-family: var(--font-display); font-size: 0.96rem; font-weight: 650; margin-bottom: 8px; }
+  .visa-months { display: flex; align-items: baseline; gap: 6px; margin-bottom: 8px; }
+  .visa-months input { width: 64px; font-family: var(--font-mono); font-weight: 600; font-size: 1.05rem; color: var(--coral-ink); border: 1.5px solid var(--line); border-radius: var(--radius-s); padding: 5px 8px; }
+  .visa-months small { color: var(--ink-faint); font-size: 0.76rem; }
+  .visa-card p { font-size: 0.79rem; color: var(--ink-soft); margin: 0; }
+  .visa-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @media (min-width: 420px) { .visa-grid { grid-template-columns: 1fr 1fr; } }
+
+  details.info { border: 1px solid var(--line); border-radius: var(--radius-m); background: var(--paper-raised); padding: 14px 16px; }
+  details.info summary { cursor: pointer; font-weight: 600; font-size: 0.86rem; display: flex; align-items: center; gap: 7px; }
+  details.info summary .icon { width: 15px; height: 15px; }
+  details.info ul { margin: 10px 0 0; padding-left: 18px; font-size: 0.84rem; color: var(--ink-soft); }
+  details.info li { margin-bottom: 6px; }
+
+  .chip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; -webkit-overflow-scrolling: touch; }
+  .chip { border: 1.5px solid var(--line); background: var(--paper-raised); color: var(--ink-soft); border-radius: 999px; padding: 7px 14px; font-size: 0.82rem; font-weight: 600; white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; }
+  .chip.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .tag-card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-m); padding: 18px; box-shadow: var(--shadow-sm); position: relative; }
+  .tag-punch { position: absolute; top: 16px; right: 16px; width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 1px solid var(--line); }
+  .tag-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding-right: 24px; }
+  .tag-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--paper-sunk); display: flex; align-items: center; justify-content: center; color: var(--ink); flex-shrink: 0; font-size: 1.1rem; }
+  .tag-title { font-family: var(--font-display); font-weight: 650; font-size: 1rem; }
+  .tag-card p.blurb { font-size: 0.86rem; color: var(--ink-soft); margin: 0 0 10px; }
+  .country-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .flag-chip { font-size: 0.76rem; font-weight: 600; background: var(--paper-sunk); border-radius: 999px; padding: 3px 10px; }
+  .drive-chip { font-size: 0.73rem; font-weight: 600; background: var(--sky-tint); color: var(--sky-ink); border-radius: 999px; padding: 3px 10px; display: inline-flex; align-items: center; gap: 4px; }
+  .drive-chip .icon { width: 12px; height: 12px; }
+
+  .check-row { display: flex; align-items: flex-start; gap: 12px; background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 12px 14px; }
+  .check-row input { width: 19px; height: 19px; accent-color: var(--teal); margin-top: 1px; cursor: pointer; }
+  .check-row label { flex: 1; font-size: 0.88rem; cursor: pointer; }
+  .check-row.done label { color: var(--ink-faint); text-decoration: line-through; }
+  .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .progress-row .progress { flex: 1; height: 10px; }
+  .progress-row .pct { font-family: var(--font-mono); font-weight: 600; color: var(--coral-ink); font-size: 0.88rem; }
+
+  .notes-area textarea { width: 100%; min-height: 130px; border: 1.5px solid var(--line); border-radius: var(--radius-m); padding: 14px; font-size: 0.9rem; resize: vertical; background: var(--paper); }
+  .save-note { font-size: 0.76rem; color: var(--ink-faint); margin-top: 8px; }
+
+  .order-row { display: flex; align-items: center; gap: 10px; background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 10px 12px; }
+  .order-row .rank { font-family: var(--font-mono); font-weight: 700; color: var(--ink-faint); width: 18px; }
+  .order-row .name { flex: 1; font-weight: 600; font-size: 0.9rem; }
+  .order-row .btn-mini { border: 1px solid var(--line); background: var(--paper); border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .order-row .btn-mini:disabled { opacity: 0.3; cursor: default; }
+  .order-row .btn-mini .icon { width: 15px; height: 15px; }
+
+  .photo-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .photo-preview { width: 72px; height: 72px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--coral-tint); color: var(--coral-ink); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; border: 1.5px solid var(--line); }
+  .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ---------------- bottom nav ---------------- */
+  .bottomnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--paper-raised); border-top: 1px solid var(--line); box-shadow: 0 -6px 20px -12px rgba(24,35,56,0.3); padding-bottom: env(safe-area-inset-bottom, 0); }
+  .app-frame .bottomnav { position: absolute; }
+  .bottomnav-inner { display: flex; }
+  .navbtn { flex: 1; background: none; border: none; padding: 9px 4px 7px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--ink-faint); font-size: 0.64rem; font-weight: 600; }
+  .navbtn .icon { width: 21px; height: 21px; }
+  .navbtn.active { color: var(--coral-ink); }
+
+  .toast { position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%) translateY(14px); background: var(--hero-bg); color: var(--hero-fg); padding: 10px 20px; border-radius: 999px; font-size: 0.84rem; font-weight: 600; box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; z-index: 60; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .app-frame .toast { position: absolute; }
+
+  .footnote { text-align: center; color: var(--ink-faint); font-size: 0.74rem; padding: 30px 10px 10px; }
+
+  /* ---------------- settings sheet (the cog) ---------------- */
+  .sheet-overlay { display: none; position: absolute; inset: 0; background: rgba(10,14,22,0.4); z-index: 70; }
+  .sheet-overlay.open { display: block; }
+  .appearance-panel {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 71; background: var(--paper-raised);
+    border-top: 1px solid var(--line); border-radius: 20px 20px 0 0;
+    padding: 18px 20px calc(18px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 30px rgba(0,0,0,0.22);
+    transform: translateY(110%); transition: transform .22s ease; max-height: 84vh; overflow-y: auto;
+  }
+  .appearance-panel.open { transform: translateY(0); }
+  .appearance-panel h4 { margin: 0 26px 2px 0; font-size: 1.15rem; }
+  .ap-intro { color: var(--ink-faint); font-size: 0.82rem; margin: 0 0 4px; }
+  .ap-row { margin: 18px 0; }
+  .ap-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 9px; display: block; }
+  .ap-row input[type="text"] { width: 100%; border: 1.5px solid var(--line); border-radius: var(--radius-s); padding: 10px 12px; background: var(--paper); color: var(--ink); }
+  .ap-row input[type="text"]:focus { outline: none; border-color: var(--coral); }
+  .ap-close { position: absolute; top: 12px; right: 14px; background: none; border: 0; font-size: 20px; color: var(--ink-faint); cursor: pointer; padding: 6px; line-height: 1; }
+  .palette-row { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-top: 4px; }
+  .palette-swatch { width: 100%; aspect-ratio: 1; border-radius: 12px; border: 2px solid var(--line); cursor: pointer; padding: 0; position: relative; }
+  .palette-swatch.on { border-color: var(--ink); box-shadow: 0 0 0 2px var(--paper-raised), 0 0 0 4px var(--ink); }
+  .palette-swatch.on::after { content: "✓"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+  .palette-choice { margin: 10px 0 0; color: var(--ink-soft); font-size: 0.82rem; } .palette-choice strong { color: var(--coral-ink); }
+  .brightness-presets { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-top: 11px; }
+  .brightness-presets button { border: 1px solid var(--line); border-radius: 8px; padding: 8px 5px; background: var(--paper); color: var(--ink-soft); font-family: var(--font-mono); font-size: 0.68rem; cursor: pointer; }
+  .brightness-presets button.on { border-color: var(--coral); background: var(--coral-tint); color: var(--coral-ink); }
+  .ap-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ap-toggle-row p { margin: 0; font-size: 0.92rem; font-weight: 600; }
+  .ap-toggle-row .d { color: var(--ink-faint); font-size: 0.78rem; margin-top: 2px; }
+  .ap-switch { position: relative; width: 44px; height: 26px; border-radius: 14px; background: var(--line); border: 0; cursor: pointer; flex: 0 0 auto; }
+  .ap-switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+  .ap-switch.on { background: var(--coral); } .ap-switch.on::after { left: 21px; }
+  .ap-slider { width: 100%; accent-color: var(--coral); height: 30px; }
+  .ap-slider-row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.66rem; color: var(--ink-faint); margin-top: -4px; }
+  .ap-backup-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .ap-backup-btns button { border: 1px solid var(--coral); border-radius: 8px; background: var(--coral-tint); color: var(--coral-ink); font-family: var(--font-display); font-size: 0.82rem; padding: 9px 8px; cursor: pointer; font-weight: 600; }
+  .ap-backup-status { font-family: var(--font-mono); font-size: 0.66rem; color: var(--teal-ink); min-height: 14px; margin: 8px 0 0; }
+  .ap-backup-status.warn { color: var(--coral-ink); }
+  .ap-rollback-btn { width: 100%; margin-top: 10px; border: 1px solid var(--mustard); border-radius: 8px; background: var(--mustard-tint); color: var(--mustard-ink); font-family: var(--font-display); font-size: 0.82rem; padding: 9px 8px; cursor: pointer; font-weight: 600; }
+  .ap-rollback-btn[aria-pressed="true"] { background: var(--mustard); color: #fff; }
+  .ap-reset { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-faint); background: none; border: 1px solid var(--line); border-radius: 20px; padding: 7px 13px; cursor: pointer; margin-top: 4px; }
+</style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="logo"><span class="emoji">🌏</span> RobAJobBob</div>
-    <div class="tagline">Career compass + 5-year travel plan, all in one spot</div>
-    <div class="spacer"></div>
-    <div class="greet"><img id="greet-avatar" alt="" /><span>Hey, <span id="greet-name">there</span> 👋</span></div>
-  </header>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="app-frame">
 
-  <nav class="tabs">
-    <button class="tab-btn active" data-tab="home">🏠 Home</button>
-    <button class="tab-btn" data-tab="career">🧭 Career Compass</button>
-    <button class="tab-btn" data-tab="roadmap">🗺️ Travel Roadmap</button>
-    <button class="tab-btn" data-tab="jobs">🎉 Casual Jobs</button>
-    <button class="tab-btn" data-tab="toolkit">✅ Toolkit</button>
-    <button class="tab-btn" data-tab="profile">⚙️ Profile</button>
-  </nav>
+  <div class="topstrip">
+    <div class="topstrip-inner">
+      <div class="brand">
+        <div class="brand-mark"><img src="robajobbob-icon.png" alt=""></div>
+        <div style="min-width:0;">
+          <div class="brand-name">RobAJobBob</div>
+          <div class="brand-sub" id="strip-sub">Career &amp; travel plan</div>
+        </div>
+      </div>
+      <button class="topbtn refresh" id="updateBtn" type="button" hidden aria-label="An update is ready — tap to refresh">↻</button>
+      <div class="avatar" id="avatar-chip">R</div>
+      <button class="topbtn" id="cogBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings">
+        <svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </div>
 
-  <main>
+  <div class="sheet-overlay" id="sheetOverlay"></div>
+  <div class="appearance-panel" id="appearancePanel" role="dialog" aria-label="Settings" aria-hidden="true">
+    <button class="ap-close" id="appearanceClose" type="button" aria-label="Close">✕</button>
+    <h4>Make it yours</h4>
+    <p class="ap-intro">Changes the colours, brightness and a few other things on this device only — nothing is sent anywhere.</p>
+
+    <div class="ap-row">
+      <span class="ap-label">Colour theme</span>
+      <div class="palette-row" id="paletteRow"></div>
+      <p class="palette-choice" id="paletteChoice" aria-live="polite"></p>
+    </div>
+
+    <div class="ap-row">
+      <span class="ap-label">Brightness</span>
+      <input type="range" class="ap-slider" id="brightSlider" min="80" max="120" step="5" value="100" aria-label="Brightness">
+      <div class="ap-slider-row"><span>Dimmer</span><span id="brightVal">100%</span><span>Brighter</span></div>
+      <div class="brightness-presets" aria-label="Brightness presets"><button type="button" data-brightness="85">Dim</button><button type="button" data-brightness="100">Normal</button><button type="button" data-brightness="115">Bright</button></div>
+    </div>
+
+    <div class="ap-row ap-toggle-row">
+      <div><p>Low-light mode</p><div class="d">A dark version of your colour theme. Off by default — never switches on by itself.</div></div>
+      <button class="ap-switch" id="lowlightSwitch" type="button" role="switch" aria-checked="false" aria-label="Low-light mode"></button>
+    </div>
+
+    <div class="ap-row ap-toggle-row">
+      <div><p>High contrast</p><div class="d">Maximum text clarity — prioritises readable black/white over the theme colour.</div></div>
+      <button class="ap-switch" id="contrastSwitch" type="button" role="switch" aria-checked="false" aria-label="High contrast"></button>
+    </div>
+
+    <div class="ap-row">
+      <span class="ap-label">First name</span>
+      <input type="text" id="apName" placeholder="e.g. Rob" maxlength="30" autocomplete="off" aria-label="First name">
+    </div>
+
+    <div class="ap-row">
+      <span class="ap-label">Back up your data</span>
+      <p class="ap-intro">Everything — profile, route, checklist, notes, photo — lives only in this browser. Save a backup now and then so it can be restored on a new phone.</p>
+      <div class="ap-backup-btns">
+        <button type="button" id="dataExport">Export backup</button>
+        <button type="button" id="dataImport">Restore backup</button>
+      </div>
+      <input type="file" id="dataImportInput" accept="application/json,.json" hidden aria-label="Choose a backup file to restore">
+      <p class="ap-backup-status" id="dataBackupStatus" aria-live="polite"></p>
+    </div>
+
+    <div class="ap-row">
+      <span class="ap-label">Had a bad update?</span>
+      <p class="ap-intro">Keeps the version from before your last update on this device. Switching back never touches your saved data.</p>
+      <button class="ap-rollback-btn" id="usePreviousToggle" type="button" aria-pressed="false">Use previous version</button>
+      <p class="ap-backup-status" id="usePreviousStatus" aria-live="polite"></p>
+    </div>
+
+    <button class="ap-reset" id="appearanceReset" type="button">Reset to default look</button>
+  </div>
+
+  <main id="main">
     <section id="view-home" class="view active"></section>
     <section id="view-career" class="view"></section>
     <section id="view-roadmap" class="view"></section>
     <section id="view-jobs" class="view"></section>
     <section id="view-toolkit" class="view"></section>
     <section id="view-profile" class="view"></section>
+    <p class="footnote">Made for one specific person, not a template — not official immigration or career advice. Verify visa details on the official sites before booking anything.</p>
   </main>
 
-  <footer>
-    Made with 💛 as a personal planner — not official immigration or career advice. Always check
-    official sources before making visa or work decisions.
-  </footer>
+  <nav class="bottomnav">
+    <div class="bottomnav-inner" id="bottomnav-inner"></div>
+  </nav>
 
   <div class="toast" id="toast"></div>
+</div>
 
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
+<script>
+/* ===================================== ICONS ===================================== */
+const ICONS = {
+  home: '<svg class="icon" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h4v-6h2v6h4a1 1 0 0 0 1-1v-9"/></svg>',
+  compass: '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M15 9l-2 5-5 2 2-5z"/></svg>',
+  route: '<svg class="icon" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M5 8c0 6 14 2 14 8"/></svg>',
+  ticket: '<svg class="icon" viewBox="0 0 24 24"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2 1.6 1.6 0 0 0 0 6 2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 1.6 1.6 0 0 0 0-6Z"/><path d="M10 7.5v9" stroke-dasharray="1.6 2.6"/></svg>',
+  check: '<svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>',
+  user: '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M4.5 20c1.5-4 5-5.5 7.5-5.5S18 16 19.5 20"/></svg>',
+  chevron: '<svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
+  arrowRight: '<svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  up: '<svg class="icon" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>',
+  down: '<svg class="icon" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
+  car: '<svg class="icon" viewBox="0 0 24 24"><path d="M4 16v-3l2-4.5A2 2 0 0 1 7.8 7h8.4a2 2 0 0 1 1.8 1.5L20 13v3"/><path d="M4 16h16v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/></svg>',
+  info: '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8v.01"/></svg>',
+  calendar: '<svg class="icon" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>',
+  flag: '<svg class="icon" viewBox="0 0 24 24"><path d="M6 3v18"/><path d="M6 4.5h10l-2 3.5 2 3.5H6z"/></svg>',
+  cake: '<svg class="icon" viewBox="0 0 24 24"><path d="M4 12v6.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V12"/><path d="M4 12c1 1.3 2.3 1.3 3.3 0 1-1.3 2.3-1.3 3.3 0 1 1.3 2.3 1.3 3.3 0 1-1.3 2.3-1.3 3.3 0 1 1.3 2.3 1.3 3.8 0"/><path d="M9 8V5M12 8V4M15 8V5"/></svg>',
+};
+
+/* ===================================== DATA ======================================= */
+const DEFAULT_PROFILE = {
+  name: "Rob",
+  currentRole: "All-Rounder — Operations & Events Support",
+  currentCompany: "TreebySound (working alongside Dave Treeby)",
+  nationalityNote: "UK citizen",
+  visaStatus: "Hasn't applied for any working-holiday visa yet",
+  drivingLicence: true,
+  ageBand: "30s (exact birth year not set yet)",
+  savingsNote: "£10k+ saved already",
+  certsNote: "Not sure what he already has — to confirm",
+  travelStartDate: "",
+  countryOrder: ["australia", "newzealand", "canada"],
+  birthYear: null,
+};
+const TYPICAL_VISA_AGE_CAP = 35;
+
+const SKILLS_BRIDGE = [
+  { from: "Loading, driving & delivering gear for events", to: "Logistics planning, route/scheduling, supply chain thinking" },
+  { from: "Setting up & packing down event sites", to: "Production management, site management, H&S awareness" },
+  { from: "Being the go-to support person across the business", to: "Operations management, project coordination, generalist management track" },
+  { from: "Seeing sound, procurement, events & delivery all from the inside", to: "Whole-business fluency most people take a decade to get" },
+  { from: "Working directly under an owner-operator (Dave)", to: "Front-row seat on how a small business is actually run day to day" },
+];
+
+const CAREER_PATHS = [
+  { icon: "🎪", title: "Event Production & Operations Manager", tagline: "The direct next step up from where you already stand.", why: "You're already doing the on-the-ground work — this is the same world, just with more planning, budget and people responsibility layered on top.", from: "Currently: hands-on all-rounder support role.", steps: ["Start owning one small event end-to-end (budget, run sheet, crew) as a stretch project at TreebySound", "Learn the commercial side: quoting, supplier costs, client comms", "Pick up a recognised events/production short course or certificate", "Build a portfolio of events you've run or co-run", "Aim for Production Manager / Operations Manager title within 2–4 years"], timeframe: "2–4 years" },
+  { icon: "🎤", title: "Live Events, Festivals & Touring Production", tagline: "Bigger stages, bigger crews, more travel built into the job itself.", why: "Uses the same sound/event instincts already there, but scales up to festivals, tours and large-scale production — and the industry travels a lot.", from: "Currently: sound & event setup exposure through TreebySound.", steps: ["Get on the crew list for a few festivals or larger shows as casual/freelance crew", "Specialise in one lane first — stage management, technical production or logistics", "Network hard — this industry runs on who's reliable and who you know", "Consider a crewing agency once there are runs on the board", "Long-term: touring production manager or festival site manager"], timeframe: "3–5 years" },
+  { icon: "🚚", title: "Logistics & Supply Chain Coordinator", tagline: "Turns delivery-driving into a proper career track.", why: "Already planning routes, loading gear and hitting deadlines — that's the core of logistics coordination, and it's a stable career that exists everywhere.", from: "Currently: deliveries & equipment handling.", steps: ["Get familiar with basic inventory/warehouse software (even free tools)", "Look at a logistics or supply chain fundamentals course", "Target a coordinator role at a hire company, event supplier or freight business", "Build toward warehouse/ops manager or dispatch supervisor"], timeframe: "1–3 years" },
+  { icon: "🏛️", title: "Venue & Hospitality Management", tagline: "Run the building instead of the one-off event.", why: "Combines the operational muscle already built with steadier, more local hours than touring — good for putting down roots after the travel years.", from: "Currently: events + general operations support.", steps: ["Pick up shifts in a venue, bar or hospitality management setting", "Learn rostering, licensing basics and front-of-house operations", "Move into assistant venue manager, then venue/general manager"], timeframe: "2–5 years" },
+  { icon: "🧭", title: "Travel & Adventure Tourism Operations", tagline: "Turn the travel years into the actual career, not just a break from it.", why: "If the 5-year trip lights him up, this path takes everything learned doing excursions/tours and turns it into running tourism operations rather than just guiding them.", from: "Currently: interest in excursions, adventure & meeting people.", steps: ["Use travel years to work front-line in tours/excursions across NZ, AU & Canada", "Note what each operator does well and badly — this becomes instinct for running one", "Pick up a first-aid, guiding or tourism qualification relevant to the region", "Move into lead guide, then operations/booking coordinator for a tour company", "Long-term: operations manager or a small tour outfit of his own"], timeframe: "Runs alongside the travel plan" },
+  { icon: "✈️", title: "Aviation — Cabin Crew → Ground Operations", tagline: "Start as flight attendant, land in airline operations.", why: "Flight attendant work is a genuine gateway into aviation, not just a travel job — airlines promote operationally-minded crew into ground ops, crew scheduling and base management.", from: "Currently: interest in flight attendant work as a travel job.", steps: ["Apply to airlines based in NZ/AU/Canada hubs during the travel years", "Treat it as a career entry, not a stopgap — track performance & training", "After 2–3 years, look sideways into crew scheduling, base ops or training roles", "Long-term: ground operations manager or airline base management"], timeframe: "3–6 years" },
+  { icon: "🚀", title: "Start His Own Thing", tagline: "The long shot with the best ceiling — running an event/hire business.", why: "Working across every part of TreebySound (delivery, sound, procurement, events, ops) is exactly the broad exposure someone needs before starting their own company.", from: "Currently: full-spectrum exposure to how a small events business runs.", steps: ["Keep absorbing the commercial side at TreebySound — ask Dave questions, don't just execute", "Save & build a client/supplier network over the travel years", "Test a small side venture (mobile bar, event styling, gear hire) at low stakes", "Long-term: launch once there's capital, contacts and confidence"], timeframe: "5–10 years" },
+];
+
+const VISA_DEFAULTS = {
+  australia: { label: "Australia — Working Holiday (417/462)", extendNote: "UK passport: since the 2024 UK–Australia trade deal, a 2nd and 3rd 417 visa (36 months total) need no specified work at all. Most other nationalities still need 6 months of regional work. Base fee ~AUD 840 (2026)." },
+  newzealand: { label: "New Zealand — Working Holiday", extendNote: "UK passport: apply for 12, 23, or up to 36 months total. Most others get a flat 12 months. ~15,000 UK places/year, from NZD 770." },
+  canada: { label: "Canada — IEC Working Holiday", extendNote: "UK passport: up to 36 months across two participations (24 + 12), mixing Working Holiday / Young Professionals / Co-op streams. Most others get one 12-month entry. Pool-based, not guaranteed." },
+};
+const COUNTRY_META = {
+  australia: { flag: "🇦🇺", short: "Australia" },
+  newzealand: { flag: "🇳🇿", short: "New Zealand" },
+  canada: { flag: "🇨🇦", short: "Canada" },
+};
+const ROADMAP_PHASE_CONTENT = {
+  australia: { title: "Australia — landing & finding your feet", focus: "Base yourself in a coastal or events-friendly city. Mix bar/hospitality shifts with casual event crew work and a few excursions/tour shifts to test what you enjoy.", careerLink: "Every event crewed anywhere in the world adds to the 'Live Events' and 'Adventure Tourism' paths.", monthsKey: "australia" },
+  newzealand: { title: "New Zealand adventure season", focus: "Ski/adventure tourism town for winter (Queenstown/Wanaka), excursions and guiding work, hospitality to fill the gaps. Small enough to properly explore on days off.", careerLink: "Guiding + hospitality here builds the 'Adventure Tourism' and 'Venue & Hospitality' paths at once.", monthsKey: "newzealand" },
+  canada: { title: "Canada — mountains & cities", focus: "A resort town (Whistler/Banff) for ski season, then a city stint (Vancouver/Toronto) trying event crew, flight attendant applications, or hospitality management shifts.", careerLink: "Good spot to seriously test 'Aviation — Cabin Crew' since major airlines hub through Canadian cities.", monthsKey: "canada" },
+};
+const AUSTRALIA_EXT_PHASE = { country: "australia", title: "Australia — second (and maybe third) year", focus: "For a UK passport this needs no specified work at all — just re-apply. Push further into ski resort work, farm/harvest work, or a regional tourism operator.", careerLink: "Regional/adventure tourism work here is direct experience for 'Travel & Adventure Tourism Operations'.", monthsKey: "australia_ext", optional: true };
+const CONSOLIDATE_PHASE = { country: null, title: "Consolidate & decide", focus: "Use whatever time is left to either keep travelling on the strongest thread, or bring everything back into a real step up in the events/logistics/tourism career track.", careerLink: "The point to pick a lane from the Career Compass and start applying travel experience directly to it.", monthsKey: "consolidate" };
+
+const CASUAL_JOBS = [
+  { icon: "🍹", title: "Bar & Hospitality Work", blurb: "The easiest way to fund travel almost anywhere — flexible hours, social, and tips.", fit: "Fits straight on top of any events/hospitality experience already picked up at TreebySound.", howTo: "Walk in with a CV to bars/hostel bars in tourist towns first. RSA/RSA-equivalent certificates (short online courses) are usually required.", countries: ["australia", "newzealand", "canada"], visaAngle: "Standard casual work — counts toward general working-holiday hours, not 'specified work'.", drivingHelps: false },
+  { icon: "🧗", title: "Excursions & Tour Guiding", blurb: "Leading day trips, adventure activities or sightseeing tours — social, active, outdoors.", fit: "Directly feeds the Adventure Tourism Operations career path.", howTo: "Local tour operators, hostels and adventure companies hire seasonally. First-aid certs help a lot.", countries: ["newzealand", "australia", "canada"], visaAngle: "Regional excursion work in Australia can sometimes count toward specified work — verify per role/region.", drivingHelps: true },
+  { icon: "✈️", title: "Flight Attendant / Cabin Crew", blurb: "Travel built into the job, plus a genuine airline career on-ramp.", fit: "Matches the interest in flight attendant work — and it's a real aviation career entry.", howTo: "Apply directly to airlines based in the country you're in. Expect training school (paid) before flying.", countries: ["australia", "newzealand", "canada"], visaAngle: "Airlines often want 12+ months validity left to justify training — time this early in a visa.", drivingHelps: false },
+  { icon: "🎪", title: "Event & Festival Crew", blurb: "Bump-in/bump-out, stagehand, box office, bar or runner work at concerts and festivals.", fit: "Directly on-theme — the same work already being done at TreebySound, just abroad.", howTo: "Sign up with local crewing/casual staffing agencies and follow local venues/festival companies for call-outs.", countries: ["australia", "newzealand", "canada"], visaAngle: "Great CV-builder for Live Events & Festival Production — keep a running list of every show worked.", drivingHelps: false },
+  { icon: "🎿", title: "Ski Resort & Adventure Tourism", blurb: "A full winter season working lift ops, hospitality or guiding at a ski town.", fit: "High energy, very social, and stacks hospitality + outdoor experience in one go.", howTo: "Resorts run big seasonal hiring pushes a few months before each season opens — apply early.", countries: ["newzealand", "canada", "australia"], visaAngle: "Seasonal accommodation is often bundled with the job — budget-friendly for a working holiday.", drivingHelps: true },
+  { icon: "🏕️", title: "Hostel & Work Exchange", blurb: "Reception, cleaning or bar work at a hostel in exchange for free accommodation.", fit: "Cheap way to stretch savings between paid seasonal jobs, fast way to meet other travellers.", howTo: "Work-exchange platforms, or just ask directly at hostels in smaller towns.", countries: ["australia", "newzealand", "canada"], visaAngle: "Useful as a bridge between seasons rather than a main income source.", drivingHelps: false },
+  { icon: "🚢", title: "Cruise Ship Crew", blurb: "Hospitality, entertainment or events roles on cruise lines that circuit the Pacific.", fit: "Another genuine hospitality/events career thread, with contracts that fund travel between them.", howTo: "Apply directly to cruise lines or crew agencies; contracts are usually 4–8 months on.", countries: ["australia", "newzealand", "canada"], visaAngle: "Sits outside the standard working-holiday timeline — an alternative branch, not a filler.", drivingHelps: false },
+  { icon: "🍇", title: "Farm & Harvest Work", blurb: "Fruit picking, packing or general farm work — physical, seasonal.", fit: "Not the most social option, but reliable, and useful for nationalities that still need specified work for an AU 2nd year.", howTo: "Regional harvest trail job boards and hostels in farming regions post daily.", countries: ["australia"], visaAngle: "UK passport holders don't need this for a 2nd/3rd Australian year any more — it's optional for him, not required.", drivingHelps: true },
+];
+
+const TOOLKIT_CHECKLIST_TEMPLATE = [
+  { id: "passport", label: "Check passport has 12+ months validity before each visa application" },
+  { id: "visa-aus", label: "Apply for the Australia 417 working holiday visa" },
+  { id: "visa-nz", label: "Apply for the New Zealand working holiday visa" },
+  { id: "visa-can", label: "Enter the Canada IEC pool & confirm invitation" },
+  { id: "insurance", label: "Sort travel/health insurance for the full trip" },
+  { id: "cert-rsa", label: "Get RSA / bar certifications sorted before arrival" },
+  { id: "cert-firstaid", label: "Get a first-aid certificate (helps for guiding/excursion roles)" },
+  { id: "licence-intl", label: "Check whether the UK licence needs an international permit for each country" },
+  { id: "cv", label: "Build a one-page CV suited to casual/hospitality applications" },
+  { id: "portfolio", label: "Start a simple log/portfolio of every event worked, anywhere" },
+  { id: "bank", label: "Set up a fee-free international bank card" },
+  { id: "checkin", label: "Set a 6-monthly check-in with yourself: still on the right country/lane?" },
+];
+
+/* ---------- colour themes ----------
+   Each theme is one seed hue (plus an optional "muted" flag for a softer,
+   lower-saturation look). Every other token — backgrounds, text, the three
+   accent colours — is derived from that single hue at runtime by the colour
+   engine below, in both a light and a low-light version. */
+const PALETTES = [
+  { key: "sunrise",    name: "Sunrise",    hue: 6 },
+  { key: "sunset",     name: "Sunset",     hue: 20 },
+  { key: "marigold",   name: "Marigold",   hue: 38 },
+  { key: "citrus",     name: "Citrus",     hue: 58, muted: true },
+  { key: "meadow",     name: "Meadow",     hue: 95 },
+  { key: "rainforest", name: "Rainforest", hue: 150 },
+  { key: "lagoon",     name: "Lagoon",     hue: 175 },
+  { key: "sky",        name: "Sky",        hue: 200 },
+  { key: "harbor",     name: "Harbor",     hue: 222 },
+  { key: "dusk",       name: "Dusk",       hue: 250 },
+  { key: "grape",      name: "Grape",      hue: 268 },
+  { key: "berry",      name: "Berry",      hue: 320 },
+  { key: "rose",       name: "Rose",       hue: 340 },
+  { key: "cocoa",      name: "Cocoa",      hue: 25, muted: true },
+  { key: "slate",      name: "Slate",      hue: 215, muted: true },
+];
+
+/* ===================================== STORAGE ===================================== */
+/* Every key shares the robajobbob- prefix so the backup export/import below can
+   sweep up everything with one loop, the same way TreebySound and Thorn
+   Procurement do it. */
+const PFX = "robajobbob-";
+const K = {
+  profile: PFX + "profile", visa: PFX + "visa", ext: PFX + "ext",
+  checklist: PFX + "checklist", notes: PFX + "notes", photo: PFX + "photo",
+  palette: PFX + "palette", lowlight: PFX + "lowlight", contrast: PFX + "contrast",
+  bright: PFX + "bright", usePrevious: PFX + "use-previous",
+};
+function storeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function storeSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
+function storeRemove(k) { try { localStorage.removeItem(k); } catch {} }
+
+function loadProfile() { try { return { ...DEFAULT_PROFILE, ...JSON.parse(storeGet(K.profile) || "{}") }; } catch { return { ...DEFAULT_PROFILE }; } }
+function saveProfile(p) { storeSet(K.profile, JSON.stringify(p)); }
+const VISA_KEY_META = [
+  { key: "australia", label: "Australia — 1st year", base: 12 },
+  { key: "australia_ext", label: "Australia — 2nd/3rd year", base: 12 },
+  { key: "newzealand", label: "New Zealand", base: 23 },
+  { key: "canada", label: "Canada (1st participation)", base: 24 },
+];
+function loadVisas() { try { const s = JSON.parse(storeGet(K.visa) || "{}"); const m = {}; VISA_KEY_META.forEach(v => m[v.key] = s[v.key] ?? v.base); return m; } catch { const m = {}; VISA_KEY_META.forEach(v => m[v.key] = v.base); return m; } }
+function saveVisas(v) { storeSet(K.visa, JSON.stringify(v)); }
+function loadExt() { return storeGet(K.ext) === "1"; }
+function saveExt(b) { storeSet(K.ext, b ? "1" : "0"); }
+function loadCheck() { try { return JSON.parse(storeGet(K.checklist) || "{}"); } catch { return {}; } }
+function saveCheck(s) { storeSet(K.checklist, JSON.stringify(s)); }
+function loadNotes() { return storeGet(K.notes) || ""; }
+function saveNotes(t) { storeSet(K.notes, t); }
+function loadPhoto() { return storeGet(K.photo) || ""; }
+function savePhoto(d) { storeSet(K.photo, d); }
+function clearPhoto() { storeRemove(K.photo); }
+
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function addMonths(d, m) { const r = new Date(d); r.setMonth(r.getMonth() + m); return r; }
+function fmtDate(d) { return d.toLocaleDateString(undefined, { year: "numeric", month: "short" }); }
+
+let profile = loadProfile();
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+/* ===================================== COLOUR ENGINE =====================================
+   Ported from TreebySound's Appearance panel, but generative rather than one
+   hand-written CSS block per theme: give it a hue (and whether it's a muted
+   or dark run) and it derives the whole token set — page/card/line surfaces,
+   three ink weights, and four accent colours each with a text and a tint
+   variant — so every theme in PALETTES gets full-surface treatment, not just
+   a different accent smear on top of the same page. */
+function hsl(h, s, l) { h = ((h % 360) + 360) % 360; return `hsl(${h.toFixed(1)} ${s.toFixed(0)}% ${l.toFixed(0)}%)`; }
+
+function computeTokens(hue, muted, dark) {
+  const m = muted ? 0.55 : 1;
+  const s = (base) => base * m;
+  if (!dark) {
+    return {
+      "--paper": hsl(hue, s(34), 97), "--paper-raised": hsl(hue, s(44), 99), "--paper-sunk": hsl(hue, s(29), 93),
+      "--line": hsl(hue, s(27), 85),
+      "--ink": hsl(hue, s(29), 16), "--ink-soft": hsl(hue, s(17), 38), "--ink-faint": hsl(hue, s(11), 55),
+      "--coral": hsl(hue, s(78), 54), "--coral-ink": hsl(hue, s(70), 34), "--coral-tint": hsl(hue, s(65), 93),
+      "--teal": hsl(hue + 150, s(50), 32), "--teal-ink": hsl(hue + 150, s(50), 24), "--teal-tint": hsl(hue + 150, s(42), 90),
+      "--mustard": hsl(hue + 45, s(70), 45), "--mustard-ink": hsl(hue + 45, s(60), 30), "--mustard-tint": hsl(hue + 45, s(58), 90),
+      "--sky": hsl(hue - 60, s(52), 45), "--sky-ink": hsl(hue - 60, s(52), 30), "--sky-tint": hsl(hue - 60, s(48), 91),
+    };
+  }
+  return {
+    "--paper": hsl(hue, s(26), 9), "--paper-raised": hsl(hue, s(22), 14), "--paper-sunk": hsl(hue, s(24), 6),
+    "--line": hsl(hue, s(18), 24),
+    "--ink": hsl(hue, s(22), 92), "--ink-soft": hsl(hue, s(14), 72), "--ink-faint": hsl(hue, s(10), 54),
+    "--coral": hsl(hue, s(80), 70), "--coral-ink": hsl(hue, s(70), 84), "--coral-tint": hsl(hue, s(42), 20),
+    "--teal": hsl(hue + 150, s(50), 60), "--teal-ink": hsl(hue + 150, s(46), 80), "--teal-tint": hsl(hue + 150, s(32), 17),
+    "--mustard": hsl(hue + 45, s(65), 65), "--mustard-ink": hsl(hue + 45, s(60), 82), "--mustard-tint": hsl(hue + 45, s(42), 18),
+    "--sky": hsl(hue - 60, s(55), 68), "--sky-ink": hsl(hue - 60, s(50), 82), "--sky-tint": hsl(hue - 60, s(38), 18),
+  };
+}
+/* High contrast overrides every theme with the same fixed, near-black/white
+   set — clarity wins over "make it yours" when this is switched on. */
+const HIGH_CONTRAST = {
+  light: { "--paper": "#FFFFFF", "--paper-raised": "#FFFFFF", "--paper-sunk": "#F0F0F0", "--line": "#8A8A8A", "--ink": "#0A0A0A", "--ink-soft": "#2B2B2B", "--ink-faint": "#4A4A4A", "--coral": "#B3261E", "--coral-ink": "#7A1913", "--coral-tint": "#FBE4E2", "--teal": "#0B5D52", "--teal-ink": "#083F38", "--teal-tint": "#DCF2EE", "--mustard": "#6B4E00", "--mustard-ink": "#4A3600", "--mustard-tint": "#FBEDCC", "--sky": "#1D4E89", "--sky-ink": "#123761", "--sky-tint": "#DCE9F7" },
+  dark: { "--paper": "#000000", "--paper-raised": "#111111", "--paper-sunk": "#000000", "--line": "#8A8A8A", "--ink": "#FFFFFF", "--ink-soft": "#E4E4E4", "--ink-faint": "#BEBEBE", "--coral": "#FF8A80", "--coral-ink": "#FFD3CE", "--coral-tint": "#3D1512", "--teal": "#6FE0D2", "--teal-ink": "#C9F5EE", "--teal-tint": "#0C2C28", "--mustard": "#F0C34D", "--mustard-ink": "#FBE6A8", "--mustard-tint": "#332600", "--sky": "#8FBCEE", "--sky-ink": "#D6E7FA", "--sky-tint": "#0F2540" },
+};
+
+const root = document.documentElement;
+function updateThemeColor() {
+  const meta = document.getElementById("themeColorMeta");
+  if (!meta) return;
+  try {
+    const bg = getComputedStyle(document.body).backgroundColor;
+    if (bg) meta.setAttribute("content", bg);
+  } catch {}
+}
+function paletteByKey(key) { return PALETTES.find(p => p.key === key) || PALETTES[0]; }
+function applyTheme() {
+  const p = paletteByKey(savedPalette);
+  const tokens = savedHighContrast ? HIGH_CONTRAST[savedLowlight ? "dark" : "light"] : computeTokens(p.hue, !!p.muted, savedLowlight);
+  Object.entries(tokens).forEach(([k, v]) => root.style.setProperty(k, v));
+  updateThemeColor();
+}
+function applyBright(v) {
+  root.style.setProperty("--bright", (v / 100).toString());
+  root.classList.toggle("raj-dimmed", Number(v) !== 100);
+}
+
+var savedPalette = storeGet(K.palette) || "sunrise";
+var savedLowlight = storeGet(K.lowlight) === "1";
+var savedHighContrast = storeGet(K.contrast) === "1";
+var savedBright = parseInt(storeGet(K.bright), 10); if (isNaN(savedBright)) savedBright = 100;
+applyTheme();
+applyBright(savedBright);
+
+/* ===================================== SETTINGS SHEET ===================================== */
+(function () {
+  const sheetOverlay = document.getElementById("sheetOverlay");
+  const panel = document.getElementById("appearancePanel");
+  const cogBtn = document.getElementById("cogBtn");
+  const closeBtn = document.getElementById("appearanceClose");
+  let opener = null;
+
+  function openPanel() {
+    opener = document.activeElement;
+    panel.classList.add("open");
+    sheetOverlay.classList.add("open");
+    panel.setAttribute("aria-hidden", "false");
+    cogBtn.setAttribute("aria-expanded", "true");
+    setTimeout(() => closeBtn.focus(), 30);
+  }
+  function closePanel() {
+    panel.classList.remove("open");
+    sheetOverlay.classList.remove("open");
+    panel.setAttribute("aria-hidden", "true");
+    cogBtn.setAttribute("aria-expanded", "false");
+    if (opener && document.contains(opener)) { try { opener.focus({ preventScroll: true }); } catch { opener.focus(); } }
+    opener = null;
+  }
+  cogBtn.addEventListener("click", openPanel);
+  closeBtn.addEventListener("click", closePanel);
+  sheetOverlay.addEventListener("click", closePanel);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && panel.classList.contains("open")) closePanel(); });
+
+  /* palette swatches — each renders its own light-mode preview colour */
+  const paletteRow = document.getElementById("paletteRow");
+  const paletteChoice = document.getElementById("paletteChoice");
+  paletteRow.innerHTML = PALETTES.map(p => {
+    const t = computeTokens(p.hue, !!p.muted, false);
+    return `<button class="palette-swatch" type="button" data-palette="${p.key}" style="background:${t["--coral"]}" title="${p.name}" aria-label="${p.name}"></button>`;
+  }).join("");
+  function markPaletteOn() {
+    let name = paletteByKey(savedPalette).name;
+    paletteRow.querySelectorAll(".palette-swatch").forEach(sw => {
+      sw.classList.toggle("on", sw.dataset.palette === savedPalette);
+    });
+    paletteChoice.innerHTML = `Selected: <strong>${esc(name)}</strong>`;
+  }
+  markPaletteOn();
+  paletteRow.addEventListener("click", (e) => {
+    const btn = e.target.closest(".palette-swatch");
+    if (!btn) return;
+    savedPalette = btn.dataset.palette;
+    storeSet(K.palette, savedPalette);
+    applyTheme();
+    markPaletteOn();
+  });
+
+  /* brightness */
+  const brightSlider = document.getElementById("brightSlider");
+  const brightVal = document.getElementById("brightVal");
+  function syncBrightnessPresets() {
+    document.querySelectorAll("[data-brightness]").forEach(btn => btn.classList.toggle("on", parseInt(btn.dataset.brightness, 10) === savedBright));
+  }
+  brightSlider.value = savedBright;
+  brightVal.textContent = savedBright + "%";
+  syncBrightnessPresets();
+  brightSlider.addEventListener("input", () => {
+    savedBright = parseInt(brightSlider.value, 10);
+    applyBright(savedBright);
+    brightVal.textContent = savedBright + "%";
+    syncBrightnessPresets();
+  });
+  brightSlider.addEventListener("change", () => storeSet(K.bright, savedBright));
+  document.querySelectorAll("[data-brightness]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      savedBright = parseInt(btn.dataset.brightness, 10);
+      applyBright(savedBright);
+      brightSlider.value = savedBright;
+      brightVal.textContent = savedBright + "%";
+      storeSet(K.bright, savedBright);
+      syncBrightnessPresets();
+    });
+  });
+
+  /* low-light + high-contrast */
+  const lowlightSwitch = document.getElementById("lowlightSwitch");
+  function syncLowlight() { lowlightSwitch.classList.toggle("on", savedLowlight); lowlightSwitch.setAttribute("aria-checked", savedLowlight ? "true" : "false"); }
+  syncLowlight();
+  lowlightSwitch.addEventListener("click", () => {
+    savedLowlight = !savedLowlight;
+    storeSet(K.lowlight, savedLowlight ? "1" : "0");
+    applyTheme();
+    syncLowlight();
+  });
+  const contrastSwitch = document.getElementById("contrastSwitch");
+  function syncContrast() { contrastSwitch.classList.toggle("on", savedHighContrast); contrastSwitch.setAttribute("aria-checked", savedHighContrast ? "true" : "false"); }
+  syncContrast();
+  contrastSwitch.addEventListener("click", () => {
+    savedHighContrast = !savedHighContrast;
+    storeSet(K.contrast, savedHighContrast ? "1" : "0");
+    applyTheme();
+    syncContrast();
+  });
+
+  /* name — shared with the You tab's profile.name */
+  const apName = document.getElementById("apName");
+  apName.value = profile.name;
+  apName.addEventListener("input", () => {
+    profile = { ...profile, name: apName.value.trim().slice(0, 30) || DEFAULT_PROFILE.name };
+    saveProfile(profile);
+    renderAll();
+    apName.focus();
+    apName.setSelectionRange(apName.value.length, apName.value.length);
+  });
+
+  /* reset to default look */
+  document.getElementById("appearanceReset").addEventListener("click", () => {
+    savedPalette = "sunrise"; storeSet(K.palette, savedPalette);
+    savedLowlight = false; storeSet(K.lowlight, "0");
+    savedHighContrast = false; storeSet(K.contrast, "0");
+    savedBright = 100; storeSet(K.bright, "100");
+    applyTheme(); applyBright(100);
+    brightSlider.value = 100; brightVal.textContent = "100%";
+    syncBrightnessPresets(); markPaletteOn(); syncLowlight(); syncContrast();
+    toast("Back to the default look");
+  });
+
+  /* ---------- back up / restore everything on this device ---------- */
+  (function () {
+    const exportBtn = document.getElementById("dataExport");
+    const importBtn = document.getElementById("dataImport");
+    const importInput = document.getElementById("dataImportInput");
+    const statusEl = document.getElementById("dataBackupStatus");
+    let statusTimer = null;
+    function setStatus(msg, warn) {
+      statusEl.textContent = msg;
+      statusEl.classList.toggle("warn", !!warn);
+      clearTimeout(statusTimer);
+      if (msg) statusTimer = setTimeout(() => { statusEl.textContent = ""; statusEl.classList.remove("warn"); }, 4500);
+    }
+    function collect() {
+      const data = {};
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.indexOf(PFX) === 0) data[k] = localStorage.getItem(k);
+        }
+      } catch {}
+      return data;
+    }
+    exportBtn.addEventListener("click", () => {
+      const payload = { app: "RobAJobBob", kind: "backup", version: 1, exportedAt: new Date().toISOString(), data: collect() };
+      const count = Object.keys(payload.data).length;
+      if (!count) { setStatus("Nothing saved yet to back up.", true); return; }
+      try {
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const stamp = new Date().toISOString().slice(0, 10);
+        a.href = url; a.download = `robajobbob-backup-${stamp}.json`;
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+        setStatus(`Backup saved — ${count} item${count === 1 ? "" : "s"}.`);
+      } catch { setStatus("Could not create the backup file here.", true); }
+    });
+    importBtn.addEventListener("click", () => importInput.click());
+    importInput.addEventListener("change", () => {
+      const file = importInput.files && importInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        let parsed;
+        try { parsed = JSON.parse(reader.result); } catch { setStatus("That file isn't a valid backup.", true); importInput.value = ""; return; }
+        const data = parsed && parsed.data && typeof parsed.data === "object" ? parsed.data : null;
+        if (!data) { setStatus("That file isn't a RobAJobBob backup.", true); importInput.value = ""; return; }
+        const keys = Object.keys(data).filter(k => k.indexOf(PFX) === 0);
+        if (!keys.length) { setStatus("No RobAJobBob data found in that file.", true); importInput.value = ""; return; }
+        if (!window.confirm(`Restore ${keys.length} saved item${keys.length === 1 ? "" : "s"}? This replaces matching data on this device with the backup, then reloads.`)) { importInput.value = ""; return; }
+        try { keys.forEach(k => storeSet(k, data[k])); } catch { setStatus("Could not save the restored data on this device.", true); importInput.value = ""; return; }
+        importInput.value = "";
+        location.reload();
+      };
+      reader.onerror = () => setStatus("Could not read that file.", true);
+      reader.readAsText(file);
+    });
+  })();
+
+  /* ---------- revert to the version before the last update ---------- */
+  (function () {
+    const toggleBtn = document.getElementById("usePreviousToggle");
+    const statusEl = document.getElementById("usePreviousStatus");
+    function setStatus(msg, warn) { statusEl.textContent = msg; statusEl.classList.toggle("warn", !!warn); }
+    function sync() {
+      const on = storeGet(K.usePrevious) === "1";
+      toggleBtn.textContent = on ? "Back to the latest version" : "Use previous version";
+      toggleBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    }
+    sync();
+    function askServiceWorker(flag) {
+      return new Promise(resolve => {
+        if (!("serviceWorker" in navigator) || !navigator.serviceWorker.controller) { resolve({ ok: false }); return; }
+        let settled = false;
+        const channel = new MessageChannel();
+        channel.port1.onmessage = (e) => { settled = true; resolve(e.data || { ok: false }); };
+        navigator.serviceWorker.controller.postMessage({ type: "USE_PREVIOUS", value: flag }, [channel.port2]);
+        setTimeout(() => { if (!settled) resolve({ ok: false, timeout: true }); }, 1500);
+      });
+    }
+    toggleBtn.addEventListener("click", () => {
+      const next = storeGet(K.usePrevious) !== "1";
+      toggleBtn.disabled = true;
+      setStatus("");
+      askServiceWorker(next).then(result => {
+        toggleBtn.disabled = false;
+        if (!result || !result.ok) { setStatus("Could not switch versions here — try again once you're online.", true); return; }
+        if (next && !result.hasPrevious) { setStatus("No earlier version saved on this device yet — this appears after your next update.", true); return; }
+        storeSet(K.usePrevious, next ? "1" : "0");
+        location.reload();
+      });
+    });
+  })();
+})();
+
+/* ===================================== NAV ===================================== */
+const TABS = [
+  { key: "home", label: "Home", icon: ICONS.home },
+  { key: "career", label: "Compass", icon: ICONS.compass },
+  { key: "roadmap", label: "Route", icon: ICONS.route },
+  { key: "jobs", label: "Jobs", icon: ICONS.ticket },
+  { key: "toolkit", label: "Kit", icon: ICONS.check },
+  { key: "profile", label: "You", icon: ICONS.user },
+];
+function renderNav() {
+  document.getElementById("bottomnav-inner").innerHTML = TABS.map(t => `<button class="navbtn" data-tab="${t.key}">${t.icon}<span>${t.label}</span></button>`).join("");
+  document.querySelectorAll(".navbtn").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.tab)));
+}
+function switchTab(id) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.querySelectorAll(".navbtn").forEach(b => b.classList.remove("active"));
+  document.getElementById(`view-${id}`).classList.add("active");
+  document.querySelector(`.navbtn[data-tab="${id}"]`).classList.add("active");
+  document.getElementById("main").scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ===================================== HOME ===================================== */
+function renderHome() {
+  const el = document.getElementById("view-home");
+  el.innerHTML = `
+    <section class="hero">
+      <div class="hero-eyebrow">Personal plan · updated for what you told us</div>
+      <h1>Right, ${esc(profile.name)} — let's line up the next five years</h1>
+      <p>Two things, side by side: the long-term career you haven't fully decided on yet, and the working-holiday run through New Zealand, Australia and Canada you're excited about. They're built to feed each other, not compete.</p>
+      <div class="hero-stats">
+        <span class="hero-stat">📍 ${esc(profile.currentRole)}</span>
+        <span class="hero-stat">🤝 TreebySound</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="callout mustard">
+        ${ICONS.cake}
+        <div>
+          <h3>Timing is the thing to get right</h3>
+          <p>UK working-holiday age caps sit at 35 across Australia, New Zealand and Canada — and you said he's already in his 30s with no firm dates yet. That's not a problem, but it does mean the sooner this starts, the more of the plan is realistically achievable. Add his exact birth year on the <strong>You</strong> tab and the Route tab will flag any stretch that would land him past 35.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Get into it</h2></div>
+      <div class="nav-grid">
+        <button class="nav-card" data-goto="career">${ICONS.compass}<strong>Career Compass</strong><span>7 real paths from here</span></button>
+        <button class="nav-card" data-goto="roadmap">${ICONS.route}<strong>Travel Route</strong><span>5 years, visa-checked</span></button>
+        <button class="nav-card" data-goto="jobs">${ICONS.ticket}<strong>Casual Jobs</strong><span>What funds the trip</span></button>
+        <button class="nav-card" data-goto="toolkit">${ICONS.check}<strong>Prep Kit</strong><span>Checklist &amp; notes</span></button>
+      </div>
+    </section>
+
+    <section>
+      <div class="callout teal">
+        ${ICONS.info}
+        <div>
+          <h3>Where things stand</h3>
+          <p>No visa applied for yet, ${esc(profile.savingsNote).toLowerCase()} — comfortably above what any of the three typically ask you to show — full UK driving licence, and no certificates confirmed yet. None of that blocks anything; it's exactly the starting point this plan assumes.</p>
+        </div>
+      </div>
+    </section>
+  `;
+  el.querySelectorAll("[data-goto]").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.goto)));
+}
+
+/* ===================================== CAREER ===================================== */
+function renderCareer() {
+  const el = document.getElementById("view-career");
+  el.innerHTML = `
+    <div class="eyebrow">${ICONS.compass} Long-term</div>
+    <h1 class="page-title">Career Compass</h1>
+    <p class="page-lede">Long-term is still open — that's normal. Here are seven real directions that build on what's already happening at TreebySound, from the obvious next step to the ambitious long shot.</p>
+
+    <section>
+      <div class="section-head"><h2>Skills already in hand</h2></div>
+      <div class="stack">
+        ${SKILLS_BRIDGE.map(b => `
+          <div class="bridge-row">
+            <div class="from">${esc(b.from)}</div>
+            <div class="to">${ICONS.arrowRight}${esc(b.to)}</div>
+          </div>`).join("")}
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Seven paths worth weighing</h2></div>
+      <div class="stack">
+        ${CAREER_PATHS.map(p => `
+          <div class="card path-card">
+            <div class="path-top">
+              <div class="path-badge">${p.icon}</div>
+              <div style="flex:1;">
+                <div class="path-title">${esc(p.title)}</div>
+                <div class="path-time mono">${esc(p.timeframe)}</div>
+              </div>
+            </div>
+            <div class="path-why">${esc(p.tagline)}</div>
+            <div class="path-body"><p>${esc(p.why)}</p></div>
+            <details class="disclose">
+              <summary>${ICONS.chevron} How to get there from here</summary>
+              <p style="margin-top:8px; font-size:0.82rem; color:var(--ink-faint);">${esc(p.from)}</p>
+              <ol>${p.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>
+            </details>
+          </div>`).join("")}
+      </div>
+    </section>
+  `;
+}
+
+/* ===================================== ROADMAP ===================================== */
+function buildPhases() {
+  const includeExt = loadExt();
+  const order = (profile.countryOrder && profile.countryOrder.length) ? profile.countryOrder : DEFAULT_PROFILE.countryOrder;
+  const phases = [];
+  order.forEach(c => {
+    const content = ROADMAP_PHASE_CONTENT[c];
+    if (!content) return;
+    phases.push({ ...content, country: c });
+    if (c === "australia" && includeExt) phases.push({ ...AUSTRALIA_EXT_PHASE });
+  });
+  phases.push({ ...CONSOLIDATE_PHASE });
+  return phases;
+}
+function computeRoadmap(startDateStr) {
+  const visas = loadVisas();
+  const start = startDateStr ? new Date(startDateStr) : new Date();
+  const phases = buildPhases();
+  let cursor = new Date(start);
+  let used = 0;
+  const target = 60;
+  const built = [];
+  phases.forEach(phase => {
+    let months = phase.monthsKey === "consolidate" ? Math.max(target - used, 3) : (visas[phase.monthsKey] ?? 12);
+    const from = new Date(cursor);
+    const to = addMonths(cursor, months);
+    cursor = to; used += months;
+    built.push({ ...phase, from, to, months });
+  });
+  return built;
+}
+function phaseStatus(from, to) {
+  const now = new Date();
+  if (now < from) return "upcoming";
+  if (now < to) return "current";
+  return "past";
+}
+function renderRoadmap() {
+  const el = document.getElementById("view-roadmap");
+  const visas = loadVisas();
+  const includeExt = loadExt();
+  const startVal = profile.travelStartDate || "";
+  const built = computeRoadmap(startVal || undefined);
+
+  el.innerHTML = `
+    <div class="eyebrow">${ICONS.route} 5-year plan</div>
+    <h1 class="page-title">The Travel Route</h1>
+    <p class="page-lede">A working-holiday run through New Zealand, Australia and Canada, laid out against realistic visa lengths. Everything below is editable.</p>
+
+    <details class="info" style="margin-bottom:22px;">
+      <summary>${ICONS.info} Visa lengths change — what we checked, and when (Aug 2026)</summary>
+      <ul>
+        <li><strong>Australia 417:</strong> since the 2024 UK–Australia trade deal, a UK 2nd &amp; 3rd year (36 months total) needs no specified work at all. Most other nationalities still need 6 months of regional work.</li>
+        <li><strong>New Zealand:</strong> UK citizens can take 12, 23, or up to 36 months total.</li>
+        <li><strong>Canada IEC:</strong> UK citizens can get up to 36 months across two participations (24 + 12).</li>
+      </ul>
+      <p style="margin-top:8px; font-size:0.83rem; color:var(--ink-faint);">Always confirm on <a href="https://www.immigration.govt.nz" target="_blank" rel="noopener">immigration.govt.nz</a>, <a href="https://immi.homeaffairs.gov.au" target="_blank" rel="noopener">immi.homeaffairs.gov.au</a> and <a href="https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec.html" target="_blank" rel="noopener">canada.ca/iec</a> before booking anything — nationality, age and rules all move fast.</p>
+    </details>
+
+    <section>
+      <div class="section-head"><h2>Age &amp; timing check</h2></div>
+      <div class="card">
+        <div class="field-grid two">
+          <div class="field">
+            <label for="rm-birthyear">Birth year <span class="hint">(unlocks precise flags)</span></label>
+            <input type="number" id="rm-birthyear" min="1950" max="2015" placeholder="e.g. 1993" value="${profile.birthYear || ""}" />
+          </div>
+          <div class="field">
+            <label for="rm-start">Travel start date</label>
+            <input type="date" id="rm-start" value="${esc(startVal)}" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="rm-apply">Update route</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Visa assumptions</h2></div>
+      <div class="visa-grid">
+        ${VISA_KEY_META.map(v => `
+          <div class="visa-card">
+            <h4>${esc(v.label)}</h4>
+            <div class="visa-months"><input type="number" min="1" max="36" id="visa-${v.key}" value="${visas[v.key]}" /> <small>months</small></div>
+            <p>${esc((VISA_DEFAULTS[v.key.replace("_ext", "")] || {}).extendNote || "")}</p>
+          </div>`).join("")}
+      </div>
+      <div class="field" style="margin-top:14px; max-width:280px;">
+        <label for="rm-ext">Include Australia 2nd/3rd year?</label>
+        <select id="rm-ext">
+          <option value="0" ${!includeExt ? "selected" : ""}>Not yet decided</option>
+          <option value="1" ${includeExt ? "selected" : ""}>Yes, include it</option>
+        </select>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>The route, leg by leg</h2></div>
+      ${!startVal ? `<div class="callout sky" style="margin-bottom:16px;">${ICONS.calendar}<div><h3>No start date set yet</h3><p>Showing the plan as if it started today, just so the shape of it makes sense. Set a real (or rough) date above any time — everything below shifts to match.</p></div></div>` : ""}
+      <div class="route-line">
+        ${built.map(phase => {
+          const status = phaseStatus(phase.from, phase.to);
+          const meta = phase.country ? COUNTRY_META[phase.country] : { flag: "🏁" };
+          let progressHtml = "";
+          if (status === "current") {
+            const now = new Date();
+            const pct = Math.min(100, Math.max(0, ((now - phase.from) / (phase.to - phase.from)) * 100));
+            progressHtml = `<div class="progress"><span style="width:${pct.toFixed(0)}%"></span></div>`;
+          }
+          let ageHtml = "";
+          if (profile.birthYear) {
+            const ageAtStart = phase.from.getFullYear() - profile.birthYear;
+            if (ageAtStart >= TYPICAL_VISA_AGE_CAP) {
+              ageHtml = `<div class="age-note">${ICONS.cake}<span>He'd be turning ~${ageAtStart} around this leg — most working-holiday visas cap between 30 and 35, so double-check eligibility for this stretch specifically.</span></div>`;
+            }
+          }
+          return `
+          <div class="ticket-wrap ${status}">
+            <div class="route-dot">${meta.flag}</div>
+            <div class="ticket">
+              <div class="ticket-head">
+                <div class="ticket-title">${esc(phase.title)}</div>
+                <div class="ticket-dates">${fmtDate(phase.from)} → ${fmtDate(phase.to)}<br>${phase.months} mo</div>
+              </div>
+              <span class="ticket-status ${status}">${status === "current" ? "Happening now" : status === "past" ? "Done" : "Upcoming"}</span>
+              <p class="focus">${esc(phase.focus)}</p>
+              <div class="link-note">${ICONS.compass}<span>${esc(phase.careerLink)}</span></div>
+              ${ageHtml}
+              ${progressHtml}
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
+    </section>
+  `;
+
+  document.getElementById("rm-apply").addEventListener("click", () => {
+    const by = parseInt(document.getElementById("rm-birthyear").value, 10);
+    profile = { ...profile, birthYear: Number.isFinite(by) ? by : null, travelStartDate: document.getElementById("rm-start").value || "" };
+    saveProfile(profile);
+    saveExt(document.getElementById("rm-ext").value === "1");
+    const overrides = {};
+    VISA_KEY_META.forEach(v => { const raw = parseInt(document.getElementById(`visa-${v.key}`).value, 10); overrides[v.key] = Number.isFinite(raw) && raw > 0 ? raw : v.base; });
+    saveVisas(overrides);
+    toast("Route updated");
+    renderRoadmap();
+  });
+}
+
+/* ===================================== JOBS ===================================== */
+let jobsFilter = "all";
+function renderJobs() {
+  const el = document.getElementById("view-jobs");
+  const filtered = jobsFilter === "all" ? CASUAL_JOBS : CASUAL_JOBS.filter(j => j.countries.includes(jobsFilter));
+  const filters = [{ key: "all", flag: "🌏", short: "All" }, ...Object.entries(COUNTRY_META).map(([k, m]) => ({ key: k, ...m }))];
+
+  el.innerHTML = `
+    <div class="eyebrow">${ICONS.ticket} Fund the trip</div>
+    <h1 class="page-title">Casual Jobs Explorer</h1>
+    <p class="page-lede">Bar work, excursions, flight attending and more — the social, adventurous jobs that fund the trip. Worth doing on purpose, but the long-term career is the point of the trip; these are the fuel.</p>
+
+    <div class="chip-row">
+      ${filters.map(f => `<button class="chip ${jobsFilter === f.key ? "active" : ""}" data-filter="${f.key}">${f.flag} ${f.short}</button>`).join("")}
+    </div>
+
+    <div class="stack">
+      ${filtered.map(j => `
+        <div class="tag-card">
+          <div class="tag-punch"></div>
+          <div class="tag-top">
+            <div class="tag-icon">${j.icon}</div>
+            <div class="tag-title">${esc(j.title)}</div>
+          </div>
+          <p class="blurb">${esc(j.blurb)}</p>
+          <div class="country-row">
+            ${j.countries.map(c => `<span class="flag-chip">${COUNTRY_META[c].flag} ${COUNTRY_META[c].short}</span>`).join("")}
+            ${j.drivingHelps ? `<span class="drive-chip">${ICONS.car} Driving licence helps</span>` : ""}
+          </div>
+          <details class="disclose">
+            <summary>${ICONS.chevron} Why it fits &amp; how to start</summary>
+            <p style="font-size:0.84rem; color:var(--ink-soft); margin-top:8px;"><strong>Why it fits:</strong> ${esc(j.fit)}</p>
+            <p style="font-size:0.84rem; color:var(--ink-soft);"><strong>How to start:</strong> ${esc(j.howTo)}</p>
+          </details>
+          <div class="link-note" style="margin-top:10px;">${ICONS.flag}<span>${esc(j.visaAngle)}</span></div>
+        </div>`).join("") || `<p class="page-lede">Nothing tagged for that country yet.</p>`}
+    </div>
+  `;
+  el.querySelectorAll("[data-filter]").forEach(b => b.addEventListener("click", () => { jobsFilter = b.dataset.filter; renderJobs(); }));
+}
+
+/* ===================================== TOOLKIT ===================================== */
+function renderToolkit() {
+  const el = document.getElementById("view-toolkit");
+  const checklist = loadCheck();
+  const done = TOOLKIT_CHECKLIST_TEMPLATE.filter(i => checklist[i.id]).length;
+  const pct = Math.round((done / TOOLKIT_CHECKLIST_TEMPLATE.length) * 100);
+
+  el.innerHTML = `
+    <div class="eyebrow">${ICONS.check} Prep</div>
+    <h1 class="page-title">The Kit</h1>
+    <p class="page-lede">Practical prep, tracked in one place. Saved automatically on this device.</p>
+
+    <div class="callout sky" style="margin-bottom:20px;">
+      ${ICONS.info}
+      <div><h3>Where money's concerned, he's fine</h3><p>£10k+ already saved clears the typical minimum-funds asks for all three visas comfortably — this list is about paperwork and timing, not scraping funds together.</p></div>
+    </div>
+
+    <div class="progress-row"><div class="progress"><span style="width:${pct}%"></span></div><span class="pct">${pct}%</span></div>
+    <div class="stack">
+      ${TOOLKIT_CHECKLIST_TEMPLATE.map(item => `
+        <div class="check-row ${checklist[item.id] ? "done" : ""}">
+          <input type="checkbox" id="chk-${item.id}" ${checklist[item.id] ? "checked" : ""} />
+          <label for="chk-${item.id}">${esc(item.label)}</label>
+        </div>`).join("")}
+    </div>
+
+    <section>
+      <div class="section-head"><h2>Notes to himself</h2></div>
+      <div class="card notes-area">
+        <textarea id="notes-area" placeholder="Thoughts, ideas, things to look into...">${esc(loadNotes())}</textarea>
+        <p class="save-note">Saves automatically as you type.</p>
+      </div>
+    </section>
+  `;
+  TOOLKIT_CHECKLIST_TEMPLATE.forEach(item => {
+    document.getElementById(`chk-${item.id}`).addEventListener("change", e => {
+      const s = loadCheck(); s[item.id] = e.target.checked; saveCheck(s); renderToolkit();
+    });
+  });
+  let t = null;
+  document.getElementById("notes-area").addEventListener("input", e => { clearTimeout(t); t = setTimeout(() => saveNotes(e.target.value), 400); });
+}
+
+/* ===================================== PROFILE ===================================== */
+function renderProfile() {
+  const el = document.getElementById("view-profile");
+  const photo = loadPhoto();
+  el.innerHTML = `
+    <div class="eyebrow">${ICONS.user} Tailored to one person</div>
+    <h1 class="page-title">You</h1>
+    <p class="page-lede">This app is built around one specific person — keep these details right and everything else follows.</p>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="photo-row">
+        <div class="photo-preview" id="photo-preview">${photo ? `<img src="${photo}" />` : (profile.name || "?").charAt(0).toUpperCase()}</div>
+        <div>
+          <input type="file" id="p-photo" accept="image/*" />
+          <p class="save-note">Stored only on this device.</p>
+          ${photo ? `<button class="btn ghost small" id="p-photo-remove" style="margin-top:8px;">Remove photo</button>` : ""}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field-grid">
+        <div class="field"><label for="p-name">First name</label><input type="text" id="p-name" value="${esc(profile.name)}" /></div>
+        <div class="field"><label for="p-role">Current role</label><input type="text" id="p-role" value="${esc(profile.currentRole)}" /></div>
+        <div class="field"><label for="p-company">Current company</label><input type="text" id="p-company" value="${esc(profile.currentCompany)}" /></div>
+        <div class="field"><label for="p-nationality">Nationality</label><input type="text" id="p-nationality" value="${esc(profile.nationalityNote)}" /></div>
+        <div class="field"><label for="p-visa">Visa status</label><input type="text" id="p-visa" value="${esc(profile.visaStatus)}" /></div>
+        <div class="field-grid two">
+          <div class="field"><label for="p-ageband">Age</label><input type="text" id="p-ageband" value="${esc(profile.ageBand)}" /></div>
+          <div class="field"><label for="p-birthyear">Birth year <span class="hint">(optional, exact)</span></label><input type="number" id="p-birthyear" min="1950" max="2015" value="${profile.birthYear || ""}" /></div>
+        </div>
+        <div class="field"><label for="p-savings">Savings note</label><input type="text" id="p-savings" value="${esc(profile.savingsNote)}" /></div>
+        <div class="field"><label for="p-certs">Certificates / quals</label><input type="text" id="p-certs" value="${esc(profile.certsNote)}" /></div>
+        <div class="field">
+          <label for="p-driving">Full driving licence?</label>
+          <select id="p-driving">
+            <option value="1" ${profile.drivingLicence ? "selected" : ""}>Yes</option>
+            <option value="0" ${!profile.drivingLicence ? "selected" : ""}>No</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="p-save">Save</button>
+        <button class="btn ghost" id="p-reset">Reset everything</button>
+      </div>
+    </div>
+
+    <section>
+      <div class="section-head"><h2>Country order</h2></div>
+      <p class="page-lede" style="margin-bottom:12px;">First, second, third — reorder it and the Route tab shifts to match.</p>
+      <div class="card">
+        <div class="stack" id="order-list">
+          ${(profile.countryOrder || DEFAULT_PROFILE.countryOrder).map((c, i, arr) => `
+            <div class="order-row">
+              <span class="rank mono">${i + 1}</span>
+              <span class="name">${COUNTRY_META[c].flag} ${COUNTRY_META[c].short}</span>
+              <button class="btn-mini" data-move="up" data-idx="${i}" ${i === 0 ? "disabled" : ""}>${ICONS.up}</button>
+              <button class="btn-mini" data-move="down" data-idx="${i}" ${i === arr.length - 1 ? "disabled" : ""}>${ICONS.down}</button>
+            </div>`).join("")}
+        </div>
+        <p class="save-note">Saves instantly.</p>
+      </div>
+    </section>
+  `;
+
+  document.getElementById("p-save").addEventListener("click", () => {
+    const by = parseInt(document.getElementById("p-birthyear").value, 10);
+    profile = {
+      ...profile,
+      name: document.getElementById("p-name").value.trim() || DEFAULT_PROFILE.name,
+      currentRole: document.getElementById("p-role").value.trim() || DEFAULT_PROFILE.currentRole,
+      currentCompany: document.getElementById("p-company").value.trim() || DEFAULT_PROFILE.currentCompany,
+      nationalityNote: document.getElementById("p-nationality").value.trim() || DEFAULT_PROFILE.nationalityNote,
+      visaStatus: document.getElementById("p-visa").value.trim() || DEFAULT_PROFILE.visaStatus,
+      ageBand: document.getElementById("p-ageband").value.trim() || DEFAULT_PROFILE.ageBand,
+      savingsNote: document.getElementById("p-savings").value.trim() || DEFAULT_PROFILE.savingsNote,
+      certsNote: document.getElementById("p-certs").value.trim() || DEFAULT_PROFILE.certsNote,
+      drivingLicence: document.getElementById("p-driving").value === "1",
+      birthYear: Number.isFinite(by) ? by : null,
+    };
+    saveProfile(profile);
+    toast("Saved");
+    renderAll();
+  });
+
+  document.getElementById("p-reset").addEventListener("click", () => {
+    if (!confirm("Reset everything back to defaults? This clears your profile, route, checklist, notes and photo on this device.")) return;
+    Object.values(K).forEach(k => storeRemove(k));
+    profile = loadProfile();
+    toast("Reset to defaults");
+    renderAll();
+  });
+
+  document.getElementById("p-photo").addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const size = 240, canvas = document.createElement("canvas");
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        const scale = Math.max(size / img.width, size / img.height);
+        const w = img.width * scale, h = img.height * scale;
+        ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+        try { savePhoto(canvas.toDataURL("image/jpeg", 0.85)); toast("Photo saved"); renderAll(); }
+        catch { toast("Couldn't save that photo"); }
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  const rm = document.getElementById("p-photo-remove");
+  if (rm) rm.addEventListener("click", () => { clearPhoto(); toast("Photo removed"); renderAll(); });
+
+  document.getElementById("order-list").addEventListener("click", e => {
+    const btn = e.target.closest("button[data-move]");
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.idx, 10);
+    const order = [...(profile.countryOrder || DEFAULT_PROFILE.countryOrder)];
+    const swap = btn.dataset.move === "up" ? idx - 1 : idx + 1;
+    if (swap < 0 || swap >= order.length) return;
+    [order[idx], order[swap]] = [order[swap], order[idx]];
+    profile = { ...profile, countryOrder: order };
+    saveProfile(profile);
+    toast("Country order updated");
+    renderProfile(); renderRoadmap();
+  });
+}
+
+/* ===================================== BOOT ===================================== */
+function renderAll() {
+  const photo = loadPhoto();
+  document.getElementById("avatar-chip").innerHTML = photo ? `<img src="${photo}" />` : esc((profile.name || "?").charAt(0).toUpperCase());
+  document.getElementById("strip-sub").textContent = `Hey ${profile.name} · career & travel plan`;
+  const apName = document.getElementById("apName");
+  if (apName && document.activeElement !== apName) apName.value = profile.name;
+  renderHome(); renderCareer(); renderRoadmap(); renderJobs(); renderToolkit(); renderProfile();
+}
+renderNav();
+renderAll();
+switchTab("home");
+</script>
+
+<script>
+/* ===================================== SERVICE WORKER ===================================== */
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  const updateBtn = document.getElementById("updateBtn");
+  let hadController = !!navigator.serviceWorker.controller;
+  let reloading = false;
+  function reloadNow() {
+    if (reloading) return;
+    reloading = true;
+    location.reload();
+  }
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController) { hadController = true; return; }
+    if (document.hidden) reloadNow(); else updateBtn.hidden = false;
+  });
+  document.addEventListener("visibilitychange", () => { if (document.hidden && !updateBtn.hidden) reloadNow(); });
+  updateBtn.addEventListener("click", reloadNow);
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").then(reg => {
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) reg.update().catch(() => {}); });
+    }).catch(() => {});
+  });
+})();
+</script>
 </body>
 </html>
