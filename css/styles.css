@@ -88,14 +88,28 @@ a { color: var(--teal-deep); }
 .topbar .spacer { flex: 1; }
 
 .topbar .greet {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: #fff;
   font-weight: 700;
   font-size: 0.95rem;
   background: rgba(255,255,255,0.22);
-  padding: 8px 14px;
+  padding: 6px 14px 6px 6px;
   border-radius: 999px;
   white-space: nowrap;
 }
+
+.topbar .greet img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: none;
+  border: 2px solid rgba(255,255,255,0.6);
+}
+
+.topbar .greet img[src]:not([src=""]) { display: block; }
 
 /* --------------------------------- tabs ----------------------------------- */
 

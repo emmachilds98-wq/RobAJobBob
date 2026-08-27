@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   includeAusExt: "raj_include_ausext",
   checklist: "raj_checklist",
   notes: "raj_notes",
+  photo: "raj_photo",
 };
 
 /* ------------------------------- storage helpers -------------------------- */
@@ -24,11 +25,14 @@ function saveProfile(profile) {
   localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(profile));
 }
 
+/* Defaults assume a UK passport (this app's default nationality) — see
+   VISA_DEFAULTS in data.js for what's behind these numbers and why they
+   differ for other nationalities. */
 const VISA_KEY_META = [
   { key: "australia", label: "🇦🇺 Australia — 1st year WHV", base: 12 },
-  { key: "australia_ext", label: "🇦🇺 Australia — 2nd year (if eligible)", base: 12 },
-  { key: "newzealand", label: "🇳🇿 New Zealand WHV", base: 12 },
-  { key: "canada", label: "🇨🇦 Canada IEC", base: 12 },
+  { key: "australia_ext", label: "🇦🇺 Australia — 2nd/3rd year", base: 12 },
+  { key: "newzealand", label: "🇳🇿 New Zealand WHV", base: 23 },
+  { key: "canada", label: "🇨🇦 Canada IEC (1st participation)", base: 24 },
 ];
 
 function loadVisaOverrides() {
@@ -76,6 +80,18 @@ function saveNotes(text) {
   localStorage.setItem(STORAGE_KEYS.notes, text);
 }
 
+function loadPhoto() {
+  return localStorage.getItem(STORAGE_KEYS.photo) || "";
+}
+
+function savePhoto(dataUrl) {
+  localStorage.setItem(STORAGE_KEYS.photo, dataUrl);
+}
+
+function clearPhoto() {
+  localStorage.removeItem(STORAGE_KEYS.photo);
+}
+
 /* --------------------------------- date math ------------------------------ */
 
 function addMonths(date, months) {
@@ -109,7 +125,10 @@ function renderHome() {
   const el = document.getElementById("view-home");
   el.innerHTML = `
     <section class="hero">
-      <h1>Hey ${escapeHtml(profile.name)} — let's map out where this all goes 🌏</h1>
+      <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+        ${loadPhoto() ? `<img src="${loadPhoto()}" alt="" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.7); flex-shrink:0;" />` : ""}
+        <h1>Hey ${escapeHtml(profile.name)} — let's map out where this all goes 🌏</h1>
+      </div>
       <p>
         This is your own space to plan two things side by side: the <strong>long-term career</strong>
         you haven't fully decided on yet, and the <strong>5-year working holiday</strong> across
@@ -288,6 +307,15 @@ function renderRoadmap() {
       <a href="https://www.immigration.govt.nz" target="_blank" rel="noopener">immigration.govt.nz</a>,
       <a href="https://immi.homeaffairs.gov.au" target="_blank" rel="noopener">immi.homeaffairs.gov.au</a>,
       <a href="https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec.html" target="_blank" rel="noopener">canada.ca/iec</a>.
+      <details style="margin-top:8px;">
+        <summary>What we checked, and when (Aug 2026, UK passport assumed)</summary>
+        <ul style="margin-top:8px;">
+          <li>Australia 417: since the 2024 UK–Australia trade deal, UK citizens can get a 2nd and 3rd year (36 months total) with <strong>no specified work required at all</strong> — most other nationalities still need 6 months of regional work first. Age cap 35 for UK.</li>
+          <li>New Zealand WHV: UK citizens can apply for 12, 23, or up to 36 months total. Age cap 35 for UK.</li>
+          <li>Canada IEC: UK citizens (age cap now 35) can get up to 36 months across two participations — 24 months first, 12 months second.</li>
+        </ul>
+        <p style="margin-top:6px;">If he's not a UK passport holder, these are all more conservative (usually 12 months, and Australia's 2nd year needs the regional work) — update the Nationality field on the Profile tab and treat every number here as provisional regardless.</p>
+      </details>
     </div>
 
     <div class="roadmap-controls">
@@ -333,6 +361,13 @@ function renderRoadmap() {
             );
             progressHtml = `<div class="progress-bar"><span style="width:${pct.toFixed(0)}%"></span></div>`;
           }
+          let ageWarningHtml = "";
+          if (profile.birthYear) {
+            const ageAtStart = phase.from.getFullYear() - profile.birthYear;
+            if (ageAtStart >= TYPICAL_VISA_AGE_CAP) {
+              ageWarningHtml = `<div class="visa-angle">🎂 He'd be turning ~${ageAtStart} around this phase — most working-holiday visas cap somewhere between 30 and 35 depending on nationality, so double-check eligibility for this stretch specifically.</div>`;
+            }
+          }
           return `
           <div class="phase ${status}">
             <div class="phase-head">
@@ -341,6 +376,7 @@ function renderRoadmap() {
               <span class="phase-dates">${formatDate(phase.from)} → ${formatDate(phase.to)} · ${phase.months}mo</span>
             </div>
             <span class="phase-status ${status}">${status === "current" ? "Happening now" : status === "past" ? "Done" : "Upcoming"}</span>
+            ${ageWarningHtml}
             <p>${escapeHtml(phase.focus)}</p>
             <div class="career-link">🧭 ${escapeHtml(phase.careerLink)}</div>
             ${progressHtml}
@@ -367,8 +403,13 @@ function renderRoadmap() {
 
 /* ----------------------------------- render: jobs ---------------------------- */
 
+let jobsFilter = "all";
+
 function renderJobs() {
   const el = document.getElementById("view-jobs");
+  const filtered = jobsFilter === "all" ? CASUAL_JOBS : CASUAL_JOBS.filter((j) => j.countries.includes(jobsFilter));
+  const filterOptions = [{ key: "all", icon: "🌏", short: "All" }, ...Object.entries(COUNTRY_META).map(([key, m]) => ({ key, ...m }))];
+
   el.innerHTML = `
     <div class="section-title"><span class="emoji">🎉</span><h2>Casual Jobs Explorer</h2></div>
     <p class="section-sub">
@@ -376,8 +417,16 @@ function renderJobs() {
       trip and fill it with people and stories. Good fun, and worth doing on purpose — but remember
       the long-term career is the point of the trip, these are the fuel, not the destination.
     </p>
+    <div class="tabs" style="position:static; padding:0 0 18px; background:transparent; border-bottom:none; overflow-x:auto;">
+      ${filterOptions
+        .map(
+          (f) =>
+            `<button class="tab-btn${jobsFilter === f.key ? " active" : ""}" data-job-filter="${f.key}">${f.icon} ${f.short}</button>`
+        )
+        .join("")}
+    </div>
     <div class="card-grid">
-      ${CASUAL_JOBS.map(
+      ${filtered.map(
         (j) => `
         <div class="card">
           <div class="icon-badge">${j.icon}</div>
@@ -393,9 +442,16 @@ function renderJobs() {
           </details>
           <div class="visa-angle">🛂 ${escapeHtml(j.visaAngle)}</div>
         </div>`
-      ).join("")}
+      ).join("") || `<p class="section-sub">No casual jobs tagged for that country yet.</p>`}
     </div>
   `;
+
+  el.querySelectorAll("[data-job-filter]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      jobsFilter = btn.dataset.jobFilter;
+      renderJobs();
+    });
+  });
 }
 
 /* ---------------------------------- render: toolkit --------------------------- */
@@ -477,6 +533,22 @@ function renderProfile() {
         <label for="p-start">Travel start date</label>
         <input type="date" id="p-start" value="${profile.travelStartDate}" />
       </div>
+      <div class="field">
+        <label for="p-birthyear">Birth year <span style="font-weight:400; text-transform:none;">(optional — powers age-cap warnings)</span></label>
+        <input type="number" id="p-birthyear" min="1950" max="2015" placeholder="e.g. 2001" value="${profile.birthYear || ""}" />
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:24px;"><span class="emoji">🖼️</span><h2 style="font-size:1.15rem;">Photo</h2></div>
+    <div class="card" style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+      <div id="photo-preview" style="width:84px; height:84px; border-radius:50%; overflow:hidden; background:linear-gradient(135deg,var(--sun),var(--coral)); display:flex; align-items:center; justify-content:center; font-size:2rem; flex-shrink:0;">
+        ${loadPhoto() ? `<img src="${loadPhoto()}" style="width:100%; height:100%; object-fit:cover;" />` : "🙂"}
+      </div>
+      <div>
+        <input type="file" id="p-photo" accept="image/*" />
+        <p class="save-note">Stored only on this device. A square photo works best.</p>
+        ${loadPhoto() ? `<button class="btn ghost" id="p-photo-remove" style="margin-top:8px;">Remove photo</button>` : ""}
+      </div>
     </div>
 
     <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
@@ -504,6 +576,7 @@ function renderProfile() {
   `;
 
   document.getElementById("p-save").addEventListener("click", () => {
+    const birthYearRaw = parseInt(document.getElementById("p-birthyear").value, 10);
     profile = {
       ...profile,
       name: document.getElementById("p-name").value.trim() || DEFAULT_PROFILE.name,
@@ -511,11 +584,50 @@ function renderProfile() {
       currentCompany: document.getElementById("p-company").value.trim() || DEFAULT_PROFILE.currentCompany,
       nationalityNote: document.getElementById("p-nationality").value.trim() || DEFAULT_PROFILE.nationalityNote,
       travelStartDate: document.getElementById("p-start").value || DEFAULT_PROFILE.travelStartDate,
+      birthYear: Number.isFinite(birthYearRaw) ? birthYearRaw : null,
     };
     saveProfile(profile);
     showToast("Profile saved ✅");
     renderAll();
   });
+
+  document.getElementById("p-photo").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const size = 240;
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        const scale = Math.max(size / img.width, size / img.height);
+        const w = img.width * scale;
+        const h = img.height * scale;
+        ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+        try {
+          savePhoto(canvas.toDataURL("image/jpeg", 0.85));
+          showToast("Photo saved ✅");
+          renderAll();
+        } catch {
+          showToast("Couldn't save that photo — try a smaller one");
+        }
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const removeBtn = document.getElementById("p-photo-remove");
+  if (removeBtn) {
+    removeBtn.addEventListener("click", () => {
+      clearPhoto();
+      showToast("Photo removed");
+      renderAll();
+    });
+  }
 
   document.getElementById("p-reset").addEventListener("click", () => {
     if (!confirm("Reset the profile, roadmap settings, checklist and notes back to defaults?")) return;
@@ -553,6 +665,7 @@ function switchTab(id) {
 
 function renderAll() {
   document.getElementById("greet-name").textContent = profile.name;
+  document.getElementById("greet-avatar").src = loadPhoto();
   renderHome();
   renderCareer();
   renderRoadmap();

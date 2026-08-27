@@ -12,7 +12,14 @@ const DEFAULT_PROFILE = {
   nationalityNote: "UK citizen (edit this if that's wrong — it changes every visa length below)",
   travelStartDate: "2027-03-01",
   countryOrder: ["australia", "newzealand", "canada"],
+  birthYear: null,
 };
+
+/* Most working-holiday visas cap out around here — used only to flag a
+   phase as worth double-checking, never to block anything. UK citizens
+   currently get 35 across all three of AU/NZ/Canada; many other
+   nationalities cap at 30 — see VISA_DEFAULTS ageNote per country. */
+const TYPICAL_VISA_AGE_CAP = 35;
 
 /* ----------------------------- CAREER COMPASS ---------------------------- */
 
@@ -151,30 +158,33 @@ const CAREER_PATHS = [
 
 /* ------------------------------ TRAVEL ROADMAP ---------------------------- */
 
-/* Visa assumptions — EDITABLE, and deliberately conservative defaults.
-   These vary by nationality, age and by year the rules were checked, so
-   treat every number here as "needs verifying", not fact. */
+/* Visa assumptions — EDITABLE. Researched and last checked August 2026,
+   defaults set for a UK passport since that's this app's current default
+   nationality (see DEFAULT_PROFILE.nationalityNote — change it there or
+   in Settings and re-check these notes if that's wrong). Every number
+   here still needs re-verifying against the official site before it's
+   relied on — rules move fast and change by nationality and age. */
 const VISA_DEFAULTS = {
   australia: {
     label: "Australia — Working Holiday Visa (subclass 417/462)",
     baseMonths: 12,
     extendable: true,
-    extendNote: "A 2nd and sometimes 3rd year may be possible if you complete specified work (often regional hospitality, events, farm or disaster-recovery work) during the prior year. Rules and eligible work change — check immi.homeaffairs.gov.au before planning around it.",
-    ageNote: "Generally available 18–30, extended to 35 for some nationalities.",
+    extendNote: "UK passport holders: since the 2024 UK–Australia FTA, a 2nd and 3rd 417 visa (36 months total) no longer require any specified work at all — a big change from the old rule. Most other nationalities still need 6 months of specified regional work (farm/fishing/tree-felling/regional mining & construction, or bushfire/flood recovery work) to unlock a 2nd year. Check immi.homeaffairs.gov.au — base application charge is ~AUD 840 (2026).",
+    ageNote: "18–35 inclusive for UK, Canada, Ireland, France, Italy, Denmark and a growing list of others (several countries were added to the 35 cap in July 2026); 18–30 for the rest. Age is assessed at the moment you lodge, not when the visa starts.",
   },
   newzealand: {
     label: "New Zealand — Working Holiday Visa",
     baseMonths: 12,
     extendable: false,
-    extendNote: "Most nationalities get 12 months; a handful (e.g. UK) can get up to 23 months. Not usually extendable beyond the visa's original length. Check immigration.govt.nz.",
-    ageNote: "Generally available 18–30, up to 35 for a few nationalities.",
+    extendNote: "UK passport holders can apply for 12, 23, or up to 36 months (if you take a shorter visa first, you can later apply for the remaining balance up to 36 months total). Most other nationalities get a flat 12 months. Check immigration.govt.nz — ~15,000 UK places/year, from NZD 770.",
+    ageNote: "18–35 inclusive for UK citizens; 18–30 for most other nationalities.",
   },
   canada: {
     label: "Canada — International Experience Canada (Working Holiday / IEC)",
     baseMonths: 12,
     extendable: false,
-    extendNote: "Most nationalities get 12 months; a few (e.g. UK, France, Ireland) can get up to 24 months. It's typically a one-time pool entry — check travel.gc.ca/iec for current rounds and eligibility.",
-    ageNote: "Generally available 18–30/35 depending on nationality.",
+    extendNote: "UK passport holders (age cap raised to 35 in recent rounds) can get up to 36 months across two participations — first participation up to 24 months, second up to 12 months, in any mix of the Working Holiday / Young Professionals / International Co-op streams. Most other nationalities get a single 12-month, one-time entry. It's pool-based (not guaranteed) — check travel.gc.ca/iec for current rounds.",
+    ageNote: "18–35 inclusive for UK citizens; commonly 18–30/35 depending on nationality.",
   },
 };
 
@@ -214,8 +224,8 @@ const ROADMAP_PHASE_CONTENT = {
    the order, when "include Australia 2nd year" is switched on. */
 const AUSTRALIA_EXT_PHASE = {
   country: "australia",
-  title: "Australia — second year push (if it's on the table)",
-  focus: "If specified regional work is completed in year one, use the 2nd-year visa to go further — ski season resort work, farm/harvest work, or a regional tourism operator.",
+  title: "Australia — second (and maybe third) year",
+  focus: "For a UK passport this no longer needs any specified work at all (since the 2024 UK–Australia trade deal) — just apply again. Other nationalities generally need 6 months of regional work first. Either way: push further into ski season resort work, farm/harvest work, or a regional tourism operator.",
   careerLink: "Regional/adventure tourism work here is direct experience for the 'Travel & Adventure Tourism Operations' path.",
   monthsKey: "australia_ext",
   optional: true,
@@ -299,11 +309,11 @@ const CASUAL_JOBS = [
   {
     icon: "🍇",
     title: "Farm & Harvest Work",
-    blurb: "Fruit picking, packing or general farm work — physical, seasonal, and often the fastest way to unlock a 2nd Australian working holiday year.",
-    fit: "Not the most social option, but the most direct route to extending the Australia leg of the trip.",
+    blurb: "Fruit picking, packing or general farm work — physical, seasonal, and a fast way to unlock a 2nd Australian working holiday year for nationalities that still need to.",
+    fit: "Not the most social option, but a direct, reliable route to extending the Australia leg of the trip.",
     howTo: "Regional harvest trail job boards and hostels in farming regions post daily. Accommodation is often arranged alongside the job.",
     countries: ["australia"],
-    visaAngle: "This is the classic 'specified work' route for an Australian 2nd-year visa — verify current eligible regions/industries before counting on it.",
+    visaAngle: "UK passport holders no longer need this for a 2nd/3rd Australian year (since the 2024 UK–Australia trade deal removed the work requirement) — it's optional for him. For most other nationalities it's still the classic 'specified work' route; verify current eligible regions/industries either way.",
   },
 ];
 
