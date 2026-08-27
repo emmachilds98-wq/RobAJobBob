@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RobAJobBob — Career &amp; Travel Planner</title>
+  <meta name="description" content="A personal career and 5-year working-holiday travel planner." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌏</text></svg>" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo"><span class="emoji">🌏</span> RobAJobBob</div>
+    <div class="tagline">Career compass + 5-year travel plan, all in one spot</div>
+    <div class="spacer"></div>
+    <div class="greet">Hey, <span id="greet-name">there</span> 👋</div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="home">🏠 Home</button>
+    <button class="tab-btn" data-tab="career">🧭 Career Compass</button>
+    <button class="tab-btn" data-tab="roadmap">🗺️ Travel Roadmap</button>
+    <button class="tab-btn" data-tab="jobs">🎉 Casual Jobs</button>
+    <button class="tab-btn" data-tab="toolkit">✅ Toolkit</button>
+    <button class="tab-btn" data-tab="profile">⚙️ Profile</button>
+  </nav>
+
+  <main>
+    <section id="view-home" class="view active"></section>
+    <section id="view-career" class="view"></section>
+    <section id="view-roadmap" class="view"></section>
+    <section id="view-jobs" class="view"></section>
+    <section id="view-toolkit" class="view"></section>
+    <section id="view-profile" class="view"></section>
+  </main>
+
+  <footer>
+    Made with 💛 as a personal planner — not official immigration or career advice. Always check
+    official sources before making visa or work decisions.
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
