@@ -212,12 +212,30 @@ function renderCareer() {
 
 /* --------------------------------- render: roadmap --------------------------- */
 
+function buildPhaseSequence() {
+  const includeExt = loadIncludeAusExt();
+  const order = profile.countryOrder && profile.countryOrder.length
+    ? profile.countryOrder
+    : DEFAULT_PROFILE.countryOrder;
+
+  const phases = [];
+  order.forEach((country) => {
+    const content = ROADMAP_PHASE_CONTENT[country];
+    if (!content) return;
+    phases.push({ ...content, country });
+    if (country === "australia" && includeExt) {
+      phases.push({ ...AUSTRALIA_EXT_PHASE });
+    }
+  });
+  phases.push({ ...CONSOLIDATE_PHASE });
+  return phases;
+}
+
 function computeRoadmap() {
   const visas = loadVisaOverrides();
-  const includeExt = loadIncludeAusExt();
   const start = profile.travelStartDate ? new Date(profile.travelStartDate) : new Date();
 
-  const phases = DEFAULT_ROADMAP_PHASES.filter((p) => !p.optional || includeExt);
+  const phases = buildPhaseSequence();
 
   let cursor = new Date(start);
   const totalTargetMonths = 60;
@@ -443,7 +461,7 @@ function renderProfile() {
         <label for="p-name">First name</label>
         <input type="text" id="p-name" value="${escapeAttr(profile.name)}" />
       </div>
-      <div class="field">
+      <div class="field full">
         <label for="p-role">Current role</label>
         <input type="text" id="p-role" value="${escapeAttr(profile.currentRole)}" />
       </div>
@@ -464,6 +482,24 @@ function renderProfile() {
     <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
       <button class="btn" id="p-save">Save profile</button>
       <button class="btn ghost" id="p-reset">Reset everything to defaults</button>
+    </div>
+
+    <div class="section-title" style="margin-top:30px;"><span class="emoji">🔀</span><h2 style="font-size:1.15rem;">Country order</h2></div>
+    <p class="section-sub">Which country he goes to first, second and third — reorder it and the whole Travel Roadmap timeline shifts to match.</p>
+    <div class="card">
+      <div class="order-list" id="order-list">
+        ${(profile.countryOrder || DEFAULT_PROFILE.countryOrder)
+          .map(
+            (c, i, arr) => `
+          <div class="order-chip">
+            <span>${i + 1}. ${COUNTRY_META[c].icon} ${COUNTRY_META[c].short}</span>
+            <button type="button" data-move="up" data-idx="${i}" ${i === 0 ? "disabled" : ""} title="Move earlier">▲</button>
+            <button type="button" data-move="down" data-idx="${i}" ${i === arr.length - 1 ? "disabled" : ""} title="Move later">▼</button>
+          </div>`
+          )
+          .join("")}
+      </div>
+      <p class="save-note">Saves instantly — no need to hit Save profile for this bit.</p>
     </div>
   `;
 
@@ -487,6 +523,21 @@ function renderProfile() {
     profile = loadProfile();
     showToast("Reset to defaults");
     renderAll();
+  });
+
+  document.getElementById("order-list").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-move]");
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.idx, 10);
+    const order = [...(profile.countryOrder || DEFAULT_PROFILE.countryOrder)];
+    const swapWith = btn.dataset.move === "up" ? idx - 1 : idx + 1;
+    if (swapWith < 0 || swapWith >= order.length) return;
+    [order[idx], order[swapWith]] = [order[swapWith], order[idx]];
+    profile = { ...profile, countryOrder: order };
+    saveProfile(profile);
+    showToast("Country order updated ✅");
+    renderProfile();
+    renderRoadmap();
   });
 }
 

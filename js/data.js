@@ -184,47 +184,51 @@ const COUNTRY_META = {
   canada: { icon: "🇨🇦", short: "Canada" },
 };
 
-/* The default 5-year phase plan. Each phase's length (months) is pulled
-   from VISA_DEFAULTS at render time so editing the visa assumptions
-   reflows the whole roadmap automatically. */
-const DEFAULT_ROADMAP_PHASES = [
-  {
-    country: "australia",
-    title: "Landing & finding your feet",
+/* Per-country phase content, keyed so the roadmap can be rebuilt in
+   whatever order the countries are set to on the Profile tab — the
+   content for "Australia" is the same whether it's visited 1st or 3rd.
+   Each phase's length (months) is pulled from the visa overrides at
+   render time so editing the visa assumptions reflows the roadmap. */
+const ROADMAP_PHASE_CONTENT = {
+  australia: {
+    title: "Australia — landing & finding your feet",
     focus: "Base yourself in a coastal or events-friendly city. Mix bar/hospitality shifts with casual event crew work and a few excursions/tour shifts to test what you enjoy.",
     careerLink: "Every event you crew for anywhere in the world adds to the 'Live Events & Festival Production' and 'Adventure Tourism' paths.",
     monthsKey: "australia",
   },
-  {
-    country: "australia",
-    title: "Second year push (if it's on the table)",
-    focus: "If specified regional work is completed in year one, use the 2nd-year visa to go further — ski season resort work, farm/harvest work, or a regional tourism operator.",
-    careerLink: "Regional/adventure tourism work here is direct experience for the 'Travel & Adventure Tourism Operations' path.",
-    monthsKey: "australia_ext",
-    optional: true,
-  },
-  {
-    country: "newzealand",
+  newzealand: {
     title: "New Zealand adventure season",
     focus: "Ski/adventure tourism town for winter (Queenstown/Wanaka), excursions and guiding work, hospitality to fill the gaps. NZ is small enough to properly explore on days off.",
     careerLink: "Guiding + hospitality here builds the 'Adventure Tourism' and 'Venue & Hospitality' paths at once.",
     monthsKey: "newzealand",
   },
-  {
-    country: "canada",
+  canada: {
     title: "Canada — mountains & cities",
     focus: "A resort town (Whistler/Banff) for ski season, then a city stint (Vancouver/Toronto) trying event crew, flight attendant applications, or hospitality management shifts.",
     careerLink: "Good spot to seriously test the 'Aviation — Cabin Crew' path since major airlines hub through Canadian cities.",
     monthsKey: "canada",
   },
-  {
-    country: null,
-    title: "Consolidate & decide",
-    focus: "Use whatever time is left (3rd AU year if eligible, or heading home) to either keep travelling on the strongest thread, or bring everything back into a real step up in the events/logistics/tourism career track.",
-    careerLink: "This is the point to pick a lane from the Career Compass and start applying travel experience directly to it.",
-    monthsKey: "consolidate",
-  },
-];
+};
+
+/* Slotted in directly after the Australia phase, wherever it falls in
+   the order, when "include Australia 2nd year" is switched on. */
+const AUSTRALIA_EXT_PHASE = {
+  country: "australia",
+  title: "Australia — second year push (if it's on the table)",
+  focus: "If specified regional work is completed in year one, use the 2nd-year visa to go further — ski season resort work, farm/harvest work, or a regional tourism operator.",
+  careerLink: "Regional/adventure tourism work here is direct experience for the 'Travel & Adventure Tourism Operations' path.",
+  monthsKey: "australia_ext",
+  optional: true,
+};
+
+/* Always appended last, after every country phase. */
+const CONSOLIDATE_PHASE = {
+  country: null,
+  title: "Consolidate & decide",
+  focus: "Use whatever time is left (3rd AU year if eligible, or heading home) to either keep travelling on the strongest thread, or bring everything back into a real step up in the events/logistics/tourism career track.",
+  careerLink: "This is the point to pick a lane from the Career Compass and start applying travel experience directly to it.",
+  monthsKey: "consolidate",
+};
 
 /* ------------------------------- CASUAL JOBS ------------------------------ */
 
