@@ -282,6 +282,40 @@
 
   .footnote { text-align: center; color: var(--ink-faint); font-size: 0.74rem; padding: 30px 10px 10px; }
 
+  /* ---------------- web view (desktop) ----------------
+     A phone screen always gets the phone app view, full stop — everything
+     here lives inside the 821px media query so a stale "web" preference
+     saved from a bigger screen can never take over a phone. Above that
+     width, which layout actually shows depends on data-layout: "auto"
+     (the default) follows the window size live, or a person can pin it
+     to "phone" or "web" from Settings regardless of how wide the window is. */
+  .sidebar { display: none; }
+  .webshell { display: block; }
+  @media (min-width: 821px) {
+    [data-layout="web"] body { display: block; padding: 0; background: var(--paper); }
+    [data-layout="web"] .app-frame { max-width: none; min-height: 100vh; border-radius: 0; box-shadow: none; }
+    [data-layout="web"] .topstrip-inner { max-width: 1200px; margin: 0 auto; padding: 16px 32px; }
+    [data-layout="web"] .bottomnav { display: none; }
+    [data-layout="web"] .webshell { display: flex; align-items: flex-start; }
+    [data-layout="web"] .sidebar {
+      display: flex; flex-direction: column; gap: 3px; width: 232px; flex-shrink: 0;
+      position: sticky; top: 65px; height: calc(100vh - 65px); padding: 22px 14px; border-right: 1px solid var(--line);
+    }
+    [data-layout="web"] .sidenavbtn {
+      display: flex; align-items: center; gap: 12px; text-align: left; background: none; border: none;
+      padding: 10px 14px; border-radius: var(--radius-s); cursor: pointer; color: var(--ink-soft); font-size: 0.92rem; font-weight: 600;
+    }
+    [data-layout="web"] .sidenavbtn:hover { background: var(--paper-sunk); }
+    [data-layout="web"] .sidenavbtn.active { background: var(--coral-tint); color: var(--coral-ink); }
+    [data-layout="web"] .sidenavbtn .icon { width: 19px; height: 19px; flex-shrink: 0; }
+    [data-layout="web"] main { flex: 1; min-width: 0; max-width: 880px; margin: 0 auto; padding: 36px 40px 70px; }
+    [data-layout="web"] body { padding-bottom: 0; }
+    [data-layout="web"] .toast { bottom: 32px; }
+    [data-layout="web"] .nav-grid { grid-template-columns: repeat(4, 1fr); }
+    [data-layout="web"] .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    [data-layout="web"] .field-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
   /* ---------------- settings sheet (the cog) ---------------- */
   .sheet-overlay { display: none; position: absolute; inset: 0; background: rgba(10,14,22,0.4); z-index: 70; }
   .sheet-overlay.open { display: block; }
@@ -310,6 +344,11 @@
   .ap-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .ap-toggle-row p { margin: 0; font-size: 0.92rem; font-weight: 600; }
   .ap-toggle-row .d { color: var(--ink-faint); font-size: 0.78rem; margin-top: 2px; }
+  .ap-view { display: none; }
+  @media (min-width: 821px) { .ap-view { display: block; } }
+  .ap-view-choice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 9px; }
+  .ap-view-choice button { border: 1px solid var(--line); border-radius: 8px; padding: 8px 6px; background: var(--paper); color: var(--ink-soft); font-family: var(--font-mono); font-size: 0.68rem; cursor: pointer; }
+  .ap-view-choice button.on { border-color: var(--coral); background: var(--coral-tint); color: var(--coral-ink); }
   .ap-switch { position: relative; width: 44px; height: 26px; border-radius: 14px; background: var(--line); border: 0; cursor: pointer; flex: 0 0 auto; }
   .ap-switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 2px rgba(0,0,0,.3); }
   .ap-switch.on { background: var(--coral); } .ap-switch.on::after { left: 21px; }
@@ -374,6 +413,16 @@
       <button class="ap-switch" id="contrastSwitch" type="button" role="switch" aria-checked="false" aria-label="High contrast"></button>
     </div>
 
+    <div class="ap-row ap-view">
+      <span class="ap-label">Layout</span>
+      <p class="ap-intro">On a bigger screen this can read as a proper web app — a docked sidebar and a wider, multi-column layout — instead of a phone-width column. A phone always gets the phone layout regardless of this setting.</p>
+      <div class="ap-view-choice" id="apViewChoice">
+        <button type="button" data-layout-choice="auto">Auto</button>
+        <button type="button" data-layout-choice="phone">Phone view</button>
+        <button type="button" data-layout-choice="web">Web view</button>
+      </div>
+    </div>
+
     <div class="ap-row">
       <span class="ap-label">First name</span>
       <input type="text" id="apName" placeholder="e.g. Rob" maxlength="30" autocomplete="off" aria-label="First name">
@@ -400,15 +449,20 @@
     <button class="ap-reset" id="appearanceReset" type="button">Reset to default look</button>
   </div>
 
-  <main id="main">
-    <section id="view-home" class="view active"></section>
-    <section id="view-career" class="view"></section>
-    <section id="view-roadmap" class="view"></section>
-    <section id="view-jobs" class="view"></section>
-    <section id="view-toolkit" class="view"></section>
-    <section id="view-profile" class="view"></section>
-    <p class="footnote">Made for one specific person, not a template — not official immigration or career advice. Verify visa details on the official sites before booking anything.</p>
-  </main>
+  <div class="webshell">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-inner" id="sidebarnav-inner"></div>
+    </nav>
+    <main id="main">
+      <section id="view-home" class="view active"></section>
+      <section id="view-career" class="view"></section>
+      <section id="view-roadmap" class="view"></section>
+      <section id="view-jobs" class="view"></section>
+      <section id="view-toolkit" class="view"></section>
+      <section id="view-profile" class="view"></section>
+      <p class="footnote">Made for one specific person, not a template — not official immigration or career advice. Verify visa details on the official sites before booking anything.</p>
+    </main>
+  </div>
 
   <nav class="bottomnav">
     <div class="bottomnav-inner" id="bottomnav-inner"></div>
@@ -548,7 +602,7 @@ const K = {
   profile: PFX + "profile", visa: PFX + "visa", ext: PFX + "ext",
   checklist: PFX + "checklist", notes: PFX + "notes", photo: PFX + "photo",
   palette: PFX + "palette", lowlight: PFX + "lowlight", contrast: PFX + "contrast",
-  bright: PFX + "bright", usePrevious: PFX + "use-previous",
+  bright: PFX + "bright", usePrevious: PFX + "use-previous", layout: PFX + "layout",
 };
 function storeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function storeSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
@@ -648,12 +702,29 @@ function applyBright(v) {
   root.classList.toggle("raj-dimmed", Number(v) !== 100);
 }
 
+/* "auto" follows the window live via the same 821px breakpoint the CSS
+   uses, so widening or narrowing the window (or rotating a tablet) updates
+   the layout on its own; "phone"/"web" pin it regardless of window size —
+   though the phone-view CSS below 821px always wins either way, so a
+   pinned "web" choice simply has nothing to do on an actual phone. */
+const desktopMQ = window.matchMedia("(min-width: 821px)");
+function effectiveLayout() {
+  if (savedLayout === "phone" || savedLayout === "web") return savedLayout;
+  return desktopMQ.matches ? "web" : "phone";
+}
+function applyLayout() {
+  root.setAttribute("data-layout", effectiveLayout());
+}
+desktopMQ.addEventListener("change", () => { if (savedLayout === "auto") applyLayout(); });
+
 var savedPalette = storeGet(K.palette) || "sunrise";
 var savedLowlight = storeGet(K.lowlight) === "1";
 var savedHighContrast = storeGet(K.contrast) === "1";
 var savedBright = parseInt(storeGet(K.bright), 10); if (isNaN(savedBright)) savedBright = 100;
+var savedLayout = storeGet(K.layout) || "auto";
 applyTheme();
 applyBright(savedBright);
+applyLayout();
 
 /* ===================================== SETTINGS SHEET ===================================== */
 (function () {
@@ -755,6 +826,21 @@ applyBright(savedBright);
     syncContrast();
   });
 
+  /* layout: auto / phone / web */
+  const apViewChoice = document.getElementById("apViewChoice");
+  function markLayoutOn() {
+    apViewChoice.querySelectorAll("button").forEach(btn => btn.classList.toggle("on", btn.dataset.layoutChoice === savedLayout));
+  }
+  markLayoutOn();
+  apViewChoice.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-layout-choice]");
+    if (!btn) return;
+    savedLayout = btn.dataset.layoutChoice;
+    storeSet(K.layout, savedLayout);
+    applyLayout();
+    markLayoutOn();
+  });
+
   /* name — shared with the You tab's profile.name */
   const apName = document.getElementById("apName");
   apName.value = profile.name;
@@ -772,9 +858,10 @@ applyBright(savedBright);
     savedLowlight = false; storeSet(K.lowlight, "0");
     savedHighContrast = false; storeSet(K.contrast, "0");
     savedBright = 100; storeSet(K.bright, "100");
-    applyTheme(); applyBright(100);
+    savedLayout = "auto"; storeSet(K.layout, savedLayout);
+    applyTheme(); applyBright(100); applyLayout();
     brightSlider.value = 100; brightVal.textContent = "100%";
-    syncBrightnessPresets(); markPaletteOn(); syncLowlight(); syncContrast();
+    syncBrightnessPresets(); markPaletteOn(); syncLowlight(); syncContrast(); markLayoutOn();
     toast("Back to the default look");
   });
 
@@ -885,13 +972,14 @@ const TABS = [
 ];
 function renderNav() {
   document.getElementById("bottomnav-inner").innerHTML = TABS.map(t => `<button class="navbtn" data-tab="${t.key}">${t.icon}<span>${t.label}</span></button>`).join("");
-  document.querySelectorAll(".navbtn").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.tab)));
+  document.getElementById("sidebarnav-inner").innerHTML = TABS.map(t => `<button class="sidenavbtn" data-tab="${t.key}">${t.icon}<span>${t.label}</span></button>`).join("");
+  document.querySelectorAll(".navbtn, .sidenavbtn").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.tab)));
 }
 function switchTab(id) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-  document.querySelectorAll(".navbtn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".navbtn, .sidenavbtn").forEach(b => b.classList.remove("active"));
   document.getElementById(`view-${id}`).classList.add("active");
-  document.querySelector(`.navbtn[data-tab="${id}"]`).classList.add("active");
+  document.querySelectorAll(`[data-tab="${id}"]`).forEach(b => b.classList.add("active"));
   document.getElementById("main").scrollTo({ top: 0, behavior: "smooth" });
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -964,7 +1052,7 @@ function renderCareer() {
 
     <section>
       <div class="section-head"><h2>Seven paths worth weighing</h2></div>
-      <div class="stack">
+      <div class="stack grid-cards">
         ${CAREER_PATHS.map(p => `
           <div class="card path-card">
             <div class="path-top">
@@ -1153,7 +1241,7 @@ function renderJobs() {
       ${filters.map(f => `<button class="chip ${jobsFilter === f.key ? "active" : ""}" data-filter="${f.key}">${f.flag} ${f.short}</button>`).join("")}
     </div>
 
-    <div class="stack">
+    <div class="stack grid-cards">
       ${filtered.map(j => `
         <div class="tag-card">
           <div class="tag-punch"></div>
