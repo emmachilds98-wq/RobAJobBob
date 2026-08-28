@@ -511,6 +511,7 @@ const DEFAULT_PROFILE = {
   visaStatus: "Hasn't applied for any working-holiday visa yet",
   drivingLicence: true,
   ageBand: "32 (born 23 August 1994)",
+  birthDate: "1994-08-23",
   savingsNote: "Savings already in place",
   certsNote: "Treat as none confirmed yet (possibly an old DBS check, but don't assume it's current) — see the Apply tab for fast, some-free options to close common gaps.",
   travelStartDate: "",
@@ -625,14 +626,14 @@ const SKILLS_BRIDGE = [
 ];
 
 const CAREER_PATHS = [
-  { icon: "🎪", title: "Event Production & Operations Manager", tagline: "The direct next step up from where you already stand.", why: "You're already doing the on-the-ground work — this is the same world, just with more planning, budget and people responsibility layered on top. Between the BIMM degree, the label/promotions roles at Open Room Records and Sleeping Dog Promotions, and effectively running a bar solo at Cheeky Clucker, the operational and industry grounding is already there — this path is about formalising it, not starting it.", from: "Currently: hands-on support role at TreebySound, plus a BIMM degree and hands-on solo leadership from Cheeky Clucker.", steps: ["Start owning one small event end-to-end (budget, run sheet, crew) as a stretch project at TreebySound", "Learn the commercial side: quoting, supplier costs, client comms", "Pick up a recognised events/production short course or certificate", "Build a portfolio of events you've run or co-run", "Aim for Production Manager / Operations Manager title within 2–4 years"], timeframe: "2–4 years" },
-  { icon: "🎤", title: "Live Events, Festivals & Touring Production", tagline: "Bigger stages, bigger crews, more travel built into the job itself.", why: "This is arguably the closest fit on paper: a completed Music Management degree from BIMM plus real promotions/label experience is formal and practical grounding in exactly this industry — not just adjacent skills. Add the sound/event exposure at TreebySound and it scales up naturally to festivals, tours and large-scale production, which also travels a lot.", from: "Currently: sound & event setup exposure through TreebySound, plus a BIMM Music Management degree and real promotions experience.", steps: ["Get on the crew list for a few festivals or larger shows as casual/freelance crew — in Australia, Sidekicker, Event-Crew Australia and ESA Group are real places to register", "Specialise in one lane first — stage management, technical production or logistics", "Network hard — this industry runs on who's reliable and who you know", "Keep a running portfolio of every show worked, wherever in the world it happens", "Long-term: touring production manager or festival site manager"], timeframe: "3–5 years" },
-  { icon: "🎙️", title: "Artist Management, Label & Music Promotions", tagline: "Not a stretch — literally what you already did.", why: "This isn't hypothetical: you were Head of Marketing & Assistant Label Manager at Open Room Records and Artist Manager & Promoter at Sleeping Dog Promotions, on top of the BIMM degree itself. It's paused, not abandoned — and the travel years are a natural excuse to widen the network before picking it back up seriously.", from: "Currently: real prior experience in label management, artist management and promotions.", steps: ["Keep in touch with contacts from Open Room Records and Sleeping Dog Promotions — this industry runs on relationships that don't need to go cold just because you're travelling", "Use the travel years to build a wider network — every city in NZ/AU/Canada has its own local labels, promoters and venues worth knowing", "Consider freelance artist promotion or social media/marketing work that can be done remotely, even while travelling", "Long-term: return to label/artist management, or use the broadened network to launch something independent"], timeframe: "Can restart any time — the experience doesn't expire" },
-  { icon: "🚚", title: "Logistics & Supply Chain Coordinator", tagline: "Turns delivery-driving into a proper career track.", why: "Already planning routes, loading gear and hitting deadlines — that's the core of logistics coordination, and it's a stable career that exists everywhere.", from: "Currently: deliveries & equipment handling.", steps: ["Get familiar with basic inventory/warehouse software (even free tools)", "Look at a logistics or supply chain fundamentals course", "Target a coordinator role at a hire company, event supplier or freight business", "Build toward warehouse/ops manager or dispatch supervisor"], timeframe: "1–3 years" },
-  { icon: "🏛️", title: "Venue & Hospitality Management", tagline: "Run the building instead of the one-off event.", why: "You've already done a version of this, not just adjacent work — leading the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more, plus a supervisor stint at Foot Asylum before that. This path is a straightforward scale-up of something already proven twice over, with steadier, more local hours than touring once the travel years are done.", from: "Currently: events + general operations support at TreebySound, plus real solo bar leadership at Cheeky Clucker and retail supervision at Foot Asylum.", steps: ["Pick up shifts in a venue, bar or hospitality management setting", "Learn rostering, licensing basics and front-of-house operations", "Move into assistant venue manager, then venue/general manager"], timeframe: "2–5 years" },
-  { icon: "🧭", title: "Travel & Adventure Tourism Operations", tagline: "Turn the travel years into the actual career, not just a break from it.", why: "If the 5-year trip lights you up, this path takes everything learned doing excursions/tours and turns it into running tourism operations rather than just guiding them.", from: "Currently: interest in excursions, adventure & meeting people.", steps: ["Use travel years to work front-line in tours/excursions across NZ, AU & Canada — in Queenstown specifically, AJ Hackett Bungy and Skyline are real, well-regarded operators worth applying to directly", "Note what each operator does well and badly — this becomes instinct for running one", "Pick up a first-aid, guiding or tourism qualification relevant to the region", "Move into lead guide, then operations/booking coordinator for a tour company", "Long-term: operations manager or a small tour outfit of your own"], timeframe: "Runs alongside the travel plan" },
-  { icon: "✈️", title: "Aviation — Cabin Crew → Ground Operations", tagline: "Start as flight attendant, land in airline operations — worth checking eligibility before counting on it.", why: "Flight attendant work is a genuine gateway into aviation, not just a travel job — airlines promote operationally-minded crew into ground ops, crew scheduling and base management. But this one needs a reality check first: Qantas explicitly requires Australian/NZ permanent residency (or UK right-to-work) for cabin crew, so a standard working-holiday visa likely doesn't qualify at the major carriers. Confirm directly with each airline before treating this as part of the plan.", from: "Currently: interest in flight attendant work as a travel job.", steps: ["Check current visa eligibility directly on careers.qantas.com, careers.jetstar.com and any Canadian carrier's careers page — don't assume a WHV is enough", "If AU/NZ/Canada doesn't work out on a working holiday visa, consider UK-based cabin crew (easyJet, Jet2, British Airways) as the entry point instead, before or after the travel years", "If it does check out somewhere, treat it as a career entry, not a stopgap — track performance & training", "After 2–3 years, look sideways into crew scheduling, base ops or training roles", "Long-term: ground operations manager or airline base management"], timeframe: "3–6 years" },
-  { icon: "🚀", title: "Start Your Own Thing", tagline: "The long shot with the best ceiling — running an event/hire, label, or promotions business.", why: "Working across every part of TreebySound (delivery, sound, procurement, events, ops) is exactly the broad exposure someone needs before starting their own company — and it's backed by a Music Management degree that covers the business side of this industry specifically, plus direct proof you can actually run something yourself: leading a bar solo at Cheeky Clucker, and real label/artist-management roles at Open Room Records and Sleeping Dog Promotions.", from: "Currently: full-spectrum exposure to how a small events business runs, a Music Management degree, and hands-on experience running a bar and a record label solo.", steps: ["Keep absorbing the commercial side at TreebySound — ask Dave questions, don't just execute", "Save & build a client/supplier network over the travel years", "Test a small side venture (mobile bar, event styling, gear hire) at low stakes", "Long-term: launch once there's capital, contacts and confidence"], timeframe: "5–10 years" },
+  { icon: "🎪", title: "Event Production & Operations Manager", tagline: "The direct next step up from where you already stand.", why: "You're already doing the on-the-ground work — this is the same world, just with more planning, budget and people responsibility layered on top. Between the BIMM degree, the label/promotions roles at Open Room Records and Sleeping Dog Promotions, and effectively running a bar solo at Cheeky Clucker, the operational and industry grounding is already there — this path is about formalising it, not starting it.", from: "Currently: hands-on support role at TreebySound, plus a BIMM degree and hands-on solo leadership from Cheeky Clucker.", steps: ["Start owning one small event end-to-end (budget, run sheet, crew) as a stretch project at TreebySound", "Learn the commercial side: quoting, supplier costs, client comms", "Pick up a recognised events/production short course or certificate", "Build a portfolio of events you've run or co-run", "Aim for Production Manager / Operations Manager title within 2–4 years"], timeframe: "2–4 years", portable: "Event production is one of the most transferable career tracks going — every city in Australia, NZ and Canada runs venues and festivals that need crew and coordinators, so this can genuinely be built up across all three countries, then walked straight back into a UK production role with a fatter portfolio than most people your age." },
+  { icon: "🎤", title: "Live Events, Festivals & Touring Production", tagline: "Bigger stages, bigger crews, more travel built into the job itself.", why: "This is arguably the closest fit on paper: a completed Music Management degree from BIMM plus real promotions/label experience is formal and practical grounding in exactly this industry — not just adjacent skills. Add the sound/event exposure at TreebySound and it scales up naturally to festivals, tours and large-scale production, which also travels a lot.", from: "Currently: sound & event setup exposure through TreebySound, plus a BIMM Music Management degree and real promotions experience.", steps: ["Get on the crew list for a few festivals or larger shows as casual/freelance crew — in Australia, Sidekicker, Event-Crew Australia and ESA Group are real places to register", "Specialise in one lane first — stage management, technical production or logistics", "Network hard — this industry runs on who's reliable and who you know", "Keep a running portfolio of every show worked, wherever in the world it happens", "Long-term: touring production manager or festival site manager"], timeframe: "3–5 years", portable: "Festival and touring circuits exist in every country on the route — Melbourne, Auckland/Wellington and Toronto all have their own serious festival seasons — and crew experience from any of them reads as international credibility back in the UK, not a gap year." },
+  { icon: "🎙️", title: "Artist Management, Label & Music Promotions", tagline: "Not a stretch — literally what you already did.", why: "This isn't hypothetical: you were Head of Marketing & Assistant Label Manager at Open Room Records and Artist Manager & Promoter at Sleeping Dog Promotions, on top of the BIMM degree itself. It's paused, not abandoned — and the travel years are a natural excuse to widen the network before picking it back up seriously.", from: "Currently: real prior experience in label management, artist management and promotions.", steps: ["Keep in touch with contacts from Open Room Records and Sleeping Dog Promotions — this industry runs on relationships that don't need to go cold just because you're travelling", "Use the travel years to build a wider network — every city in NZ/AU/Canada has its own local labels, promoters and venues worth knowing", "Consider freelance artist promotion or social media/marketing work that can be done remotely, even while travelling", "Long-term: return to label/artist management, or use the broadened network to launch something independent"], timeframe: "Can restart any time — the experience doesn't expire", portable: "This is the one that works everywhere at once, including while you're not physically doing it: stay a member of the Music Managers Forum (musicmanagersforum.co.uk) and the Association of Independent Music (aim.org.uk) throughout the trip — both run online events, directories and member communities you can dip into from any country — so the UK network is still there, warmer than when you left, the day you're ready to pick this back up." },
+  { icon: "🚚", title: "Logistics & Supply Chain Coordinator", tagline: "Turns delivery-driving into a proper career track.", why: "Already planning routes, loading gear and hitting deadlines — that's the core of logistics coordination, and it's a stable career that exists everywhere.", from: "Currently: deliveries & equipment handling.", steps: ["Get familiar with basic inventory/warehouse software (even free tools)", "Look at a logistics or supply chain fundamentals course", "Target a coordinator role at a hire company, event supplier or freight business", "Build toward warehouse/ops manager or dispatch supervisor"], timeframe: "1–3 years", portable: "Logistics is about as portable as a career gets — warehouses, hire companies and freight operators exist in every city you'll pass through, and the skills map straight back onto UK logistics roles with zero retraining needed." },
+  { icon: "🏛️", title: "Venue & Hospitality Management", tagline: "Run the building instead of the one-off event.", why: "You've already done a version of this, not just adjacent work — leading the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more, plus a supervisor stint at Foot Asylum before that. This path is a straightforward scale-up of something already proven twice over, with steadier, more local hours than touring once the travel years are done.", from: "Currently: events + general operations support at TreebySound, plus real solo bar leadership at Cheeky Clucker and retail supervision at Foot Asylum.", steps: ["Pick up shifts in a venue, bar or hospitality management setting", "Learn rostering, licensing basics and front-of-house operations", "Move into assistant venue manager, then venue/general manager"], timeframe: "2–5 years", portable: "Bars, restaurants and venues need duty managers everywhere — this is the steadiest possible income while travelling and it converts cleanly to a UK hospitality management role on return, no gap in the CV to explain." },
+  { icon: "🧭", title: "Travel & Adventure Tourism Operations", tagline: "Turn the travel years into the actual career, not just a break from it.", why: "If the 5-year trip lights you up, this path takes everything learned doing excursions/tours and turns it into running tourism operations rather than just guiding them.", from: "Currently: interest in excursions, adventure & meeting people.", steps: ["Use travel years to work front-line in tours/excursions across NZ, AU & Canada — in Queenstown specifically, AJ Hackett Bungy and Skyline are real, well-regarded operators worth applying to directly", "Note what each operator does well and badly — this becomes instinct for running one", "Pick up a first-aid, guiding or tourism qualification relevant to the region", "Move into lead guide, then operations/booking coordinator for a tour company", "Long-term: operations manager or a small tour outfit of your own"], timeframe: "Runs alongside the travel plan", portable: "The honest trade-off on this one: it's brilliant while you're actually in NZ/AU/Canada, but UK adventure tourism is a much smaller market — so treat it as the strongest path to enjoy the trip itself, and lean on Event Production or Venue Management as the one that carries back to the UK afterwards." },
+  { icon: "✈️", title: "Aviation — Cabin Crew → Ground Operations", tagline: "Start as flight attendant, land in airline operations — worth checking eligibility before counting on it.", why: "Flight attendant work is a genuine gateway into aviation, not just a travel job — airlines promote operationally-minded crew into ground ops, crew scheduling and base management. But this one needs a reality check first: Qantas explicitly requires Australian/NZ permanent residency (or UK right-to-work) for cabin crew, so a standard working-holiday visa likely doesn't qualify at the major carriers. Confirm directly with each airline before treating this as part of the plan.", from: "Currently: interest in flight attendant work as a travel job.", steps: ["Check current visa eligibility directly on careers.qantas.com, careers.jetstar.com and any Canadian carrier's careers page — don't assume a WHV is enough", "If AU/NZ/Canada doesn't work out on a working holiday visa, consider UK-based cabin crew (easyJet, Jet2, British Airways) as the entry point instead, before or after the travel years", "If it does check out somewhere, treat it as a career entry, not a stopgap — track performance & training", "After 2–3 years, look sideways into crew scheduling, base ops or training roles", "Long-term: ground operations manager or airline base management"], timeframe: "3–6 years", portable: "Aviation careers are genuinely global — cabin crew experience anywhere transfers to any airline's ground ops or a UK-based carrier afterwards, visa eligibility permitting." },
+  { icon: "🚀", title: "Start Your Own Thing", tagline: "The long shot with the best ceiling — running an event/hire, label, or promotions business.", why: "Working across every part of TreebySound (delivery, sound, procurement, events, ops) is exactly the broad exposure someone needs before starting their own company — and it's backed by a Music Management degree that covers the business side of this industry specifically, plus direct proof you can actually run something yourself: leading a bar solo at Cheeky Clucker, and real label/artist-management roles at Open Room Records and Sleeping Dog Promotions.", from: "Currently: full-spectrum exposure to how a small events business runs, a Music Management degree, and hands-on experience running a bar and a record label solo.", steps: ["Keep absorbing the commercial side at TreebySound — ask Dave questions, don't just execute", "Save & build a client/supplier network over the travel years", "Test a small side venture (mobile bar, event styling, gear hire) at low stakes", "Long-term: launch once there's capital, contacts and confidence"], timeframe: "5–10 years", portable: "Whatever you test abroad — a mobile bar shift, styling one event, helping run a small local label — becomes proof of concept either way: worth continuing where you are, or worth bringing home and starting properly in the UK with contacts already made in three countries." },
 ];
 
 const VISA_DEFAULTS = {
@@ -674,6 +675,9 @@ const TOOLKIT_CHECKLIST_TEMPLATE = [
   { id: "cert-firstaid", label: "Get a first-aid certificate (helps for guiding/excursion roles)" },
   { id: "licence-intl", label: "Check whether the UK licence needs an international permit for each country" },
   { id: "cv", label: "Build a one-page CV suited to casual/hospitality applications" },
+  { id: "linkedin", label: "Set up or update a LinkedIn profile that matches the CV" },
+  { id: "photo", label: "Sort a proper professional photo for LinkedIn/CV" },
+  { id: "references", label: "Line up two references (e.g. Dave at TreebySound, a manager from Cheeky Clucker or Foot Asylum) and give them a heads-up" },
   { id: "portfolio", label: "Start a simple log/portfolio of every event worked, anywhere" },
   { id: "bank", label: "Set up a fee-free international bank card" },
   { id: "checkin", label: "Set a 6-monthly check-in with yourself: still on the right country/lane?" },
@@ -744,6 +748,16 @@ function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<"
 function addMonths(d, m) { const r = new Date(d); r.setMonth(r.getMonth() + m); return r; }
 function fmtDate(d) { return d.toLocaleDateString(undefined, { year: "numeric", month: "short" }); }
 function currentAge() { return profile.birthYear ? new Date().getFullYear() - profile.birthYear : null; }
+/* The hard cut-off: most working-holiday age caps are assessed against age
+   at the point of applying/lodging, not age when the visa is actually used
+   — so the safe deadline is the day before the 35th birthday, not later. */
+function ageCapCutoffDate() {
+  if (!profile.birthDate) return null;
+  const b = new Date(profile.birthDate);
+  return new Date(b.getFullYear() + TYPICAL_VISA_AGE_CAP, b.getMonth(), b.getDate());
+}
+function fmtFullDate(d) { return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }); }
+function daysUntil(d) { return Math.ceil((d - new Date()) / (1000 * 60 * 60 * 24)); }
 
 let profile = loadProfile();
 let toastTimer = null;
@@ -1101,15 +1115,23 @@ function switchTab(id) {
 /* ===================================== HOME ===================================== */
 function renderHome() {
   const el = document.getElementById("view-home");
+  const checklist = loadCheck();
+  const kitDone = TOOLKIT_CHECKLIST_TEMPLATE.filter(i => checklist[i.id]).length;
+  const kitPct = Math.round((kitDone / TOOLKIT_CHECKLIST_TEMPLATE.length) * 100);
+  const phases = computeRoadmap(profile.travelStartDate || undefined);
+  const activePhase = phases.find(p => phaseStatus(p.from, p.to) !== "past") || phases[phases.length - 1];
+  const activeStatus = phaseStatus(activePhase.from, activePhase.to);
+  const activeLabel = activePhase.country ? COUNTRY_META[activePhase.country].short : activePhase.title;
+  const apps = loadApplications();
   el.innerHTML = `
     <section class="hero">
       <div class="hero-eyebrow">Personal plan · updated for what you told us</div>
       <h1>Right, ${esc(profile.name)} — let's line up the next five years</h1>
       <p>Two things, side by side: the long-term career you haven't fully decided on yet, and the working-holiday run through New Zealand, Australia and Canada you're excited about. They're built to feed each other, not compete.</p>
       <div class="hero-stats">
-        <span class="hero-stat">📍 ${esc(profile.currentRole)}</span>
-        <span class="hero-stat">🤝 TreebySound</span>
-        ${profile.education ? `<span class="hero-stat">🎓 ${esc(profile.education)}</span>` : ""}
+        <span class="hero-stat">✅ Kit ${kitPct}% ready</span>
+        <span class="hero-stat">🗺️ ${activeStatus === "current" ? "Now" : "Next"}: ${esc(activeLabel)} · ${fmtDate(activePhase.from)}</span>
+        ${apps.length ? `<span class="hero-stat">📨 ${apps.length} application${apps.length === 1 ? "" : "s"} saved</span>` : ""}
       </div>
     </section>
 
@@ -1184,6 +1206,7 @@ function renderCareer() {
               <p style="margin-top:8px; font-size:0.82rem; color:var(--ink-faint);">${esc(p.from)}</p>
               <ol>${p.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>
             </details>
+            ${p.portable ? `<div class="link-note" style="margin-top:10px;">${ICONS.compass}<span><strong>Every country, and back home:</strong> ${esc(p.portable)}</span></div>` : ""}
           </div>`).join("")}
       </div>
     </section>
@@ -1233,6 +1256,8 @@ function renderRoadmap() {
   const includeExt = loadExt();
   const startVal = profile.travelStartDate || "";
   const built = computeRoadmap(startVal || undefined);
+  const cutoff = ageCapCutoffDate();
+  const cutoffDays = cutoff ? daysUntil(cutoff) : null;
 
   el.innerHTML = `
     <div class="eyebrow">${ICONS.route} 5-year plan</div>
@@ -1267,6 +1292,30 @@ function renderRoadmap() {
         </div>
       </div>
     </section>
+
+    ${cutoff ? `
+    <section>
+      <div class="callout mustard">
+        ${ICONS.cake}
+        <div>
+          <h3>Your real cut-off: ${fmtFullDate(cutoff)}</h3>
+          <p>That's ${cutoffDays.toLocaleString()} days away — roughly ${(cutoffDays / 365).toFixed(1)} years. This is the deadline to have <strong>lodged</strong> each visa application, not to have finished travelling: for all three countries, eligibility is assessed on your age at the point you submit the application, not when it's granted or when you arrive. So the actual rule is "every application in before you turn 35" — once a visa is granted, it stays valid on its own terms even after that birthday passes. Worth double-checking this against each country's current rules before relying on it, since policy does shift.</p>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="section-head"><h2>Why this order, and what would change it</h2></div>
+      <div class="card">
+        <p style="font-size:0.87rem; color:var(--ink-soft); margin:0 0 10px;">The default order below — Australia, then New Zealand, then Canada — isn't arbitrary. Reorder it on the <strong>You</strong> tab any time; here's the reasoning so a change is a deliberate one:</p>
+        <ul style="margin:0 0 10px; padding-left:18px; font-size:0.87rem; color:var(--ink-soft);">
+          <li><strong>Australia first:</strong> as a UK passport holder you get up to 3 years there with zero specified-work requirement, the biggest hospitality/events job market of the three, and the least red tape to get started — the easiest place to land, start earning fast, and bank savings for the rest of the trip.</li>
+          <li><strong>New Zealand second:</strong> smaller and more seasonal, and genuinely better done once there's a savings buffer and some routine established — the Queenstown/Wanaka adventure-tourism scene rewards showing up ready to work, not needing the first few weeks to find your feet.</li>
+          <li><strong>Canada last, but start the paperwork early:</strong> Canada's IEC runs on an Expressions of Interest pool with periodic invitation rounds — worth creating an IEC profile and entering the pool well before you're actually ready to travel there, since getting invited and issued a permit can take a while, and the permit only starts counting once you actually enter Canada. Entering the pool early doesn't commit you to anything.</li>
+        </ul>
+        <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">If your circumstances change — a specific job offer, a season you don't want to miss, a relationship — swapping the order is fine; just re-run the numbers on this tab so the leg-by-leg dates and age flags below update to match.</p>
+      </div>
+    </section>
+    ` : ""}
 
     <section>
       <div class="section-head"><h2>Visa assumptions</h2></div>
@@ -1311,6 +1360,32 @@ function renderRoadmap() {
     </section>
 
     <section>
+      <div class="section-head"><h2>Staying funded and staying busy — the real 5-year problem</h2></div>
+      <p class="page-lede" style="margin-bottom:14px;">Getting there isn't the hard part — the savings already cover that. The two things worth actually planning for are keeping income steady the whole way through, and staying genuinely engaged rather than drifting between casual shifts. Both come down to the same fix: aim for the supervisor/duty-manager-track roles your background already supports, not entry-level gig work the whole time, and plug into each city's actual music/events scene rather than just its tourist strip.</p>
+      <div class="stack grid-cards">
+        <div class="card">
+          <h3 style="font-size:0.98rem; margin-bottom:6px;">🇦🇺 Australia — Sydney/Bondi to start, Melbourne if the music/events pull is stronger than the beach</h3>
+          <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">Sydney and Bondi are the easiest landing spot — huge hospitality market, familiar backpacker infrastructure. But Melbourne is genuinely Australia's live-music capital — more venues per head than almost anywhere in the world, a real festival/promotions scene, and the strongest natural fit for the Artist Management/Live Events paths specifically. Worth a deliberate stint there, not just Sydney by default.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.98rem; margin-bottom:6px;">🇳🇿 New Zealand — Queenstown/Wanaka for the season, Wellington for the scene</h3>
+          <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">Queenstown/Wanaka is right for ski-season adventure-tourism work. Wellington is NZ's creative and music capital — a real gig circuit, a compact enough industry that it's genuinely possible to meet promoters and venue bookers directly. Worth a city stint there alongside the adventure-town seasons, especially if the Artist Management path stays live.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.98rem; margin-bottom:6px;">🇨🇦 Canada — Whistler/Banff for the season, Toronto for the industry</h3>
+          <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">Whistler and Banff are the obvious resort-season plays. Toronto is Canada's music-industry hub — labels, major venues and a live scene that dwarfs anywhere else on this route — and where Canadian airlines are based too, if the Aviation path is still on the table. A city stint here is worth more toward the long-term career than another season town.</p>
+        </div>
+      </div>
+      <div class="callout sky" style="margin-top:14px;">
+        ${ICONS.linkedin}
+        <div>
+          <h3>Staying connected to the UK music industry while you're away</h3>
+          <p>The Artist Management/Label path doesn't need to go cold for five years. The Music Managers Forum (<strong>musicmanagersforum.co.uk</strong>) and the Association of Independent Music (<strong>aim.org.uk</strong>) both run member communities, directories and online events you can dip into from anywhere — worth keeping a membership or at least following both throughout the trip, so reconnecting with Open Room Records- and Sleeping Dog Promotions-style contacts on return is a warm re-entry, not a cold restart.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
       <div class="section-head"><h2>The route, leg by leg</h2></div>
       ${!startVal ? `<div class="callout sky" style="margin-bottom:16px;">${ICONS.calendar}<div><h3>No start date set yet</h3><p>Showing the plan as if it started today, just so the shape of it makes sense. Set a real (or rough) date above any time — everything below shifts to match.</p></div></div>` : ""}
       <div class="route-line">
@@ -1327,7 +1402,7 @@ function renderRoadmap() {
           if (profile.birthYear) {
             const ageAtStart = phase.from.getFullYear() - profile.birthYear;
             if (ageAtStart >= TYPICAL_VISA_AGE_CAP) {
-              ageHtml = `<div class="age-note">${ICONS.cake}<span>You'd be turning ~${ageAtStart} around this leg — most working-holiday visas cap between 30 and 35, so double-check eligibility for this stretch specifically.</span></div>`;
+              ageHtml = `<div class="age-note">${ICONS.cake}<span>You'd be turning ~${ageAtStart} around this leg — fine if that visa was already lodged before 35 (see the cut-off note further up), but double-check eligibility if it hasn't been applied for yet.</span></div>`;
             }
           }
           return `
@@ -1407,12 +1482,31 @@ function renderJobs() {
 }
 
 /* ===================================== APPLY ===================================== */
+/* Word-boundary matching rather than plain .includes() — a bare keyword
+   like "av" would otherwise false-positive inside "available"/"average".
+   \b doesn't sit right on multi-word phrases with punctuation (e.g.
+   "bump-in"), so only single, alphanumeric-only keywords get the boundary
+   treatment; phrases keep substring matching since they're specific enough
+   not to false-positive. */
+function keywordHits(norm, keywords) {
+  return keywords.filter(k => {
+    if (/^[a-z0-9]+$/i.test(k)) {
+      return new RegExp(`\\b${k}\\b`, "i").test(norm);
+    }
+    return norm.includes(k);
+  });
+}
 function analyseJobSpec(text) {
   const norm = text.toLowerCase();
-  const matched = EVIDENCE_BANK.filter(e => e.keywords.some(k => norm.includes(k)));
-  const gaps = GAP_SUGGESTIONS.filter(g => !g.autoSatisfied && g.keywords.some(k => norm.includes(k)));
-  const covered = GAP_SUGGESTIONS.filter(g => g.autoSatisfied && g.keywords.some(k => norm.includes(k)));
-  return { matched, gaps, covered };
+  const matched = EVIDENCE_BANK
+    .map(e => ({ ...e, hits: keywordHits(norm, e.keywords) }))
+    .filter(e => e.hits.length)
+    .sort((a, b) => b.hits.length - a.hits.length);
+  const gaps = GAP_SUGGESTIONS.filter(g => !g.autoSatisfied && keywordHits(norm, g.keywords).length);
+  const covered = GAP_SUGGESTIONS.filter(g => g.autoSatisfied && keywordHits(norm, g.keywords).length);
+  const fitRatio = matched.length / EVIDENCE_BANK.length;
+  const fitLevel = matched.length === 0 ? "none" : fitRatio >= 0.5 ? "strong" : fitRatio >= 0.25 ? "decent" : "stretch";
+  return { matched, gaps, covered, fitLevel };
 }
 function buildPitch(matched) {
   if (!matched.length) return "";
@@ -1437,14 +1531,26 @@ async function copyText(text, btn) {
   }
 }
 
+const FIT_COPY = {
+  strong: { label: "Strong fit", tone: "teal", note: "A lot of what you'd actually list matched here — lead confidently." },
+  decent: { label: "Decent fit", tone: "sky", note: "A real overlap, not a stretch — worth applying, and worth leaning on the gaps section below to round it out." },
+  stretch: { label: "Bit of a stretch", tone: "mustard", note: "Only a little direct overlap — still worth applying if the role interests you, just don't expect the matches below to carry the whole application." },
+  none: { label: "No direct match found", tone: "mustard", note: "Nothing in the job text matched your background bank — try pasting more of the actual requirements list, or this genuinely may not be the right fit." },
+};
 function renderApplyResults(container, text) {
-  const { matched, gaps, covered } = analyseJobSpec(text);
+  const { matched, gaps, covered, fitLevel } = analyseJobSpec(text);
   if (!text.trim()) {
     container.innerHTML = `<p class="page-lede">Paste a job description above, then hit <strong>Analyse</strong>.</p>`;
     return;
   }
   const pitch = buildPitch(matched);
+  const fit = FIT_COPY[fitLevel];
   container.innerHTML = `
+    <div class="callout ${fit.tone}" style="margin-bottom:20px;">
+      ${ICONS.sparkle}
+      <div><h3>${esc(fit.label)}${matched.length ? ` — ${matched.length} of ${EVIDENCE_BANK.length} evidence areas matched` : ""}</h3><p>${esc(fit.note)}</p></div>
+    </div>
+
     <div class="section-head"><h2>What matches from your background</h2></div>
     ${matched.length ? `
       <div class="stack">

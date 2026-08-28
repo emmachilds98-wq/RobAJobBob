@@ -22,7 +22,20 @@ TreebySound and helps him think through three things at once:
 None of these compete — travel-era casual jobs feed evidence back into the long-term career
 paths, and the Apply tab draws on all of it. A prominent home-screen callout also flags the
 thing that matters most given where he's starting from: UK working-holiday age caps sit around
-35, he's 32 with no firm start date, so timing is the one thing worth not letting drift.
+35, he's 32 with no firm start date, so timing is the one thing worth not letting drift. The
+Travel Route tab goes further and computes his actual cut-off date from a set birth date — the
+deadline to have each visa *lodged*, not to have finished travelling, since eligibility is
+assessed at application time — plus the reasoning behind the default Australia → New Zealand →
+Canada order and what would change it.
+
+The plan also treats "funding the trip" and "staying funded and engaged for five years" as two
+different problems. The Route tab names real music/events hotspots per country (Melbourne,
+Wellington, Toronto, alongside the more obvious Sydney/Bondi, Queenstown/Wanaka, Whistler) tied
+to his actual background, and points at real ways to stay plugged into the UK music industry
+while he's away (Music Managers Forum, Association of Independent Music) so reconnecting with
+his old label/promotions contacts on return is a warm re-entry, not a cold restart. Each Career
+Compass path also notes how portable it actually is — useful in every country on the route, and
+usable when he's back in the UK, or not.
 
 ## Running it
 
@@ -63,11 +76,16 @@ GitHub Pages, and easy to hand-edit without a build step.
 
 Paste a real job ad in and it's checked against `EVIDENCE_BANK` by simple, inspectable keyword
 matching — nothing is sent anywhere, there's no API call and no AI model involved, just
-substring matching against real, named experience. It renders:
+word-boundary matching against real, named experience (single-word keywords like "av" match as
+whole words only, so they don't false-positive inside words like "available" or "average"). It
+renders:
 
-- **What matches** — which parts of his real history line up, each traceable back to a named
-  employer (TreebySound, Cheeky Clucker, Foot Asylum, Tesco, Open Room Records, Sleeping Dog
-  Promotions, Bang Bang Merch, Madway Brewery).
+- **A fit-strength line** up top — strong / decent / a bit of a stretch / no match — based on how
+  many of the 8 evidence areas actually matched, so it's obvious at a glance whether an ad is
+  worth the effort before reading further.
+- **What matches** — which parts of his real history line up, sorted by how strongly each one
+  matched, each traceable back to a named employer (TreebySound, Cheeky Clucker, Foot Asylum,
+  Tesco, Open Room Records, Sleeping Dog Promotions, Bang Bang Merch, Madway Brewery).
 - **Worth addressing** — job-spec asks with no match (first aid, food hygiene, RSA, etc.), each
   flagged free or paid with a real, current way to close the gap.
 - **A draft pitch and CV bullets**, generated from the matched evidence, with one-tap copy.
