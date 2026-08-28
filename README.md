@@ -24,12 +24,15 @@ TreebySound and helps him think through three things at once:
 
 None of these compete — travel-era casual jobs feed evidence back into the long-term career
 paths, and the Apply tab draws on all of it. A prominent home-screen callout also flags the
-thing that matters most given where he's starting from: UK working-holiday age caps sit around
-35, he's 32 with no firm start date, so timing is the one thing worth not letting drift. The
-Travel Route tab goes further and computes his actual cut-off date from a set birth date — the
-deadline to have each visa *lodged*, not to have finished travelling, since eligibility is
-assessed at application time — plus the reasoning behind the default Australia → New Zealand →
-Canada order and what would change it.
+thing that matters most given where he's starting from: UK applicants are eligible right through
+age 35 on Australia 417, NZ Working Holiday and Canada IEC alike, so the real cut-off on all
+three is the 36th birthday, not the 35th as it's easy to assume — he's 32 with no firm start
+date, so timing is the one thing worth not letting drift. The Travel Route tab goes further and
+computes his actual cut-off date (his 36th birthday) from a set birth date — the deadline to
+have each visa *lodged* (or, for Canada, been invited), not to have finished travelling, since
+eligibility is assessed at that point — plus concrete advice on making the most of each scheme
+before then, and the reasoning behind the default Australia → New Zealand → Canada order and
+what would change it.
 
 The plan also treats "funding the trip" and "staying funded and engaged for five years" as two
 different problems. The Route tab names real music/events hotspots per country (Melbourne,

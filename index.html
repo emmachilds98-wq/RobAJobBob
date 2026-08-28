@@ -518,7 +518,12 @@ const DEFAULT_PROFILE = {
   countryOrder: ["australia", "newzealand", "canada"],
   birthYear: 1994,
 };
-const TYPICAL_VISA_AGE_CAP = 35;
+/* Verified against Australia 417, NZ Working Holiday and Canada IEC: UK
+   citizens are eligible right through age 35 on all three — the real cutoff
+   is the day of the 36th birthday (application/invitation must be in before
+   then), not the 35th as it's easy to assume. Keep these two in step. */
+const VISA_ELIGIBLE_THROUGH_AGE = 35;
+const VISA_CUTOFF_AGE = 36;
 
 /* Real, dated employment history — the source of truth the Apply tab's
    matching engine and pitch generator both draw on. Kept separate from
@@ -762,13 +767,14 @@ function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<"
 function addMonths(d, m) { const r = new Date(d); r.setMonth(r.getMonth() + m); return r; }
 function fmtDate(d) { return d.toLocaleDateString(undefined, { year: "numeric", month: "short" }); }
 function currentAge() { return profile.birthYear ? new Date().getFullYear() - profile.birthYear : null; }
-/* The hard cut-off: most working-holiday age caps are assessed against age
-   at the point of applying/lodging, not age when the visa is actually used
-   — so the safe deadline is the day before the 35th birthday, not later. */
+/* The hard cut-off: working-holiday age eligibility is assessed against age
+   at the point of applying/lodging (or, for Canada, being invited), not age
+   when the visa is actually used — and on all three, that's "through 35",
+   so the real deadline is the 36th birthday, not the 35th. */
 function ageCapCutoffDate() {
   if (!profile.birthDate) return null;
   const b = new Date(profile.birthDate);
-  return new Date(b.getFullYear() + TYPICAL_VISA_AGE_CAP, b.getMonth(), b.getDate());
+  return new Date(b.getFullYear() + VISA_CUTOFF_AGE, b.getMonth(), b.getDate());
 }
 function fmtFullDate(d) { return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }); }
 function daysUntil(d) { return Math.ceil((d - new Date()) / (1000 * 60 * 60 * 24)); }
@@ -1154,7 +1160,7 @@ function renderHome() {
         ${ICONS.cake}
         <div>
           <h3>Timing is the thing to get right</h3>
-          <p>UK working-holiday age caps sit at 35 across Australia, New Zealand and Canada${profile.birthYear ? ` — and at ${currentAge()}, you've got about ${Math.max(TYPICAL_VISA_AGE_CAP - currentAge(), 0)} years before that cap starts biting` : " — and you're already in your 30s"}, with no firm dates yet. That's not a problem, but it does mean the sooner this starts, the more of the plan is realistically achievable — check the <strong>Route</strong> tab for exactly which legs would land you past 35.</p>
+          <p>UK working-holiday eligibility runs right through age 35 on all three — Australia, New Zealand and Canada — so the real cut-off is your 36th birthday, not your 35th${profile.birthYear ? ` — and at ${currentAge()}, you've got about ${Math.max(VISA_CUTOFF_AGE - currentAge(), 0)} years before that cut-off hits` : ""}, with no firm dates yet. That's not a problem, but it does mean the sooner this starts, the more of the plan is realistically achievable — check the <strong>Route</strong> tab for your exact cut-off date.</p>
         </div>
       </div>
     </section>
@@ -1281,8 +1287,9 @@ function renderRoadmap() {
     <details class="info" style="margin-bottom:22px;">
       <summary>${ICONS.info} Visa lengths change — what we checked, and when (Aug 2026)</summary>
       <ul>
+        <li><strong>Age eligibility:</strong> UK citizens are accepted through age 35 on all three schemes (most other nationalities are capped at 30) — so the real cut-off on each is the 36th birthday, not the 35th. Assessed at application time for Australia and New Zealand, and at invitation time for Canada.</li>
         <li><strong>Australia 417:</strong> since the 2024 UK–Australia trade deal, a UK 2nd &amp; 3rd year (36 months total) needs no specified work at all. Most other nationalities still need 6 months of regional work.</li>
-        <li><strong>New Zealand:</strong> UK citizens can take 12, 23, or up to 36 months total.</li>
+        <li><strong>New Zealand:</strong> UK citizens can take 12, 23, or up to 36 months total, or extend a shorter grant to 36 months later via a Subsequent Work Visa.</li>
         <li><strong>Canada IEC:</strong> UK citizens can get up to 36 months across two participations (24 + 12).</li>
       </ul>
       <p style="margin-top:8px; font-size:0.83rem; color:var(--ink-faint);">Always confirm on <a href="https://www.immigration.govt.nz" target="_blank" rel="noopener">immigration.govt.nz</a>, <a href="https://immi.homeaffairs.gov.au" target="_blank" rel="noopener">immi.homeaffairs.gov.au</a> and <a href="https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec.html" target="_blank" rel="noopener">canada.ca/iec</a> before booking anything — nationality, age and rules all move fast.</p>
@@ -1307,7 +1314,7 @@ function renderRoadmap() {
         ${ICONS.cake}
         <div>
           <h3>Your real cut-off: ${fmtFullDate(cutoff)}</h3>
-          <p>You turn 35 that day, and that's ${cutoffDays.toLocaleString()} days away — roughly ${(cutoffDays / 365).toFixed(1)} years from now. This is the deadline to have <strong>lodged</strong> each visa application, not to have finished travelling: for all three countries, eligibility is assessed on your age at the point you submit the application, not when it's granted or when you arrive. So the actual rule for you is "every application in before 23 August 2029" — once a visa is granted, it stays valid on its own terms even after that birthday passes. Worth double-checking this against each country's current rules before relying on it, since policy does shift.</p>
+          <p>You turn 36 that day, and that's ${cutoffDays.toLocaleString()} days away — roughly ${(cutoffDays / 365).toFixed(1)} years from now. All three schemes accept UK applicants right through age 35, so this is the deadline to have <strong>lodged</strong> each visa application (or, for Canada, been invited) — not to have finished travelling. Eligibility is assessed on your age at that point, not when the visa is granted or when you arrive. So the actual rule for you is "every application in before ${fmtFullDate(cutoff)}" — once a visa is granted, it stays valid on its own terms even after that birthday passes. Worth double-checking this against each country's current rules before relying on it, since policy does shift.</p>
         </div>
       </div>
     </section>
@@ -1317,8 +1324,8 @@ function renderRoadmap() {
         <p style="font-size:0.87rem; color:var(--ink-soft); margin:0 0 10px;">Knowing the cut-off is one thing — actually using what each country offers a UK passport specifically is the part worth being deliberate about:</p>
         <ul style="margin:0; padding-left:18px; font-size:0.87rem; color:var(--ink-soft);">
           <li><strong>Australia:</strong> the 2024 UK–Australia deal means your 2nd and 3rd 417 years need no specified work at all — but each one is still a separate application, assessed against your age when you lodge it. Don't leave the 3rd-year application sitting until the last minute; apply for each stage as soon as you're eligible for it, not just once you feel like moving on.</li>
-          <li><strong>New Zealand:</strong> as a UK citizen you can ask for 12, 23 or up to 36 months at the point of applying — make sure you actually select the longer option if the plan calls for it, rather than defaulting to 12 months and having to sort out an extension later.</li>
-          <li><strong>Canada:</strong> IEC only works if you're in the pool — create your profile and submit an Expression of Interest well before you're actually ready to go, since invitations come in periodic rounds and getting in early gives you the most runway before 2029, not the least.</li>
+          <li><strong>New Zealand:</strong> as a UK citizen you can ask for 12, 23 or up to 36 months at the point of applying — asking for the longer option up front avoids needing a separate "Subsequent Work Visa" later to stretch a 12- or 23-month grant out to 36.</li>
+          <li><strong>Canada:</strong> IEC only works if you're in the pool — create your profile and submit an Expression of Interest well before you're actually ready to go. Invitations come in periodic rounds, and the rule is stricter here: you need to actually be <em>invited</em> before your 36th birthday, not just have applied, so getting in the pool early gives you the most runway${cutoff ? `, not the least, before ${fmtFullDate(cutoff)}` : ""}.</li>
         </ul>
       </div>
     </section>
@@ -1420,8 +1427,8 @@ function renderRoadmap() {
           let ageHtml = "";
           if (profile.birthYear) {
             const ageAtStart = phase.from.getFullYear() - profile.birthYear;
-            if (ageAtStart >= TYPICAL_VISA_AGE_CAP) {
-              ageHtml = `<div class="age-note">${ICONS.cake}<span>You'd be turning ~${ageAtStart} around this leg — fine if that visa was already lodged before 35 (see the cut-off note further up), but double-check eligibility if it hasn't been applied for yet.</span></div>`;
+            if (ageAtStart >= VISA_ELIGIBLE_THROUGH_AGE) {
+              ageHtml = `<div class="age-note">${ICONS.cake}<span>You'd be turning ~${ageAtStart} around this leg — fine if that visa was already lodged before your 36th birthday (see the cut-off note further up), but double-check eligibility if it hasn't been applied for yet.</span></div>`;
             }
           }
           return `
