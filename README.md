@@ -8,8 +8,11 @@ TreebySound and helps him think through three things at once:
 1. **Long-term career** — he's not sure yet, and that's fine. The Career Compass turns his real
    background (TreebySound, running the bar solo at Cheeky Clucker, a Music Management degree
    from BIMM, and real label/artist-management/promotions roles at Open Room Records, Sleeping
-   Dog Promotions, Bang Bang Merch and Madway Brewery) into concrete, realistic directions, each
-   with the actual steps to get there.
+   Dog Promotions, Bang Bang Merch and Madway Brewery) into 13 concrete, realistic directions,
+   each with the actual steps to get there — spanning the obvious music/events/hospitality paths
+   and a wider set of generalist corporate options (project coordination, procurement, business
+   operations, recruitment, marketing) that don't need years of retraining to start, so there's a
+   genuinely broad set of directions on the table, not just the ones tied to the music industry.
 2. **A 5-year working holiday** across New Zealand, Australia and Canada — sequenced against
    realistic working-holiday visa lengths (with UK-specific rules baked in, since that's his
    passport), with a Casual Jobs Explorer naming real platforms and employers per country, not
@@ -120,10 +123,13 @@ Tap the gear icon on any screen for:
 Open the **You** tab to set his name, contact details, role, education, background, nationality,
 visa status, driving licence and certificates — everything saves to `localStorage`, so it's
 private to whoever opens it on that device. It also shows his real work history timeline, which
-is what the Apply tab's matching is built on. The **Travel Route** tab lets the visa
-month-lengths, country order and travel start date be edited directly, with the whole 5-year
-timeline recalculating live, plus an age-cap warning on any leg that would land him past a
-typical visa age limit (a birth year is already set).
+is what the Apply tab's matching is built on. His birth date is already known and baked in
+(`DEFAULT_PROFILE.birthDate`), so there's no birth-date field to fill in — it just powers the
+age-cap maths quietly in the background. The **Travel Route** tab lets the visa month-lengths,
+country order and travel start date be edited directly, with the whole 5-year timeline
+recalculating live, a computed hard cut-off (the exact date his age locks him out of lodging a
+fresh application), concrete guidance on making the most of each country's scheme before then,
+and an age-cap warning on any leg that would land him past a typical visa age limit.
 
 ## A note on the visa numbers
 
