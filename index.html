@@ -194,6 +194,14 @@
   .ticket-status.upcoming { background: var(--sky-tint); color: var(--sky-ink); }
   .ticket-status.current { background: var(--coral-tint); color: var(--coral-ink); }
   .ticket-status.past { background: var(--paper-sunk); color: var(--ink-faint); }
+  .status-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 9px; border-radius: 999px; border: none; white-space: nowrap; }
+  .status-chip.not-sent { background: var(--paper-sunk); color: var(--ink-faint); }
+  .status-chip.applied { background: var(--sky-tint); color: var(--sky-ink); }
+  .status-chip.interview { background: var(--mustard-tint); color: var(--mustard-ink); }
+  .status-chip.offer { background: var(--teal-tint); color: var(--teal-ink); }
+  .status-chip.rejected { background: var(--coral-tint); color: var(--coral-ink); }
+  .status-chip.withdrawn { background: var(--paper-sunk); color: var(--ink-faint); }
+  .status-select { border: 1.5px solid var(--line); border-radius: var(--radius-s); padding: 6px 8px; font-size: 0.78rem; background: var(--paper); color: var(--ink); flex-shrink: 0; }
   .ticket p.focus { font-size: 0.88rem; color: var(--ink-soft); margin: 0 0 10px; }
   .ticket .link-note { display: flex; gap: 8px; font-size: 0.82rem; background: var(--teal-tint); color: var(--teal-ink); border-radius: var(--radius-s); padding: 9px 12px; }
   .ticket .link-note .icon { width: 15px; height: 15px; margin-top: 1px; }
@@ -552,6 +560,7 @@ const EVIDENCE_BANK = [
     headline: "Led the bar solo at Cheeky Clucker",
     detail: "Bartender & Server at Cheeky Clucker, regularly the supervisor and often running the bar on its own floor entirely solo — including closing up — inside a busy high-street restaurant.",
     pitch: "I've directly run a bar operation solo — including closing procedures — at Cheeky Clucker, a busy high-street restaurant, so I'm used to working independently under pressure.",
+    star: "Pick one specific busy night you ran the bar solo. Situation: how busy, what made it hard (staffing, a rush, something going wrong). Task: what you were actually responsible for that night. Action: what you did — the calls you made, how you kept it together. Result: how the night actually went, what you'd tell a manager checking up on you the next day.",
   },
   {
     id: "retail-lead",
@@ -559,6 +568,7 @@ const EVIDENCE_BANK = [
     headline: "Retail supervisor & shift leader (Foot Asylum, Tesco)",
     detail: "Supervisor at Foot Asylum and Shift Leader at Tesco (held all the way through your degree) — both fast-paced, customer-facing, team-leadership roles.",
     pitch: "I've held supervisor/shift-leader roles in retail (Foot Asylum, Tesco), so team leadership in a fast-paced, customer-facing environment isn't new to me.",
+    star: "Think of a shift at Tesco or Foot Asylum that went wrong or nearly did — a staffing gap, an angry customer, a till discrepancy. Situation/Task: what landed on you as shift leader. Action: the actual decision you made. Result: how it resolved, and what changed afterward (a habit, a process, how you'd handle it differently).",
   },
   {
     id: "music-degree",
@@ -566,6 +576,7 @@ const EVIDENCE_BANK = [
     headline: "Music industry degree + real label/promotion roles",
     detail: "BA in Business (Music Management) at BIMM Brighton, alongside Head of Marketing & Assistant Label Manager at Open Room Records and Artist Manager & Promoter at Sleeping Dog Promotions.",
     pitch: "I hold a Music Management degree from BIMM and have hands-on music-industry experience — Assistant Label Manager at Open Room Records and Artist Manager/Promoter at Sleeping Dog Promotions.",
+    star: "Pick one release or promoted show from Open Room Records or Sleeping Dog Promotions. Situation/Task: what you were trying to land (a release, a turnout, a booking). Action: what you actually did to make it happen, including anything that didn't go to plan. Result: the actual outcome — numbers if you have them, otherwise what changed because of it.",
   },
   {
     id: "marketing",
@@ -573,6 +584,7 @@ const EVIDENCE_BANK = [
     headline: "Marketing & promotions experience across four companies",
     detail: "Marketing Assistant at Bang Bang Merch, marketing/promotions at Madway Brewery, and press/promotion work at Open Room Records and Sleeping Dog Promotions.",
     pitch: "I've got hands-on marketing and promotions experience across several companies — Bang Bang Merch, Madway Brewery, Open Room Records and Sleeping Dog Promotions.",
+    star: "Pick one campaign — Bang Bang Merch or Madway Brewery both work. Situation/Task: what the campaign needed to achieve. Action: what you actually built or ran (content, a channel, an angle). Result: what happened — engagement, sales, turnout, whatever it actually moved.",
   },
   {
     id: "events-production",
@@ -580,6 +592,7 @@ const EVIDENCE_BANK = [
     headline: "Hands-on events & operations support at TreebySound",
     detail: "All-rounder support role across a live-audio/events company — deliveries, event setup and pack-down, and general operations, working directly under the owner-operator.",
     pitch: "I currently support end-to-end event operations at TreebySound, a live-audio/events company — deliveries, on-site setup/pack-down and general production support.",
+    star: "Pick one event at TreebySound that didn't go smoothly — a tight get-in, a last-minute change, a delivery problem. Situation/Task: what the day actually demanded. Action: what you did to keep it on track. Result: how it landed, and what Dave or the client actually said or did afterward.",
   },
   {
     id: "driving",
@@ -601,8 +614,32 @@ const EVIDENCE_BANK = [
     headline: "Broad, adaptable work history",
     detail: "A genuinely varied work history spanning hospitality, retail and the music industry — used to picking up a new environment fast.",
     pitch: "I've got a genuinely varied work background across hospitality, retail and the music industry, and I'm quick to adapt to a new environment.",
+    star: "Pick a moment you had to switch mode fast — moving between TreebySound, Cheeky Clucker and label work in the same week, say. Situation/Task: what was actually competing for your attention. Action: how you actually handled the switch. Result: what got delivered, and what you'd say this proves about how you work.",
   },
 ];
+
+/* Tracks a saved application through a real job search, not just as a
+   pitch-generator history. "not-sent" is the default for anything saved
+   before you've actually sent it. */
+const APPLICATION_STATUSES = [
+  { key: "not-sent", label: "Not sent yet" },
+  { key: "applied", label: "Applied" },
+  { key: "interview", label: "Interview arranged" },
+  { key: "offer", label: "Offer" },
+  { key: "rejected", label: "Rejected" },
+  { key: "withdrawn", label: "Withdrawn" },
+];
+
+/* Real, current job-search platforms — named directly rather than "search
+   online", split by where he'd actually be looking: UK corporate roles now,
+   and AU/NZ/Canada equivalents once travelling. */
+const JOB_SEARCH_PLATFORMS = {
+  uk: { label: "UK — corporate & general", flag: "🇬🇧", items: ["LinkedIn Jobs", "Indeed UK", "Reed.co.uk", "Totaljobs", "CV-Library"] },
+  ukAgencies: { label: "UK — recruitment agencies (project/procurement/ops/marketing)", flag: "🤝", items: ["Hays", "Reed Specialist Recruitment", "Michael Page", "Adecco", "Randstad"] },
+  australia: { label: "Australia", flag: "🇦🇺", items: ["Seek.com.au", "Indeed.com.au", "LinkedIn"] },
+  newzealand: { label: "New Zealand", flag: "🇳🇿", items: ["Seek.co.nz", "Trade Me Jobs", "LinkedIn"] },
+  canada: { label: "Canada", flag: "🇨🇦", items: ["Indeed.ca", "Job Bank Canada", "LinkedIn"] },
+};
 
 /* Common job-spec asks that aren't in the evidence bank — flagged rather
    than silently missed, each with a real, named next step. */
@@ -656,7 +693,7 @@ const CAREER_PATHS = [
 ];
 
 const VISA_DEFAULTS = {
-  australia: { label: "Australia — Working Holiday (417/462)", extendNote: "UK passport: since the 2024 UK–Australia trade deal, a 2nd and 3rd 417 visa (36 months total) need no specified work at all. Most other nationalities still need 6 months of regional work. Base fee ~AUD 840 (2026)." },
+  australia: { label: "Australia — Working Holiday (417/462)", extendNote: "UK passport: since the 2024 UK–Australia trade deal, a 2nd and 3rd 417 visa (36 months total) need no specified work at all. Most other nationalities still need 6 months of regional work. Fees rose 1 July 2026: ~AUD 840 for the 1st visa, ~AUD 1,000 each for the 2nd and 3rd." },
   newzealand: { label: "New Zealand — Working Holiday", extendNote: "UK passport: apply for 12, 23, or up to 36 months total. Most others get a flat 12 months. ~15,000 UK places/year, from NZD 770." },
   canada: { label: "Canada — IEC Working Holiday", extendNote: "UK passport: up to 36 months across two participations (24 + 12), mixing Working Holiday / Young Professionals / Co-op streams. Most others get one 12-month entry. Pool-based, not guaranteed." },
 };
@@ -690,10 +727,12 @@ const TOOLKIT_CHECKLIST_TEMPLATE = [
   { id: "visa-nz", label: "Apply for the New Zealand working holiday visa" },
   { id: "visa-can", label: "Enter the Canada IEC pool & confirm invitation" },
   { id: "insurance", label: "Sort travel/health insurance for the full trip" },
+  { id: "tax-p85", label: "Submit a P85 to HMRC when you actually leave, so UK tax residency (and any PAYE refund) is sorted properly" },
   { id: "cert-rsa", label: "Get RSA / bar certifications sorted before arrival" },
   { id: "cert-firstaid", label: "Get a first-aid certificate (helps for guiding/excursion roles)" },
   { id: "licence-intl", label: "Check whether the UK licence needs an international permit for each country" },
   { id: "cv", label: "Build a one-page CV suited to casual/hospitality applications" },
+  { id: "cv-corporate", label: "Build a second CV suited to corporate applications (project/procurement/ops/marketing roles)" },
   { id: "linkedin", label: "Set up or update a LinkedIn profile that matches the CV" },
   { id: "photo", label: "Sort a proper professional photo for LinkedIn/CV" },
   { id: "references", label: "Line up two references (e.g. Dave at TreebySound, a manager from Cheeky Clucker or Foot Asylum) and give them a heads-up" },
@@ -1613,7 +1652,18 @@ function renderApplyResults(container, text) {
           ${matched.map(m => `<li style="margin-bottom:6px;">${esc(m.detail)}</li>`).join("")}
         </ul>
         <button class="btn ghost small" id="apply-copy-bullets">${ICONS.copy} Copy bullets</button>
-      </div>` : ""}
+      </div>
+
+      ${matched.some(m => m.star) ? `
+      <div class="section-head" style="margin-top:24px;"><h2>If it gets to interview</h2></div>
+      <p class="page-lede" style="margin-bottom:12px;">Talk through these before you go in — same real stories as above, worked into a proper answer. Situation, Task, Action, Result: what was going on, what landed on you, what you actually did, how it actually turned out.</p>
+      <div class="stack">
+        ${matched.filter(m => m.star).map(m => `
+          <details class="disclose">
+            <summary>${ICONS.chevron} ${esc(m.headline)}</summary>
+            <p style="margin-top:8px; font-size:0.85rem; color:var(--ink-soft);">${esc(m.star)}</p>
+          </details>`).join("")}
+      </div>` : ""}` : ""}
   `;
 
   const copyPitchBtn = document.getElementById("apply-copy-pitch");
@@ -1639,6 +1689,20 @@ function renderApply() {
         <p>A few things that help every application, not just this tool: a <strong>LinkedIn profile</strong> that matches the CV (worth having before applying anywhere, especially abroad where employers check it); a proper <strong>professional photo</strong> for LinkedIn/CV specifically — separate from any personal photo in this app; and two <strong>references lined up and warned in advance</strong> — Dave at TreebySound plus a manager from Cheeky Clucker or Foot Asylum are the obvious pair.</p>
       </div>
     </div>
+
+    <section>
+      <div class="section-head"><h2>Where to actually look</h2></div>
+      <p class="page-lede" style="margin-bottom:12px;">Real platforms, not "search online" — worth having accounts set up on the relevant ones before you need them.</p>
+      <div class="stack grid-cards">
+        ${Object.values(JOB_SEARCH_PLATFORMS).map(p => `
+          <div class="card">
+            <h3 style="font-size:0.92rem; margin-bottom:8px;">${p.flag} ${esc(p.label)}</h3>
+            <div class="country-row">
+              ${p.items.map(i => `<span class="flag-chip">${esc(i)}</span>`).join("")}
+            </div>
+          </div>`).join("")}
+      </div>
+    </section>
 
     <section>
       <div class="section-head"><h2>Paste the job spec</h2></div>
@@ -1673,6 +1737,7 @@ function renderApply() {
     ${saved.length ? `
     <section>
       <div class="section-head"><h2>Saved applications</h2></div>
+      <p class="page-lede" id="apply-history-summary" style="margin-bottom:12px;"></p>
       <div class="stack" id="apply-history"></div>
     </section>` : ""}
   `;
@@ -1692,7 +1757,7 @@ function renderApply() {
     if (!label) { toast("Give it a label first"); return; }
     const { matched, gaps } = analyseJobSpec(jobtext.value);
     const list = loadApplications();
-    list.unshift({ label, date: new Date().toISOString(), matchedCount: matched.length, gapCount: gaps.length, text: jobtext.value.slice(0, 4000) });
+    list.unshift({ label, date: new Date().toISOString(), matchedCount: matched.length, gapCount: gaps.length, text: jobtext.value.slice(0, 4000), status: "not-sent" });
     saveApplications(list);
     toast("Saved");
     renderApply();
@@ -1700,12 +1765,22 @@ function renderApply() {
 
   const historyEl = document.getElementById("apply-history");
   if (historyEl) {
+    const counts = {};
+    saved.forEach(a => { const k = a.status || "not-sent"; counts[k] = (counts[k] || 0) + 1; });
+    const summaryEl = document.getElementById("apply-history-summary");
+    if (summaryEl) {
+      summaryEl.textContent = APPLICATION_STATUSES.filter(s => counts[s.key]).map(s => `${counts[s.key]} ${s.label.toLowerCase()}`).join(" · ");
+    }
     historyEl.innerHTML = saved.map((a, i) => `
-      <div class="card" style="display:flex; align-items:center; gap:12px;">
-        <div style="flex:1; min-width:0;">
+      <div class="card" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:120px;">
           <div style="font-weight:650; font-size:0.92rem;">${esc(a.label)}</div>
           <div style="font-size:0.78rem; color:var(--ink-faint);">${new Date(a.date).toLocaleDateString()} · ${a.matchedCount} matched, ${a.gapCount} to address</div>
         </div>
+        <span class="status-chip ${a.status || "not-sent"}">${esc((APPLICATION_STATUSES.find(s => s.key === (a.status || "not-sent")) || APPLICATION_STATUSES[0]).label)}</span>
+        <select class="status-select" data-status="${i}">
+          ${APPLICATION_STATUSES.map(s => `<option value="${s.key}" ${(a.status || "not-sent") === s.key ? "selected" : ""}>${esc(s.label)}</option>`).join("")}
+        </select>
         <button class="btn-mini" data-reload="${i}" title="Load back into the box">${ICONS.chevron}</button>
         <button class="btn-mini" data-remove="${i}" title="Delete">✕</button>
       </div>`).join("");
@@ -1719,6 +1794,13 @@ function renderApply() {
     historyEl.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", () => {
       const list = loadApplications();
       list.splice(parseInt(b.dataset.remove, 10), 1);
+      saveApplications(list);
+      renderApply();
+    }));
+    historyEl.querySelectorAll("[data-status]").forEach(sel => sel.addEventListener("change", () => {
+      const list = loadApplications();
+      const idx = parseInt(sel.dataset.status, 10);
+      list[idx].status = sel.value;
       saveApplications(list);
       renderApply();
     }));

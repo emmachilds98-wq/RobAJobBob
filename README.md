@@ -95,11 +95,19 @@ renders:
 - **Worth addressing** — job-spec asks with no match (first aid, food hygiene, RSA, etc.), each
   flagged free or paid with a real, current way to close the gap.
 - **A draft pitch and CV bullets**, generated from the matched evidence, with one-tap copy.
-- **Saved applications** — a local history of past pastes, so he can revisit or reuse one.
+- **If it gets to interview** — collapsible STAR-format prompts (Situation/Task/Action/Result)
+  built from the same matched evidence, so there's real prep material the moment an ad matches
+  well, not just a pitch.
+- **Saved applications**, each tracked through an actual status (not sent / applied / interview
+  arranged / offer / rejected / withdrawn) with a live summary count, so it works as a lightweight
+  job-search tracker, not just a pitch-generator history.
 
-A "Before sending anything" card also covers the things that help every application regardless
-of this tool: a LinkedIn profile matching the CV, a proper professional photo for LinkedIn/CV
-specifically, and two references lined up in advance.
+A "Before sending anything" card covers the things that help every application regardless of this
+tool: a LinkedIn profile matching the CV, a proper professional photo for LinkedIn/CV specifically,
+and two references lined up in advance. A "Where to actually look" card names real platforms —
+LinkedIn Jobs, Indeed UK, Reed.co.uk, Totaljobs, CV-Library and Hays/Reed Specialist
+Recruitment/Michael Page/Adecco/Randstad for UK corporate roles now, plus Seek.com.au, Seek.co.nz,
+Trade Me Jobs, Indeed.ca and Job Bank Canada for once he's travelling.
 
 ## Settings (the cog, top right)
 
