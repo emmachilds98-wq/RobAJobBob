@@ -19,8 +19,16 @@ TreebySound and helps him think through three things at once:
    just categories.
 3. **Actually applying for jobs** — the Apply tab checks a pasted job spec against his real work
    history, surfaces what to lead with, flags what's worth covering off first (with free options
-   named where they exist), and drafts a tailored pitch and CV bullets — no external AI calls,
-   just a transparent keyword-matching engine running entirely on-device.
+   named where they exist), and drafts a tailored pitch, CV bullets and STAR-format interview
+   prep — no external AI calls, just a transparent keyword-matching engine running entirely
+   on-device. Saved applications track a real status (applied / interview / offer / rejected),
+   so it works as a lightweight job-search tracker, not just a pitch-generator history.
+4. **What happens after** — the Kit tab's Experience Log lets him record a dated entry every time
+   he works something, anywhere, optionally tagged to a Career Compass path. Five years from now
+   that's real, specific evidence for whatever comes next — travelling on, a role picked up
+   locally, or heading home — not a vague "went travelling" line on a CV. The Route tab also
+   covers the practical side of coming home: the UK State Pension/National Insurance implications
+   of years abroad, and that the same tax-residency test applies in reverse on the way back.
 
 None of these compete — travel-era casual jobs feed evidence back into the long-term career
 paths, and the Apply tab draws on all of it. A prominent home-screen callout also flags the
@@ -69,9 +77,11 @@ GitHub Pages, and easy to hand-edit without a build step.
   colour engine, the travel-date maths, the job-spec matching engine, localStorage persistence).
   Search for the `DATA` comment block near the top of the `<script>` section to find:
   - `EMPLOYMENT_HISTORY` — his real, dated work history (source of truth for the Apply tab)
-  - `EVIDENCE_BANK` — keyword → real-experience mappings the Apply tab matches job specs against
+  - `EVIDENCE_BANK` — keyword → real-experience mappings the Apply tab matches job specs against,
+    each also carrying a `star` field (an interview-prep prompt for that piece of evidence)
   - `GAP_SUGGESTIONS` — common job-spec asks (certs etc.) not covered by the evidence bank, each
     with a real next step and whether it's free
+  - `JOB_SEARCH_PLATFORMS` — real job boards/agencies, grouped UK-corporate vs AU/NZ/Canada
   - `CAREER_PATHS`, `CASUAL_JOBS`, `VISA_DEFAULTS`, `TOOLKIT_CHECKLIST_TEMPLATE` — the rest of
     the content. **These are the blocks to edit** if specifics change.
 - `manifest.webmanifest` / `sw.js` / `robajobbob-icon.png` — makes it an installable,
@@ -135,12 +145,16 @@ Open the **You** tab to set his name, contact details, role, education, backgrou
 visa status, driving licence and certificates — everything saves to `localStorage`, so it's
 private to whoever opens it on that device. It also shows his real work history timeline, which
 is what the Apply tab's matching is built on. His birth date is already known and baked in
-(`DEFAULT_PROFILE.birthDate`), so there's no birth-date field to fill in — it just powers the
-age-cap maths quietly in the background. The **Travel Route** tab lets the visa month-lengths,
-country order and travel start date be edited directly, with the whole 5-year timeline
-recalculating live, a computed hard cut-off (the exact date his age locks him out of lodging a
-fresh application), concrete guidance on making the most of each country's scheme before then,
-and an age-cap warning on any leg that would land him past a typical visa age limit.
+(`DEFAULT_PROFILE.birthDate`), so there's no birth-date field to fill in — the Age shown is
+computed live from it instead of a manually-typed value that would silently go stale. The
+**Travel Route** tab lets the visa month-lengths, country order and travel start date be edited
+directly, with the whole 5-year timeline recalculating live, a computed hard cut-off (the exact
+date his age locks him out of lodging a fresh application), concrete guidance on making the most
+of each country's scheme before then, an age-cap warning on any leg that would land him past a
+typical visa age limit, and what the practical side of coming home looks like once the trip ends.
+The **Kit** tab's Experience Log is the other ongoing one: a dated, optionally career-path-tagged
+record of everything worked, anywhere — the evidence the Apply tab and any future CV will actually
+draw on once there are years of it, not a one-off snapshot.
 
 ## A note on the visa numbers
 

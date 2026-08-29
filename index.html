@@ -518,7 +518,6 @@ const DEFAULT_PROFILE = {
   nationalityNote: "UK citizen",
   visaStatus: "Hasn't applied for any working-holiday visa yet",
   drivingLicence: true,
-  ageBand: "32 (born 23 August 1994)",
   birthDate: "1994-08-23",
   savingsNote: "Savings already in place",
   certsNote: "Treat as none confirmed yet (possibly an old DBS check, but don't assume it's current) — see the Apply tab for fast, some-free options to close common gaps.",
@@ -708,7 +707,7 @@ const ROADMAP_PHASE_CONTENT = {
   canada: { title: "Canada — mountains & cities", focus: "A resort town (Whistler/Banff) for ski season, then a city stint (Vancouver/Toronto) trying event crew, flight attendant applications, or hospitality management shifts.", careerLink: "Good spot to seriously test 'Aviation — Cabin Crew' since major airlines hub through Canadian cities.", monthsKey: "canada" },
 };
 const AUSTRALIA_EXT_PHASE = { country: "australia", title: "Australia — second (and maybe third) year", focus: "For a UK passport this needs no specified work at all — just re-apply. Push further into ski resort work, farm/harvest work, or a regional tourism operator.", careerLink: "Regional/adventure tourism work here is direct experience for 'Travel & Adventure Tourism Operations'.", monthsKey: "australia_ext", optional: true };
-const CONSOLIDATE_PHASE = { country: null, title: "Consolidate & decide", focus: "Use whatever time is left to either keep travelling on the strongest thread, or bring everything back into a real step up in the events/logistics/tourism career track.", careerLink: "The point to pick a lane from the Career Compass and start applying travel experience directly to it.", monthsKey: "consolidate" };
+const CONSOLIDATE_PHASE = { country: null, title: "Consolidate & decide", focus: "Use whatever time is left to either keep travelling on the strongest thread, or bring everything back into a real step up in the events/logistics/tourism career track.", careerLink: "The point to pick a lane from the widened Career Compass and start applying the whole Experience Log directly to it — see the section below on what that actually looks like.", monthsKey: "consolidate" };
 
 const CASUAL_JOBS = [
   { icon: "🍹", title: "Bar & Hospitality Work", blurb: "The easiest way to fund travel almost anywhere — flexible hours, social, and tips.", fit: "Not a first-time job for you — you've led the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more. Don't undersell that: aim straight for supervisor/duty-manager-track roles, not first-rung barback work.", howTo: "In Australia and NZ, walking in with a printed CV to bars in tourist/backpacker areas (Bondi, Surry Hills, Queenstown, Wanaka) still works and is often faster than applying online.", whereTo: "Australia: SEEK, Backpacker Job Board (backpackerjobboard.com.au), and the Sidekicker app — a gig-shift marketplace that's quick to onboard and a good way to start earning within days of landing. New Zealand: SEEK NZ, Backpacker Job Board NZ, BackpackerBoard.co.nz. Canada: Backpacker Job Board Canada, Job Bank Canada, plus direct walk-ins in Whistler/Vancouver/Toronto.", countries: ["australia", "newzealand", "canada"], visaAngle: "Standard casual work — counts toward general working-holiday hours, not 'specified work'.", certNote: "Australia: RSA certificate — same-day online courses exist for around AUD 25–40 (e.g. onlinersa.com.au, galaxytraining.com.au); some states want a short in-person top-up too, so check the state you land in. New Zealand: no personal certificate needed to pour drinks — only the LCQ (Licence Controller Qualification) if you later step up to running a shift as duty manager, which needs 6 months of NZ hospitality experience first — realistic given your bar background. Canada (BC/Whistler): Serving It Right certificate, ~CAD 40, valid 5 years, required for all servers and managers.", drivingHelps: false },
@@ -736,7 +735,7 @@ const TOOLKIT_CHECKLIST_TEMPLATE = [
   { id: "linkedin", label: "Set up or update a LinkedIn profile that matches the CV" },
   { id: "photo", label: "Sort a proper professional photo for LinkedIn/CV" },
   { id: "references", label: "Line up two references (e.g. Dave at TreebySound, a manager from Cheeky Clucker or Foot Asylum) and give them a heads-up" },
-  { id: "portfolio", label: "Start a simple log/portfolio of every event worked, anywhere" },
+  { id: "portfolio", label: "Add the first entry to your Experience Log below — start the habit early" },
   { id: "bank", label: "Set up a fee-free international bank card" },
   { id: "checkin", label: "Set a 6-monthly check-in with yourself: still on the right country/lane?" },
 ];
@@ -774,7 +773,7 @@ const K = {
   checklist: PFX + "checklist", notes: PFX + "notes", photo: PFX + "photo",
   palette: PFX + "palette", lowlight: PFX + "lowlight", contrast: PFX + "contrast",
   bright: PFX + "bright", usePrevious: PFX + "use-previous", layout: PFX + "layout",
-  applications: PFX + "applications",
+  applications: PFX + "applications", experience: PFX + "experience",
 };
 function storeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function storeSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
@@ -801,6 +800,8 @@ function savePhoto(d) { storeSet(K.photo, d); }
 function clearPhoto() { storeRemove(K.photo); }
 function loadApplications() { try { return JSON.parse(storeGet(K.applications) || "[]"); } catch { return []; } }
 function saveApplications(list) { storeSet(K.applications, JSON.stringify(list)); }
+function loadExperienceLog() { try { return JSON.parse(storeGet(K.experience) || "[]"); } catch { return []; } }
+function saveExperienceLog(list) { storeSet(K.experience, JSON.stringify(list)); }
 
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 function addMonths(d, m) { const r = new Date(d); r.setMonth(r.getMonth() + m); return r; }
@@ -1163,6 +1164,12 @@ function renderNav() {
   document.querySelectorAll(".navbtn, .sidenavbtn").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.tab)));
 }
 function switchTab(id) {
+  /* Home is a read-only dashboard fed by state that changes on every other
+     tab (checklist, saved applications, the experience log) — re-render it
+     fresh on every visit so its stats never go stale. Other tabs hold
+     unsaved draft state (a pasted job spec, an in-progress route edit) that
+     a blanket re-render would wipe, so they're left alone here. */
+  if (id === "home") renderHome();
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   document.querySelectorAll(".navbtn, .sidenavbtn").forEach(b => b.classList.remove("active"));
   document.getElementById(`view-${id}`).classList.add("active");
@@ -1182,6 +1189,7 @@ function renderHome() {
   const activeStatus = phaseStatus(activePhase.from, activePhase.to);
   const activeLabel = activePhase.country ? COUNTRY_META[activePhase.country].short : activePhase.title;
   const apps = loadApplications();
+  const log = loadExperienceLog();
   el.innerHTML = `
     <section class="hero">
       <div class="hero-eyebrow">Personal plan · updated for what you told us</div>
@@ -1191,6 +1199,7 @@ function renderHome() {
         <span class="hero-stat">✅ Kit ${kitPct}% ready</span>
         <span class="hero-stat">🗺️ ${activeStatus === "current" ? "Now" : "Next"}: ${esc(activeLabel)} · ${fmtDate(activePhase.from)}</span>
         ${apps.length ? `<span class="hero-stat">📨 ${apps.length} application${apps.length === 1 ? "" : "s"} saved</span>` : ""}
+        ${log.length ? `<span class="hero-stat">📒 ${log.length} logged</span>` : ""}
       </div>
     </section>
 
@@ -1486,6 +1495,25 @@ function renderRoadmap() {
             </div>
           </div>`;
         }).join("")}
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>The other side: what happens after the trip</h2></div>
+      <p class="page-lede" style="margin-bottom:14px;">Worth planning for now, not figuring out in month 58. Whichever way the "Consolidate & decide" leg above actually goes — another year travelling, a role picked up locally, or heading home — none of this app stops being useful the day the trip ends.</p>
+      <div class="stack">
+        <div class="card">
+          <h3 style="font-size:0.98rem; margin-bottom:6px;">🧳 Turning five years abroad into the next real application</h3>
+          <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">This is what the <strong>Kit</strong> tab's Experience Log is actually for: every entry logged along the way becomes real, dated evidence — not a vague "went travelling" line on a CV. When it's time to apply for the next thing, whether that's still abroad or back in the UK, paste the job spec into the <strong>Apply</strong> tab exactly as before; the pitch and CV bullets it drafts will just have five more years of real material to draw on than they do today.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.98rem; margin-bottom:6px;">💷 Your UK State Pension record doesn't have to pause</h3>
+          <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">Time spent working abroad doesn't automatically count toward the 35 qualifying years needed for a full UK State Pension. Since April 2026 the cheaper Class 2 voluntary National Insurance rate for people abroad has ended — Class 3 is still available (given at least 10 years of prior UK NI contributions, which the work history here already clears), just pricier. Worth checking your NI record on your <a href="https://www.gov.uk/check-national-insurance-record" target="_blank" rel="noopener">Personal Tax Account</a> before you leave, and deciding then whether it's worth paying voluntarily while away.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.98rem; margin-bottom:6px;">🛬 Coming home is a tax event too, not just leaving</h3>
+          <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">The P85 on the Kit checklist sorts things on the way out — the same UK Statutory Residence Test applies in reverse on the way back, and determines when UK tax residency (and any UK tax due) starts again. Not urgent to think about now, but worth a quick check with HMRC's guidance or an accountant a few months before any return date actually gets set.</p>
+        </div>
       </div>
     </section>
   `;
@@ -1808,11 +1836,19 @@ function renderApply() {
 }
 
 /* ===================================== TOOLKIT ===================================== */
+const LOG_PLACES = [
+  { key: "australia", flag: "🇦🇺", short: "Australia" },
+  { key: "newzealand", flag: "🇳🇿", short: "New Zealand" },
+  { key: "canada", flag: "🇨🇦", short: "Canada" },
+  { key: "uk", flag: "🇬🇧", short: "UK" },
+  { key: "other", flag: "🌍", short: "Other" },
+];
 function renderToolkit() {
   const el = document.getElementById("view-toolkit");
   const checklist = loadCheck();
   const done = TOOLKIT_CHECKLIST_TEMPLATE.filter(i => checklist[i.id]).length;
   const pct = Math.round((done / TOOLKIT_CHECKLIST_TEMPLATE.length) * 100);
+  const log = loadExperienceLog();
 
   el.innerHTML = `
     <div class="eyebrow">${ICONS.check} Prep</div>
@@ -1834,6 +1870,45 @@ function renderToolkit() {
     </div>
 
     <section>
+      <div class="section-head"><h2>Experience Log</h2></div>
+      <p class="page-lede" style="margin-bottom:12px;">The one thing worth keeping up throughout the whole five years: a dated record of everything worked, wherever it happens. This is what turns "went travelling for five years" into a CV with real evidence behind it — for the next casual job, a long-term career move, or both. Tag one to a Career Compass path where it fits.</p>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="field-grid two">
+          <div class="field"><label for="log-date">Date</label><input type="date" id="log-date" value="${new Date().toISOString().slice(0, 10)}" /></div>
+          <div class="field">
+            <label for="log-country">Where</label>
+            <select id="log-country">${LOG_PLACES.map(p => `<option value="${p.key}">${p.flag} ${p.short}</option>`).join("")}</select>
+          </div>
+        </div>
+        <div class="field"><label for="log-title">What you did</label><input type="text" id="log-title" placeholder="e.g. Bar shift lead, Bondi Beachside Hotel" /></div>
+        <div class="field"><label for="log-detail">Detail <span class="hint">(optional)</span></label><textarea id="log-detail" rows="2" placeholder="Anything worth remembering for a CV bullet later"></textarea></div>
+        <div class="field">
+          <label for="log-path">Feeds which Career Compass path? <span class="hint">(optional)</span></label>
+          <select id="log-path"><option value="">— not tagged —</option>${CAREER_PATHS.map(p => `<option value="${esc(p.title)}">${p.icon} ${esc(p.title)}</option>`).join("")}</select>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="log-add">${ICONS.check} Add to the log</button>
+        </div>
+      </div>
+      ${log.length ? `
+      <p class="page-lede" style="margin-bottom:10px;">${log.length} entr${log.length === 1 ? "y" : "ies"} logged so far.</p>
+      <div class="stack" id="log-list">
+        ${log.map((e, i) => {
+          const place = LOG_PLACES.find(p => p.key === e.country) || LOG_PLACES[4];
+          return `
+          <div class="card" style="display:flex; gap:12px; align-items:flex-start;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight:650; font-size:0.92rem;">${place.flag} ${esc(e.title)}</div>
+              <div style="font-size:0.78rem; color:var(--ink-faint); margin:2px 0 4px;">${new Date(e.date).toLocaleDateString()}${e.careerPath ? ` · feeds ${esc(e.careerPath)}` : ""}</div>
+              ${e.detail ? `<p style="font-size:0.85rem; color:var(--ink-soft); margin:0;">${esc(e.detail)}</p>` : ""}
+            </div>
+            <button class="btn-mini" data-log-remove="${i}" title="Delete">✕</button>
+          </div>`;
+        }).join("")}
+      </div>` : `<p class="page-lede">Nothing logged yet — the first entry is the hardest, add it whenever the next shift or show happens.</p>`}
+    </section>
+
+    <section>
       <div class="section-head"><h2>Notes to yourself</h2></div>
       <div class="card notes-area">
         <textarea id="notes-area" placeholder="Thoughts, ideas, things to look into...">${esc(loadNotes())}</textarea>
@@ -1848,6 +1923,33 @@ function renderToolkit() {
   });
   let t = null;
   document.getElementById("notes-area").addEventListener("input", e => { clearTimeout(t); t = setTimeout(() => saveNotes(e.target.value), 400); });
+
+  document.getElementById("log-add").addEventListener("click", () => {
+    const title = document.getElementById("log-title").value.trim();
+    if (!title) { toast("Give it a title first"); return; }
+    const entry = {
+      date: document.getElementById("log-date").value || new Date().toISOString().slice(0, 10),
+      country: document.getElementById("log-country").value,
+      title,
+      detail: document.getElementById("log-detail").value.trim(),
+      careerPath: document.getElementById("log-path").value,
+    };
+    const list = loadExperienceLog();
+    list.unshift(entry);
+    list.sort((a, b) => b.date.localeCompare(a.date));
+    saveExperienceLog(list);
+    toast("Logged");
+    renderToolkit();
+  });
+  const logList = document.getElementById("log-list");
+  if (logList) {
+    logList.querySelectorAll("[data-log-remove]").forEach(b => b.addEventListener("click", () => {
+      const list = loadExperienceLog();
+      list.splice(parseInt(b.dataset.logRemove, 10), 1);
+      saveExperienceLog(list);
+      renderToolkit();
+    }));
+  }
 }
 
 /* ===================================== PROFILE ===================================== */
@@ -1883,7 +1985,7 @@ function renderProfile() {
         <div class="field"><label for="p-background">Other background &amp; experience</label><textarea id="p-background" rows="3">${esc(profile.background || "")}</textarea></div>
         <div class="field"><label for="p-nationality">Nationality</label><input type="text" id="p-nationality" value="${esc(profile.nationalityNote)}" /></div>
         <div class="field"><label for="p-visa">Visa status</label><input type="text" id="p-visa" value="${esc(profile.visaStatus)}" /></div>
-        <div class="field"><label for="p-ageband">Age</label><input type="text" id="p-ageband" value="${esc(profile.ageBand)}" /></div>
+        <div class="field"><label>Age</label><p style="margin:0; padding:10px 12px; font-size:0.94rem; color:var(--ink-soft);">${profile.birthDate ? `${currentAge()} (born ${fmtFullDate(new Date(profile.birthDate))})` : "Not set"} <span class="hint">— computed automatically, always current</span></p></div>
         <div class="field"><label for="p-savings">Savings note</label><input type="text" id="p-savings" value="${esc(profile.savingsNote)}" /></div>
         <div class="field"><label for="p-certs">Certificates / quals</label><input type="text" id="p-certs" value="${esc(profile.certsNote)}" /></div>
         <div class="field">
@@ -1947,7 +2049,6 @@ function renderProfile() {
       background: document.getElementById("p-background").value.trim(),
       nationalityNote: document.getElementById("p-nationality").value.trim() || DEFAULT_PROFILE.nationalityNote,
       visaStatus: document.getElementById("p-visa").value.trim() || DEFAULT_PROFILE.visaStatus,
-      ageBand: document.getElementById("p-ageband").value.trim() || DEFAULT_PROFILE.ageBand,
       savingsNote: document.getElementById("p-savings").value.trim() || DEFAULT_PROFILE.savingsNote,
       certsNote: document.getElementById("p-certs").value.trim() || DEFAULT_PROFILE.certsNote,
       drivingLicence: document.getElementById("p-driving").value === "1",
