@@ -640,6 +640,34 @@ const JOB_SEARCH_PLATFORMS = {
   canada: { label: "Canada", flag: "🇨🇦", items: ["Indeed.ca", "Job Bank Canada", "LinkedIn"] },
 };
 
+/* A real, worked example — seeded into Saved applications only on a genuine
+   first-ever open (see loadApplications below), so the Apply tab shows a
+   real result instead of an empty state the first time it's opened. Once
+   deleted it never comes back, the same as any other saved application. */
+const EXAMPLE_APPLICATION = {
+  label: "Example: Artist Management Assistant, Crisp Music",
+  date: "2026-08-29T00:00:00.000Z",
+  matchedCount: 5,
+  gapCount: 0,
+  status: "not-sent",
+  isExample: true,
+  text: `Artist Management Assistant — Crisp Music
+
+Crisp Music is looking for an organised, proactive and ambitious artist management assistant to support the day-to-day management of a roster of internationally touring electronic artists.
+
+Key Responsibilities:
+- Working directly alongside the artist managers, you'll play a central role assisting the coordination of all aspects of an artist's career, from shows and touring logistics to release administration, diary management and communication with global teams
+- Acting as a key point of contact between artists and their wider teams, including agents, promoters, labels, publishers, lawyers, publicists and brand partners, and managing diaries, schedules and itineraries across multiple international time zones
+- Booking and coordinating travel, accommodation, visas and ground transport for touring artists
+- Working with relevant advancing teams to help coordinate shows and event logistics
+- Managing artist expenses, invoices and general administration
+- Coordinating meetings, sessions, rehearsals and press commitments
+- Travelling with artists to selected shows, events or key industry moments when required
+
+Ideal Candidate Profile:
+This role is ideal for someone with previous experience in artist management who thrives in a fast-paced environment, has exceptional attention to detail and genuinely enjoys solving problems before they arise. A passion for electronic music is essential, alongside a calm, professional approach and the confidence to communicate with agents, promoters, labels and artists across multiple time zones.`,
+};
+
 /* Common job-spec asks that aren't in the evidence bank — flagged rather
    than silently missed, each with a real, named next step. */
 const GAP_SUGGESTIONS = [
@@ -798,7 +826,11 @@ function saveNotes(t) { storeSet(K.notes, t); }
 function loadPhoto() { return storeGet(K.photo) || ""; }
 function savePhoto(d) { storeSet(K.photo, d); }
 function clearPhoto() { storeRemove(K.photo); }
-function loadApplications() { try { return JSON.parse(storeGet(K.applications) || "[]"); } catch { return []; } }
+function loadApplications() {
+  const raw = storeGet(K.applications);
+  if (raw === null) return [EXAMPLE_APPLICATION];
+  try { return JSON.parse(raw || "[]"); } catch { return [EXAMPLE_APPLICATION]; }
+}
 function saveApplications(list) { storeSet(K.applications, JSON.stringify(list)); }
 function loadExperienceLog() { try { return JSON.parse(storeGet(K.experience) || "[]"); } catch { return []; } }
 function saveExperienceLog(list) { storeSet(K.experience, JSON.stringify(list)); }
@@ -1802,7 +1834,7 @@ function renderApply() {
     historyEl.innerHTML = saved.map((a, i) => `
       <div class="card" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
         <div style="flex:1; min-width:120px;">
-          <div style="font-weight:650; font-size:0.92rem;">${esc(a.label)}</div>
+          <div style="font-weight:650; font-size:0.92rem;">${esc(a.label)}${a.isExample ? ` <span class="status-chip not-sent" style="text-transform:none; font-weight:600;">Example — delete any time</span>` : ""}</div>
           <div style="font-size:0.78rem; color:var(--ink-faint);">${new Date(a.date).toLocaleDateString()} · ${a.matchedCount} matched, ${a.gapCount} to address</div>
         </div>
         <span class="status-chip ${a.status || "not-sent"}">${esc((APPLICATION_STATUSES.find(s => s.key === (a.status || "not-sent")) || APPLICATION_STATUSES[0]).label)}</span>

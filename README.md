@@ -110,7 +110,10 @@ renders:
   well, not just a pitch.
 - **Saved applications**, each tracked through an actual status (not sent / applied / interview
   arranged / offer / rejected / withdrawn) with a live summary count, so it works as a lightweight
-  job-search tracker, not just a pitch-generator history.
+  job-search tracker, not just a pitch-generator history. A first-ever open seeds one real worked
+  example (`EXAMPLE_APPLICATION`) — an actual Artist Management Assistant listing from Crisp
+  Music, run through the tool for real — so the tab shows a genuine result immediately instead of
+  an empty state; delete it any time and it never comes back.
 
 A "Before sending anything" card covers the things that help every application regardless of this
 tool: a LinkedIn profile matching the CV, a proper professional photo for LinkedIn/CV specifically,
