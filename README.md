@@ -97,8 +97,8 @@ whole words only, so they don't false-positive inside words like "available" or 
 renders:
 
 - **A fit-strength line** up top — strong / decent / a bit of a stretch / no match — based on how
-  many of the 8 evidence areas actually matched, so it's obvious at a glance whether an ad is
-  worth the effort before reading further.
+  many of the evidence areas in `EVIDENCE_BANK` actually matched, so it's obvious at a glance
+  whether an ad is worth the effort before reading further.
 - **What matches** — which parts of his real history line up, sorted by how strongly each one
   matched, each traceable back to a named employer (TreebySound, Cheeky Clucker, Foot Asylum,
   Tesco, Open Room Records, Sleeping Dog Promotions, Bang Bang Merch, Madway Brewery).
