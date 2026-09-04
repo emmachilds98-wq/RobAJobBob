@@ -586,7 +586,7 @@ const EVIDENCE_BANK = [
   },
   {
     id: "marketing",
-    keywords: ["marketing", "social media", "digital marketing", "campaign", "brand", "content", "advertising", "market analysis", "competitor", "networking", "negotiation", "pr ", "public relations"],
+    keywords: ["marketing", "social media", "digital marketing", "campaign", "brand", "content", "advertising", "market analysis", "competitor", "networking", "negotiation", "pr", "public relations"],
     headline: "Marketing & promotions experience across four companies",
     detail: "Marketing Assistant at Bang Bang Merch, marketing/promotions at Madway Brewery, and press/promotion work at Open Room Records and Sleeping Dog Promotions.",
     pitch: "I've got hands-on marketing and promotions experience across several companies — Bang Bang Merch, Madway Brewery, Open Room Records and Sleeping Dog Promotions.",
@@ -1719,6 +1719,16 @@ function renderApplyResults(container, text) {
           <div class="callout ${g.free ? "teal" : "mustard"}">
             ${g.free ? ICONS.info : ICONS.flag}
             <div><h3>${esc(g.label)}${g.free ? " — free" : ""}</h3><p>${esc(g.advice)}</p></div>
+          </div>`).join("")}
+      </div>` : ""}
+
+    ${covered.length ? `
+      <div class="section-head" style="margin-top:24px;"><h2>Already covered</h2></div>
+      <div class="stack">
+        ${covered.map(g => `
+          <div class="callout teal">
+            ${ICONS.check}
+            <div><h3>${esc(g.label)}</h3><p>${esc(g.advice)}</p></div>
           </div>`).join("")}
       </div>` : ""}
 

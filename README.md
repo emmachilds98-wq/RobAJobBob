@@ -112,6 +112,9 @@ renders:
   Tesco, Open Room Records, Sleeping Dog Promotions, Bang Bang Merch, Madway Brewery).
 - **Worth addressing** — job-spec asks with no match (first aid, food hygiene, RSA, etc.), each
   flagged free or paid with a real, current way to close the gap.
+- **Already covered** — the flip side of that: job-spec asks he already has sorted (a degree, a
+  driving licence) get their own explicit reassurance instead of just silently not appearing
+  anywhere.
 - **A draft pitch and CV bullets**, generated from the matched evidence, with one-tap copy.
 - **If it gets to interview** — collapsible STAR-format prompts (Situation/Task/Action/Result)
   built from the same matched evidence, so there's real prep material the moment an ad matches
