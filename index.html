@@ -222,6 +222,14 @@
   .stale-note { display: flex; gap: 8px; align-items: flex-start; font-size: 0.83rem; background: var(--mustard-tint); color: var(--mustard-ink); border: 1px solid var(--mustard); border-radius: var(--radius-s); padding: 10px 12px; margin: 10px 0 0; }
   .stale-note .icon { width: 15px; height: 15px; margin-top: 2px; flex: none; }
 
+  /* How reachable a past employer realistically is — live / recent / dormant.
+     Dormant is deliberately not styled as a warning: it's the normal state of
+     a contact nobody has messaged in four years, not a failure. */
+  .warmth { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .warmth.live { background: var(--teal-tint); color: var(--teal-ink); }
+  .warmth.recent { background: var(--sky-tint); color: var(--sky-ink); }
+  .warmth.dormant { background: var(--paper-sunk); color: var(--ink-faint); }
+
   .src-chip { display: inline-block; vertical-align: middle; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.02em; padding: 2px 8px; border-radius: 999px; background: var(--teal-tint); color: var(--teal-ink); border: 1px solid var(--teal); margin-left: 4px; }
 
   .age-note { display: flex; gap: 8px; font-size: 0.82rem; background: var(--sky-tint); color: var(--sky-ink); border-radius: var(--radius-s); padding: 9px 12px; margin-top: 8px; }
@@ -487,6 +495,7 @@
       <section id="view-roadmap" class="view"></section>
       <section id="view-jobs" class="view"></section>
       <section id="view-apply" class="view"></section>
+      <section id="view-people" class="view"></section>
       <section id="view-toolkit" class="view"></section>
       <section id="view-profile" class="view"></section>
       <p class="footnote">Graciously made by Emma for Rob — made for Rob, so he can finally do what he said he would. Not official immigration or career advice. Verify visa details on the official sites before booking anything.</p>
@@ -521,6 +530,7 @@ const ICONS = {
   send: '<svg class="icon" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7.5 3L14 21l7-18Z"/><path d="M10.5 13.5 21 3"/></svg>',
   sparkle: '<svg class="icon" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/></svg>',
   copy: '<svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+  people: '<svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 19.5c1.2-3.4 4-4.8 6.5-4.8s5.3 1.4 6.5 4.8"/><path d="M16 5.4a3.2 3.2 0 0 1 0 6.1M18 14.9c2 .5 3.3 1.9 4 4.1"/></svg>',
   linkedin: '<svg class="icon" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M7.5 10v6.5M7.5 7.2v.1M11.5 16.5V10M11.5 12.7c0-1.5 1-2.7 2.5-2.7s2.5 1.2 2.5 2.7v3.8" fill="none"/></svg>',
 };
 
@@ -739,7 +749,7 @@ const SKILLS_BRIDGE = [
 const CAREER_PATHS = [
   { icon: "🎪", category: "music", title: "Event Production & Operations Manager", tagline: "The direct next step up from where you already stand.", why: "You're already doing the on-the-ground work — this is the same world, just with more planning, budget and people responsibility layered on top. Between the BIMM degree, the label/promotions roles at Open Room Records and Sleeping Dog Promotions, and effectively running a bar solo at Cheeky Clucker, the operational and industry grounding is already there — this path is about formalising it, not starting it.", from: "Currently: hands-on support role at TreebySound, plus a BIMM degree and hands-on solo leadership from Cheeky Clucker.", steps: ["Start owning one small event end-to-end (budget, run sheet, crew) as a stretch project at TreebySound", "Learn the commercial side: quoting, supplier costs, client comms", "Pick up a recognised events/production short course or certificate", "Build a portfolio of events you've run or co-run", "Aim for Production Manager / Operations Manager title within 2–4 years"], timeframe: "2–4 years", portable: "Event production is one of the most transferable career tracks going — every city in Australia, NZ and Canada runs venues and festivals that need crew and coordinators, so this can genuinely be built up across all three countries, then walked straight back into a UK production role with a fatter portfolio than most people your age." },
   { icon: "🎤", category: "music", title: "Live Events, Festivals & Touring Production", tagline: "Bigger stages, bigger crews, more travel built into the job itself.", why: "This is arguably the closest fit on paper: a completed Music Management degree from BIMM plus real promotions/label experience is formal and practical grounding in exactly this industry — not just adjacent skills. Add the sound/event exposure at TreebySound and it scales up naturally to festivals, tours and large-scale production, which also travels a lot.", from: "Currently: sound & event setup exposure through TreebySound, plus a BIMM Music Management degree and real promotions experience.", steps: ["Get on the crew list for a few festivals or larger shows as casual/freelance crew — in Australia, Sidekicker, Event-Crew Australia and ESA Group are real places to register", "Specialise in one lane first — stage management, technical production or logistics", "Network hard — this industry runs on who's reliable and who you know", "Keep a running portfolio of every show worked, wherever in the world it happens", "Long-term: touring production manager or festival site manager"], timeframe: "3–5 years", portable: "Festival and touring circuits exist in every country on the route — Melbourne, Auckland/Wellington and Toronto all have their own serious festival seasons — and crew experience from any of them reads as international credibility back in the UK, not a gap year." },
-  { icon: "🎙️", category: "music", title: "Artist Management, Label & Music Promotions", tagline: "Not a stretch — literally what you already did.", why: "This isn't hypothetical: you were Head of Marketing & Assistant Label Manager at Open Room Records and Artist Manager & Promoter at Sleeping Dog Promotions, on top of the BIMM degree itself. It's paused, not abandoned — and the travel years are a natural excuse to widen the network before picking it back up seriously.", from: "Currently: real prior experience in label management, artist management and promotions.", steps: ["Keep in touch with contacts from Open Room Records and Sleeping Dog Promotions — this industry runs on relationships that don't need to go cold just because you're travelling", "Use the travel years to build a wider network — every city in NZ/AU/Canada has its own local labels, promoters and venues worth knowing", "Consider freelance artist promotion or social media/marketing work that can be done remotely, even while travelling", "Long-term: return to label/artist management, or use the broadened network to launch something independent"], timeframe: "Can restart any time — the experience doesn't expire", portable: "This is the one that works everywhere at once, including while you're not physically doing it: stay a member of the Music Managers Forum (musicmanagersforum.co.uk) and the Association of Independent Music (aim.org.uk) throughout the trip — both run online events, directories and member communities you can dip into from any country — so the UK network is still there, warmer than when you left, the day you're ready to pick this back up." },
+  { icon: "🎙️", category: "music", title: "Artist Management, Label & Music Promotions", tagline: "Not a stretch — literally what you already did.", why: "This isn't hypothetical: you were Head of Marketing & Assistant Label Manager at Open Room Records and Artist Manager & Promoter at Sleeping Dog Promotions, on top of the BIMM degree itself. It's paused, not abandoned. The honest catch is that the relationships are paused too — nothing from either role has been a live contact since around 2022 — so this path starts with reopening those before it starts with anything else, and the travel years are then the chance to build a wider network than you had the first time.", from: "Currently: real prior experience in label management, artist management and promotions.", steps: ["Reopen the Open Room Records and Sleeping Dog Promotions relationships before doing anything else — they've been quiet since about 2022, but a former colleague getting back in touch is an ordinary thing to receive, not an imposition (the People tab has who to start with and roughly what to say)", "Use the travel years to build a wider network — every city in NZ/AU/Canada has its own local labels, promoters and venues worth knowing", "Consider freelance artist promotion or social media/marketing work that can be done remotely, even while travelling", "Long-term: return to label/artist management, or use the broadened network to launch something independent"], timeframe: "Can restart any time — the experience doesn't expire", portable: "This is the one that works everywhere at once, including while you're not physically doing it: join the Music Managers Forum (musicmanagersforum.co.uk) and the Association of Independent Music (aim.org.uk) and stay in throughout the trip — both run online events, directories and member communities you can dip into from any country. Starting from a standing start that matters more, not less: it's how you arrive back in the UK with a network you didn't have when you left, rather than hoping four-year-old contacts remember you." },
   { icon: "🚚", category: "corporate", title: "Logistics & Supply Chain Coordinator", tagline: "Turns delivery-driving into a proper career track.", why: "Already planning routes, loading gear and hitting deadlines — that's the core of logistics coordination, and it's a stable career that exists everywhere.", from: "Currently: deliveries & equipment handling.", steps: ["Get familiar with basic inventory/warehouse software (even free tools)", "Look at a logistics or supply chain fundamentals course", "Target a coordinator role at a hire company, event supplier or freight business", "Build toward warehouse/ops manager or dispatch supervisor"], timeframe: "1–3 years", portable: "Logistics is about as portable as a career gets — warehouses, hire companies and freight operators exist in every city you'll pass through, and the skills map straight back onto UK logistics roles with zero retraining needed." },
   { icon: "🏛️", category: "travel", title: "Venue & Hospitality Management", tagline: "Run the building instead of the one-off event.", why: "You've already done a version of this, not just adjacent work — leading the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more, plus a supervisor stint at Foot Asylum before that. This path is a straightforward scale-up of something already proven twice over, with steadier, more local hours than touring once the travel years are done.", from: "Currently: events + general operations support at TreebySound, plus real solo bar leadership at Cheeky Clucker and retail supervision at Foot Asylum.", steps: ["Pick up shifts in a venue, bar or hospitality management setting", "Learn rostering, licensing basics and front-of-house operations", "Move into assistant venue manager, then venue/general manager"], timeframe: "2–5 years", portable: "Bars, restaurants and venues need duty managers everywhere — this is the steadiest possible income while travelling and it converts cleanly to a UK hospitality management role on return, no gap in the CV to explain." },
   { icon: "🧭", category: "travel", title: "Travel & Adventure Tourism Operations", tagline: "Turn the travel years into the actual career, not just a break from it.", why: "If the 5-year trip lights you up, this path takes everything learned doing excursions/tours and turns it into running tourism operations rather than just guiding them.", from: "Currently: interest in excursions, adventure & meeting people.", steps: ["Use travel years to work front-line in tours/excursions across NZ, AU & Canada — in Queenstown specifically, AJ Hackett Bungy and Skyline are real, well-regarded operators worth applying to directly", "Note what each operator does well and badly — this becomes instinct for running one", "Pick up a first-aid, guiding or tourism qualification relevant to the region", "Move into lead guide, then operations/booking coordinator for a tour company", "Long-term: operations manager or a small tour outfit of your own"], timeframe: "Runs alongside the travel plan", portable: "The honest trade-off on this one: it's brilliant while you're actually in NZ/AU/Canada, but UK adventure tourism is a much smaller market — so treat it as the strongest path to enjoy the trip itself, and lean on Event Production or Venue Management as the one that carries back to the UK afterwards." },
@@ -796,6 +806,106 @@ const CASUAL_JOBS = [
   { icon: "🍇", title: "Farm & Harvest Work", blurb: "Fruit picking, packing or general farm work — physical, seasonal.", fit: "Not the most social option, but reliable, and useful for nationalities that still need specified work for an AU 2nd year.", howTo: "If this ever becomes relevant, go through the official channel first, not a random hostel noticeboard — it's free, government-run, and the jobs on it are pre-verified as visa-eligible.", whereTo: "Workforce Australia's Harvest Trail (workforceaustralia.gov.au — search \"Harvest Trail\") is the official government job-matching site for exactly this. Backpacker Job Board's harvest trail page is a solid second source.", countries: ["australia"], visaAngle: "UK passport holders don't need this for a 2nd/3rd Australian year any more — it's optional for you, not required.", certNote: "", drivingHelps: true },
 ];
 
+/* ===================================== PEOPLE =====================================
+   The working assumption here is deliberately pessimistic and probably right:
+   nothing from Open Room Records, Sleeping Dog Promotions, Bang Bang Merch,
+   Madway Brewery, Foot Asylum or Tesco is a live relationship any more. Those
+   ended around 2022. What's actually live is TreebySound, because he works
+   there, and possibly Cheeky Clucker.
+
+   But "no network" and "a network nobody has touched in four years" are very
+   different starting points, and the app was previously wrong in both
+   directions — it assumed the contacts were warm, and the honest correction
+   is not to assume they're gone. Every name in EMPLOYMENT_HISTORY is a real
+   person who worked with him and would recognise him. That's dormant, not
+   dead, and reopening one is far cheaper than making a new one. */
+const CONTACT_TAGS = [
+  { key: "industry", label: "Industry", flag: "🎧" },
+  { key: "employer", label: "Employer / manager", flag: "🏢" },
+  { key: "recruiter", label: "Recruiter", flag: "🤝" },
+  { key: "traveller", label: "Met travelling", flag: "🌏" },
+  { key: "other", label: "Other", flag: "👤" },
+];
+/* A professional contact left alone for four months has gone quiet; left alone
+   for a year is a cold contact again. The nudge fires at the first, so it's a
+   prompt rather than a post-mortem. */
+const CONTACT_QUIET_DAYS = 120;
+
+/* Which past employers are worth treating as reachable, and how hard. Kept as
+   data because the honest answer differs per employer, and "message your old
+   contacts" as one instruction is exactly the useless advice this replaces. */
+const RECONNECT_TARGETS = [
+  { company: "TreebySound", who: "Dave", warmth: "live", note: "Current employer, so this one isn't networking, it's just asking. The single most valuable thing he can give you is a reference and an honest opinion on which of the Compass paths actually suits you — he's watched you work." },
+  { company: "Cheeky Clucker", who: "Whoever managed you", warmth: "recent", note: "Recent enough that someone there still remembers you, and hospitality turns over fast — so the useful move is getting a personal email or number for a specific manager now, while there's still someone in the building who knows your name." },
+  { company: "Open Room Records", who: "Whoever ran the label", warmth: "dormant", note: "The most valuable dormant contact you have: an actual label, and you were Head of Marketing and Assistant Label Manager, not an intern. Four years of silence feels enormous to you and is close to invisible to them." },
+  { company: "Sleeping Dog Promotions", who: "Whoever you promoted with", warmth: "dormant", note: "Promoters know other promoters, venues and bookers — one reopened relationship here is worth more than its own contact details. Small scene, long memories." },
+  { company: "Bang Bang Merch / Madway Brewery", who: "Whoever you reported to", warmth: "dormant", note: "Lower priority than the two above, but both are real marketing references and both are small enough that the person you worked for is probably still there." },
+  { company: "BIMM Brighton", who: "Course mates, not staff", warmth: "dormant", note: "The one most people forget. A 2022 Music Management cohort is now four years into the industry — they're not contacts to ask for favours, they're peers who are now inside labels, agencies and venues. Easiest possible reconnect, because catching up is the whole reason to message." },
+];
+
+const NETWORK_PLAYBOOK = [
+  {
+    icon: "💬",
+    title: "Reopening an old one beats making a new one",
+    body: "Four years of not speaking feels, from the inside, like the relationship is gone and getting in touch would be weird. From the other side it's an ordinary message from someone they remember. Nobody keeps a ledger of who owes whom a message. This is the cheapest network-building available to you and it's the one that feels hardest, which is why it's first.",
+    steps: [
+      "Find them on LinkedIn — that's what it's for, and a connection request from a former colleague needs no justification",
+      "Don't open with an ask. Open with the fact that you're getting back into it and wondered what they're up to now",
+      "Say what you're doing now, concretely — TreebySound, and that you're looking at going travelling — because a specific person is easier to help than a vague one",
+      "Ask nothing on the first message. If it goes well, the ask is the second conversation, not the first",
+      "Log them on this tab the moment you send it, whether or not they reply",
+    ],
+  },
+  {
+    icon: "✍️",
+    title: "The message, roughly",
+    body: "The reason most reconnects don't happen is not knowing what to type. So: “Hi [name] — it’s Rob, I worked with you at [company] back in 2021/22 doing [the thing]. Bit out of the blue, but I’ve been working at a live-audio and events company for a while now and I’m getting properly back into the events/music side, so I’m reconnecting with people I used to work with. Would be good to hear what you’re up to these days.” That’s it. No CV attached, no favour asked, no apology for the gap.",
+    steps: [],
+  },
+  {
+    icon: "🎪",
+    title: "Working next to people beats meeting them",
+    body: "For events and music specifically, the reliable way in as an outsider isn't an event where you introduce yourself — it's a shift. Crewing a festival puts you next to production managers, stage managers and promoters for three days, doing a job with them. That's a real relationship; a business card is not. This is also the one thing on this list you're already qualified for.",
+    steps: [
+      "Register with crewing agencies before you need the work — the same ones the Jobs tab names for Australia work the same way in the UK",
+      "Volunteer crew at a UK festival for one season before you go — Boomtown, which you already go to, runs volunteer crew",
+      "Every shift, get one name and one contact — that's the entire objective, on top of the pay",
+      "Log it here the same night, while you still remember which Sam it was",
+    ],
+  },
+  {
+    icon: "🏛️",
+    title: "Two organisations that will let you in the door",
+    body: "The Music Managers Forum (musicmanagersforum.co.uk) and the Association of Independent Music (aim.org.uk) both run member communities, directories and online events. Previously this app framed them as a way to stay connected — with no live industry contacts they're better understood as the way to get connected in the first place, because they're among the few places you can pay a modest fee and be in the room without knowing anyone already.",
+    steps: [
+      "Check both for the entry-level or associate tier — they're aimed at exactly your position",
+      "Go to online events specifically: lower stakes than a room, and you can do them from any country on the route",
+      "Use the member directories the way they're meant to be used — as a list of people it's normal to approach",
+    ],
+  },
+  {
+    icon: "🤝",
+    title: "Recruiters are a free network for the corporate paths",
+    body: "For the Project Coordinator, Procurement, Business Operations, Recruitment and Marketing Coordinator paths on the Compass, you don't have to build a network at all to start — recruitment consultants at Hays, Reed, Michael Page, Adecco and Randstad are paid to find people, will take a call from a stranger, and will tell you honestly what your CV is currently worth. That's market intelligence you can't get any other way, and it costs nothing.",
+    steps: [
+      "Register with two or three, not one — they see different roles",
+      "Ask directly what would make you a stronger candidate for the role you want; they will tell you",
+      "Log each consultant here with the date — they move agencies constantly, and the relationship is with the person, not the firm",
+    ],
+  },
+  {
+    icon: "🌏",
+    title: "The travel years are the network, if you write it down",
+    body: "Five years across three countries, mostly in hospitality and events, means meeting a very large number of people who work in the industries you're aiming at. The only difference between coming home with a network and coming home with a camera roll is whether the names got written down at the time. Nobody remembers, in year five, the name of the production manager from a festival in year two.",
+    steps: [
+      "One rule: anyone whose job you'd want, or who could hire you, gets logged that night",
+      "Get the thing you can actually reach them on later — a personal number, an Instagram, a LinkedIn — not the venue's email",
+      "Note where you met them, not just who they are; that's what makes a message years later land",
+      "Check this tab's quiet list every few months and send two messages. That's the whole maintenance cost",
+    ],
+  },
+];
+
 const TOOLKIT_CHECKLIST_TEMPLATE = [
   { id: "passport", label: "Check passport has 12+ months validity before each visa application" },
   { id: "visa-aus", label: "Apply for the Australia 417 working holiday visa" },
@@ -810,7 +920,9 @@ const TOOLKIT_CHECKLIST_TEMPLATE = [
   { id: "cv-corporate", label: "Build a second CV suited to corporate applications (project/procurement/ops/marketing roles)" },
   { id: "linkedin", label: "Set up or update a LinkedIn profile that matches the CV" },
   { id: "photo", label: "Sort a proper professional photo for LinkedIn/CV" },
-  { id: "references", label: "Line up two references (e.g. Dave at TreebySound, a manager from Cheeky Clucker or Foot Asylum) and give them a heads-up" },
+  { id: "references", label: "Ask Dave at TreebySound to be a referee — properly, not assumed" },
+  { id: "references-2", label: "Get a named manager's personal contact at Cheeky Clucker, before the people who remember you move on" },
+  { id: "reconnect", label: "Send the first three reconnect messages (see the People tab for who, and roughly what to say)" },
   { id: "portfolio", label: "Add the first entry to your Experience Log below — start the habit early" },
   { id: "bank", label: "Set up a fee-free international bank card" },
   { id: "checkin", label: "Set a 6-monthly check-in with yourself: still on the right country/lane?" },
@@ -850,6 +962,7 @@ const K = {
   palette: PFX + "palette", lowlight: PFX + "lowlight", contrast: PFX + "contrast",
   bright: PFX + "bright", usePrevious: PFX + "use-previous", layout: PFX + "layout",
   applications: PFX + "applications", experience: PFX + "experience", customEvidence: PFX + "custom-evidence",
+  contacts: PFX + "contacts",
 };
 function storeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function storeSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
@@ -888,6 +1001,12 @@ function saveExperienceLog(list) { storeSet(K.experience, JSON.stringify(list));
    staying fixed to what was known when this was built. */
 function loadCustomEvidence() { try { return JSON.parse(storeGet(K.customEvidence) || "[]"); } catch { return []; } }
 function saveCustomEvidence(list) { storeSet(K.customEvidence, JSON.stringify(list)); }
+/* People. Starting from a network of effectively one live contact, the thing
+   that decides whether five years abroad produces a network or a camera roll
+   is whether names got written down at the time — so this is a tool for
+   doing that, not a directory of people already known. */
+function loadContacts() { try { return JSON.parse(storeGet(K.contacts) || "[]"); } catch { return []; } }
+function saveContacts(list) { storeSet(K.contacts, JSON.stringify(list)); }
 
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 function addMonths(d, m) { const r = new Date(d); r.setMonth(r.getMonth() + m); return r; }
@@ -1307,6 +1426,7 @@ const TABS = [
   { key: "roadmap", label: "Route", icon: ICONS.route },
   { key: "jobs", label: "Jobs", icon: ICONS.ticket },
   { key: "apply", label: "Apply", icon: ICONS.send },
+  { key: "people", label: "People", icon: ICONS.people },
   { key: "toolkit", label: "Kit", icon: ICONS.check },
   { key: "profile", label: "You", icon: ICONS.user },
 ];
@@ -1362,6 +1482,9 @@ function renderHome() {
      one thing on this dashboard that's actually asking for something back. */
   const todayKey = new Date().toISOString().slice(0, 10);
   const dueApps = apps.filter(a => a.nextAction && a.nextAction <= todayKey && !["rejected", "withdrawn", "offer"].includes(a.status || "not-sent"));
+  const contacts = loadContacts();
+  const quietContacts = contacts.filter(contactIsQuiet);
+  const refereeCount = contacts.filter(c => c.isReferee).length;
   el.innerHTML = `
     <section class="hero">
       <div class="hero-eyebrow">Personal plan · updated for what you told us</div>
@@ -1373,6 +1496,7 @@ function renderHome() {
         ${apps.length ? `<span class="hero-stat">📨 ${apps.length} application${apps.length === 1 ? "" : "s"} saved</span>` : ""}
         ${log.length ? `<span class="hero-stat">📒 ${log.length} logged</span>` : ""}
         ${dueApps.length ? `<span class="hero-stat">⏰ ${dueApps.length} follow-up${dueApps.length === 1 ? "" : "s"} due</span>` : ""}
+        ${contacts.length ? `<span class="hero-stat">👥 ${contacts.length} contact${contacts.length === 1 ? "" : "s"}${refereeCount ? ` · ${refereeCount} referee${refereeCount === 1 ? "" : "s"}` : ""}</span>` : ""}
       </div>
     </section>
 
@@ -1385,6 +1509,17 @@ function renderHome() {
         </div>
       </div>
     </section>
+
+    ${!refereeCount ? `
+    <section>
+      <div class="callout mustard">
+        ${ICONS.people}
+        <div>
+          <h3>No referees lined up yet</h3>
+          <p>The jobs that ended around 2022 aren't live contacts any more, so references are the thing most likely to catch you out — after an interview has already gone well. Dave at TreebySound is the obvious first ask, and Cheeky Clucker is worth pinning down while people who remember you are still there. The <strong>People</strong> tab has the rest.</p>
+        </div>
+      </div>
+    </section>` : ""}
 
     ${dueApps.length ? `
     <section>
@@ -1404,6 +1539,7 @@ function renderHome() {
         <button class="nav-card" data-goto="roadmap">${ICONS.route}<strong>Travel Route</strong><span>5 years, visa-checked</span></button>
         <button class="nav-card" data-goto="jobs">${ICONS.ticket}<strong>Casual Jobs</strong><span>What funds the trip</span></button>
         <button class="nav-card" data-goto="apply">${ICONS.send}<strong>Apply</strong><span>${apps.length ? `${apps.length} application${apps.length === 1 ? "" : "s"} tracked` : "Match a job spec"}</span></button>
+        <button class="nav-card" data-goto="people">${ICONS.people}<strong>People</strong><span>${contacts.length ? `${contacts.length} logged${quietContacts.length ? `, ${quietContacts.length} gone quiet` : ""}` : "Build a network from zero"}</span></button>
         <button class="nav-card" data-goto="toolkit">${ICONS.check}<strong>Prep Kit</strong><span>Checklist, log &amp; notes</span></button>
       </div>
     </section>
@@ -1688,8 +1824,8 @@ function renderRoadmap() {
       <div class="callout sky" style="margin-top:14px;">
         ${ICONS.linkedin}
         <div>
-          <h3>Staying connected to the UK music industry while you're away</h3>
-          <p>The Artist Management/Label path doesn't need to go cold for five years. The Music Managers Forum (<strong>musicmanagersforum.co.uk</strong>) and the Association of Independent Music (<strong>aim.org.uk</strong>) both run member communities, directories and online events you can dip into from anywhere — worth keeping a membership or at least following both throughout the trip, so reconnecting with Open Room Records- and Sleeping Dog Promotions-style contacts on return is a warm re-entry, not a cold restart.</p>
+          <h3>Building a UK music-industry network while you're away</h3>
+          <p>Worth being straight about the starting point: the Open Room Records and Sleeping Dog Promotions relationships haven't been live since around 2022, so there isn't a warm network sitting in the UK waiting for you to come back to it. That's fixable, and five years is a long time to fix it in. The Music Managers Forum (<strong>musicmanagersforum.co.uk</strong>) and the Association of Independent Music (<strong>aim.org.uk</strong>) both run member communities, directories and online events you can join from any country on this route — so the UK industry connection gets <em>built</em> across the trip rather than decaying across it. The <strong>People</strong> tab is where to start and where to keep track.</p>
         </div>
       </div>
     </section>
@@ -2039,9 +2175,23 @@ function renderApply() {
       ${ICONS.linkedin}
       <div>
         <h3>Before sending anything</h3>
-        <p>A few things that help every application, not just this tool: a <strong>LinkedIn profile</strong> that matches the CV (worth having before applying anywhere, especially abroad where employers check it); a proper <strong>professional photo</strong> for LinkedIn/CV specifically — separate from any personal photo in this app; and two <strong>references lined up and warned in advance</strong> — Dave at TreebySound plus a manager from Cheeky Clucker or Foot Asylum are the obvious pair.</p>
+        <p>A few things that help every application, not just this tool: a <strong>LinkedIn profile</strong> that matches the CV (worth having before applying anywhere, especially abroad where employers check it) and a proper <strong>professional photo</strong> for LinkedIn/CV specifically — separate from any personal photo in this app. Track who you know, and who'd vouch for you, on the <strong>People</strong> tab.</p>
       </div>
     </div>
+
+    <section>
+      <div class="section-head"><h2>References, honestly</h2></div>
+      <div class="card">
+        <p style="font-size:0.87rem; color:var(--ink-soft); margin:0 0 10px;">Most employers ask for two, and they ask <em>after</em> the interview has gone well — which is the worst possible moment to discover you can only produce one. Assume the roles that ended around 2022 aren't reachable and work from there:</p>
+        <ul style="margin:0 0 10px; padding-left:18px; font-size:0.87rem; color:var(--ink-soft);">
+          <li><strong>Dave at TreebySound is the strong one</strong>, and a current employer is the best kind of referee there is — recent, relevant, and able to speak to how you actually work rather than how you worked four years ago. Ask him properly, now, rather than listing him and hoping.</li>
+          <li><strong>Cheeky Clucker is the realistic second</strong>, and it's time-sensitive: hospitality turns over fast, so the manager who remembers you won't be there forever. Get a personal email or number for a named person while someone in that building still knows you.</li>
+          <li><strong>If a second employer reference genuinely isn't available</strong>, say so early rather than letting it surface at offer stage. Most employers will accept a character or professional reference instead — a tutor from BIMM, a client, someone you crewed for — and plenty only need one real referee plus employment verification, which is just HR confirming dates and doesn't need anyone to remember you at all.</li>
+          <li><strong>Do this before you leave the country.</strong> Getting a referee's personal contact details is a five-minute conversation while you're still in Kent, and a genuinely hard problem from Australia three years later once the work email has bounced.</li>
+        </ul>
+        <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">Mark anyone who's agreed as a referee on the <strong>People</strong> tab and it'll track how many you've actually got lined up.</p>
+      </div>
+    </section>
 
     <section>
       <div class="section-head"><h2>Where to actually look</h2></div>
@@ -2233,6 +2383,217 @@ function renderApply() {
       saveApplications(list);
       renderHome();
       toast(input.value ? "Follow-up set" : "Follow-up cleared");
+    }));
+  }
+}
+
+/* ===================================== PEOPLE ===================================== */
+/* Days since a contact was last spoken to, or since they were added if never. */
+function contactQuietDays(c) {
+  const from = c.lastContacted || c.added;
+  if (!from) return null;
+  const d = new Date(from);
+  if (isNaN(d.getTime())) return null;
+  return Math.floor((new Date() - d) / (1000 * 60 * 60 * 24));
+}
+function contactIsQuiet(c) {
+  const days = contactQuietDays(c);
+  return days !== null && days >= CONTACT_QUIET_DAYS;
+}
+let peopleEditIndex = null;
+
+function renderPeople() {
+  const el = document.getElementById("view-people");
+  const contacts = loadContacts();
+  const quiet = contacts.filter(contactIsQuiet);
+  const referees = contacts.filter(c => c.isReferee);
+  const editing = peopleEditIndex !== null ? contacts[peopleEditIndex] : null;
+  if (peopleEditIndex !== null && !editing) peopleEditIndex = null;
+
+  el.innerHTML = `
+    <div class="eyebrow">${ICONS.people} Contacts</div>
+    <h1 class="page-title">People</h1>
+    <p class="page-lede">Starting close to zero, and that's worth being straight about: the roles at Open Room Records, Sleeping Dog Promotions, Bang Bang Merch, Madway Brewery, Foot Asylum and Tesco all ended around 2022, and none of them is a live relationship now. What you actually have is Dave at TreebySound, possibly someone at Cheeky Clucker, and a list of real people who worked with you and would still recognise your name. That's a dormant network, not no network — and reopening one of those is far less work than making a new one from scratch.</p>
+
+    <div class="callout ${referees.length >= 2 ? "teal" : "mustard"}" style="margin-bottom:22px;">
+      ${referees.length >= 2 ? ICONS.check : ICONS.flag}
+      <div>
+        <h3>${referees.length >= 2 ? "References covered" : referees.length === 1 ? "One referee lined up, most employers want two" : "No referees lined up yet"}</h3>
+        <p>${referees.length >= 2
+          ? `You've marked ${referees.length} people as referees below. Worth re-checking their details are current before each application round.`
+          : `This is the thing most likely to catch you out at the worst possible moment — an employer asks for two references after the interview has gone well. Mark anyone below as a referee to track it here. See the Apply tab for what to do when the second one is hard to reach.`}</p>
+      </div>
+    </div>
+
+    ${quiet.length ? `
+    <div class="callout sky" style="margin-bottom:22px;">
+      ${ICONS.send}
+      <div>
+        <h3>${quiet.length === 1 ? "One contact has gone quiet" : `${quiet.length} contacts have gone quiet`}</h3>
+        <p>Nothing for ${CONTACT_QUIET_DAYS}+ days: ${quiet.slice(0, 5).map(c => `<strong>${esc(c.name)}</strong>`).join(", ")}${quiet.length > 5 ? `, and ${quiet.length - 5} more` : ""}. Two messages is the whole maintenance cost of a network — mark the date once you've sent one.</p>
+      </div>
+    </div>` : ""}
+
+    <section>
+      <div class="section-head"><h2>${editing ? "Edit this contact" : "Add someone"}</h2></div>
+      <div class="card">
+        ${editing ? `<p class="save-note" style="margin:0 0 10px;">Editing <strong>${esc(editing.name)}</strong> — saving replaces this entry.</p>` : ""}
+        <div class="field-grid two">
+          <div class="field"><label for="ct-name">Name</label><input type="text" id="ct-name" placeholder="e.g. Sam Whitfield" value="${editing ? esc(editing.name) : ""}" /></div>
+          <div class="field">
+            <label for="ct-tag">Who are they?</label>
+            <select id="ct-tag">${CONTACT_TAGS.map(t => `<option value="${t.key}" ${editing && editing.tag === t.key ? "selected" : ""}>${t.flag} ${t.label}</option>`).join("")}</select>
+          </div>
+        </div>
+        <div class="field"><label for="ct-what">What they do <span class="hint">(and where)</span></label><input type="text" id="ct-what" placeholder="e.g. Production manager, Wildwood Festival" value="${editing ? esc(editing.what || "") : ""}" /></div>
+        <div class="field"><label for="ct-where">Where you met them</label><input type="text" id="ct-where" placeholder="e.g. Crewing the main stage, Aug 2027 — this is what makes a message years later land" value="${editing ? esc(editing.where || "") : ""}" /></div>
+        <div class="field"><label for="ct-how">How to reach them <span class="hint">(the one that'll still work later — personal, not a company address)</span></label><input type="text" id="ct-how" placeholder="e.g. LinkedIn / @samw on Instagram / 07…" value="${editing ? esc(editing.how || "") : ""}" /></div>
+        <div class="field-grid two">
+          <div class="field"><label for="ct-last">Last spoke to them</label><input type="date" id="ct-last" value="${editing ? esc(editing.lastContacted || "") : new Date().toISOString().slice(0, 10)}" /></div>
+          <div class="field">
+            <label for="ct-referee">Could they be a referee?</label>
+            <select id="ct-referee">
+              <option value="0" ${!editing || !editing.isReferee ? "selected" : ""}>Not asked / no</option>
+              <option value="1" ${editing && editing.isReferee ? "selected" : ""}>Yes — agreed to it</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label for="ct-notes">Notes <span class="hint">(optional)</span></label><textarea id="ct-notes" rows="2" placeholder="What you talked about, what they offered, what to follow up on">${editing ? esc(editing.notes || "") : ""}</textarea></div>
+        <div class="btn-row">
+          <button class="btn" id="ct-save">${editing ? `${ICONS.check} Save changes` : `${ICONS.check} Add them`}</button>
+          ${editing ? `<button class="btn ghost" id="ct-cancel">Cancel</button>` : ""}
+        </div>
+      </div>
+    </section>
+
+    ${contacts.length ? `
+    <section>
+      <div class="section-head">
+        <h2>Your contacts</h2>
+        <button class="btn ghost small" id="ct-copy" style="flex:none;">${ICONS.copy} Copy list</button>
+      </div>
+      <p class="page-lede" style="margin-bottom:12px;">${contacts.length} ${contacts.length === 1 ? "person" : "people"}${referees.length ? ` · ${referees.length} referee${referees.length === 1 ? "" : "s"}` : ""}${quiet.length ? ` · ${quiet.length} gone quiet` : ""}.</p>
+      <div class="stack" id="ct-list">
+        ${contacts.map((c, i) => {
+          const tag = CONTACT_TAGS.find(t => t.key === c.tag) || CONTACT_TAGS[CONTACT_TAGS.length - 1];
+          const days = contactQuietDays(c);
+          return `
+          <div class="card ${peopleEditIndex === i ? "editing" : ""}" style="display:flex; gap:12px; align-items:flex-start;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight:650; font-size:0.94rem;">${tag.flag} ${esc(c.name)}${c.isReferee ? ` <span class="src-chip">Referee</span>` : ""}</div>
+              ${c.what ? `<div style="font-size:0.85rem; color:var(--ink-soft); margin-top:3px;">${esc(c.what)}</div>` : ""}
+              ${c.where ? `<div style="font-size:0.8rem; color:var(--ink-faint); margin-top:3px;">Met: ${esc(c.where)}</div>` : ""}
+              ${c.how ? `<div style="font-size:0.8rem; color:var(--ink-faint); margin-top:2px;">Reach: ${esc(c.how)}</div>` : ""}
+              ${c.notes ? `<p style="font-size:0.84rem; color:var(--ink-soft); margin:6px 0 0;">${esc(c.notes)}</p>` : ""}
+              <div style="font-size:0.78rem; margin-top:6px;" class="${contactIsQuiet(c) ? "due-flag" : ""}">${days === null ? "" : days === 0 ? "Spoke today" : `${days} day${days === 1 ? "" : "s"} since you spoke${contactIsQuiet(c) ? " — worth a message" : ""}`}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <button class="btn-mini" data-ct-touch="${i}" title="Mark as spoken to today">↻</button>
+              <button class="btn-mini" data-ct-edit="${i}" title="Edit">✎</button>
+              <button class="btn-mini" data-ct-remove="${i}" title="Delete">✕</button>
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
+    </section>` : `<section><p class="page-lede">Nobody logged yet. The list below is where to start — and the first one is the hardest only because it's first.</p></section>`}
+
+    <section>
+      <div class="section-head"><h2>Who's actually worth messaging first</h2></div>
+      <p class="page-lede" style="margin-bottom:12px;">Real names from your own work history, in the order worth doing them — not "reach out to your network".</p>
+      <div class="stack">
+        ${RECONNECT_TARGETS.map(t => `
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; gap:10px; align-items:baseline; flex-wrap:wrap;">
+              <h3 style="font-size:0.94rem;">${esc(t.company)} <span style="color:var(--ink-faint); font-weight:500;">— ${esc(t.who)}</span></h3>
+              <span class="warmth ${t.warmth}">${t.warmth === "live" ? "Live" : t.warmth === "recent" ? "Recent" : "Dormant"}</span>
+            </div>
+            <p style="font-size:0.85rem; color:var(--ink-soft); margin:6px 0 0;">${esc(t.note)}</p>
+          </div>`).join("")}
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Building one from here</h2></div>
+      <div class="stack">
+        ${NETWORK_PLAYBOOK.map(pb => `
+          <div class="card">
+            <h3 style="font-size:0.98rem; margin-bottom:6px;">${pb.icon} ${esc(pb.title)}</h3>
+            <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">${esc(pb.body)}</p>
+            ${pb.steps.length ? `<ul style="margin:10px 0 0; padding-left:18px; font-size:0.86rem; color:var(--ink-soft);">${pb.steps.map(x => `<li style="margin-bottom:4px;">${esc(x)}</li>`).join("")}</ul>` : ""}
+          </div>`).join("")}
+      </div>
+    </section>
+  `;
+
+  function readForm() {
+    const name = document.getElementById("ct-name").value.trim();
+    if (!name) { toast("Give them a name first"); return null; }
+    return {
+      name,
+      tag: document.getElementById("ct-tag").value,
+      what: document.getElementById("ct-what").value.trim(),
+      where: document.getElementById("ct-where").value.trim(),
+      how: document.getElementById("ct-how").value.trim(),
+      lastContacted: document.getElementById("ct-last").value,
+      isReferee: document.getElementById("ct-referee").value === "1",
+      notes: document.getElementById("ct-notes").value.trim(),
+    };
+  }
+  document.getElementById("ct-save").addEventListener("click", () => {
+    const data = readForm();
+    if (!data) return;
+    const list = loadContacts();
+    if (peopleEditIndex !== null && list[peopleEditIndex]) {
+      list[peopleEditIndex] = { ...list[peopleEditIndex], ...data };
+      peopleEditIndex = null;
+      toast("Saved");
+    } else {
+      list.unshift({ id: `contact-${Date.now()}`, added: new Date().toISOString().slice(0, 10), ...data });
+      toast("Added");
+    }
+    saveContacts(list);
+    renderPeople();
+    renderHome();
+  });
+  const ctCancel = document.getElementById("ct-cancel");
+  if (ctCancel) ctCancel.addEventListener("click", () => { peopleEditIndex = null; renderPeople(); });
+
+  const ctCopy = document.getElementById("ct-copy");
+  if (ctCopy) ctCopy.addEventListener("click", () => {
+    const lines = loadContacts().map(c => {
+      const tag = CONTACT_TAGS.find(t => t.key === c.tag) || CONTACT_TAGS[CONTACT_TAGS.length - 1];
+      return [`${c.name}${c.isReferee ? " (referee)" : ""} — ${tag.label}`, c.what, c.where ? `Met: ${c.where}` : "", c.how ? `Reach: ${c.how}` : "", c.notes].filter(Boolean).join("\n  ");
+    });
+    copyText(lines.join("\n\n"), ctCopy);
+  });
+
+  const ctList = document.getElementById("ct-list");
+  if (ctList) {
+    ctList.querySelectorAll("[data-ct-touch]").forEach(b => b.addEventListener("click", () => {
+      const list = loadContacts();
+      const idx = parseInt(b.dataset.ctTouch, 10);
+      if (!list[idx]) return;
+      list[idx].lastContacted = new Date().toISOString().slice(0, 10);
+      saveContacts(list);
+      renderPeople();
+      renderHome();
+      toast("Marked as spoken to today");
+    }));
+    ctList.querySelectorAll("[data-ct-edit]").forEach(b => b.addEventListener("click", () => {
+      peopleEditIndex = parseInt(b.dataset.ctEdit, 10);
+      renderPeople();
+      document.getElementById("ct-name").scrollIntoView({ behavior: "smooth", block: "center" });
+    }));
+    ctList.querySelectorAll("[data-ct-remove]").forEach(b => b.addEventListener("click", () => {
+      const list = loadContacts();
+      const idx = parseInt(b.dataset.ctRemove, 10);
+      if (!confirm(`Delete ${list[idx].name} from your contacts? This can't be undone.`)) return;
+      list.splice(idx, 1);
+      if (peopleEditIndex === idx) peopleEditIndex = null;
+      else if (peopleEditIndex !== null && peopleEditIndex > idx) peopleEditIndex--;
+      saveContacts(list);
+      renderPeople();
+      renderHome();
     }));
   }
 }
@@ -2634,7 +2995,7 @@ function renderAll() {
   document.getElementById("strip-sub").textContent = `Hey ${profile.name} · career & travel plan`;
   const apName = document.getElementById("apName");
   if (apName && document.activeElement !== apName) apName.value = profile.name;
-  renderHome(); renderCareer(); renderRoadmap(); renderJobs(); renderApply(); renderToolkit(); renderProfile();
+  renderHome(); renderCareer(); renderRoadmap(); renderJobs(); renderApply(); renderPeople(); renderToolkit(); renderProfile();
 }
 renderNav();
 renderAll();

@@ -30,7 +30,19 @@ TreebySound and helps him think through three things at once:
    real status (applied / interview / offer / rejected) plus free-text notes and a "next step by"
    date that surfaces on the home screen once it's due — so it works as an actual job-search
    tracker, not just a pitch-generator history.
-4. **What happens after** — the Kit tab's Experience Log lets him record a dated entry every time
+4. **Building a network from nothing** — the working assumption is now that he has no live
+   professional contacts. The roles at Open Room Records, Sleeping Dog Promotions, Bang Bang
+   Merch, Madway Brewery, Foot Asylum and Tesco all ended around 2022 and none of them is a
+   relationship any more; what's actually live is Dave at TreebySound, and possibly someone at
+   Cheeky Clucker. The **People** tab treats that as the starting position rather than pretending
+   otherwise — a contacts log with a gone-quiet nudge and a referee tracker, a ranked list of who
+   from his own history is worth messaging first (dormant is not the same as dead), and a
+   playbook for building one from scratch: the actual wording of a reconnect message, crewing as
+   the way into events as an outsider, MMF/AIM as places you can pay to be in the room without
+   knowing anyone, recruiters as a free network for the corporate paths, and the travel years as
+   the biggest network-building opportunity he'll get — conditional entirely on writing names
+   down at the time.
+5. **What happens after** — the Kit tab's Experience Log lets him record a dated entry every time
    he works something, anywhere, optionally tagged to a Career Compass path. Each entry immediately
    becomes matchable evidence in the Apply tab, and the whole log copies out as CV bullets in one
    tap. Five years from now that's real, specific evidence for whatever comes next — travelling
@@ -39,7 +51,8 @@ TreebySound and helps him think through three things at once:
    of years abroad, and that the same tax-residency test applies in reverse on the way back.
 
 None of these compete — travel-era casual jobs feed evidence back into the long-term career
-paths, and the Apply tab draws on all of it. A prominent home-screen callout also flags the
+paths, people met along the way get logged on the People tab, and the Apply tab draws on all of
+it. A prominent home-screen callout also flags the
 thing that matters most given where he's starting from: UK applicants are eligible right through
 age 35 on Australia 417, NZ Working Holiday and Canada IEC alike, so the real cut-off on all
 three is the 36th birthday, not the 35th as it's easy to assume — he's 32 with no firm start
@@ -111,6 +124,9 @@ GitHub Pages, and easy to hand-edit without a build step.
     isn't the full picture once he's used that.
   - `GAP_SUGGESTIONS` — common job-spec asks (certs etc.) not covered by the evidence bank, each
     with a real next step and whether it's free
+  - `RECONNECT_TARGETS` / `NETWORK_PLAYBOOK` / `CONTACT_TAGS` — the People tab's content: which
+    past employers are `live` / `recent` / `dormant` and why, and the from-scratch playbook.
+    `CONTACT_QUIET_DAYS` (120) is when a logged contact starts showing as gone quiet.
   - `FACTS_LAST_VERIFIED` — the date every fee, scheme length and tax rule below it was last
     checked against an official source. The Route tab prints it, and once it's older than
     `FACTS_STALE_AFTER_MONTHS` the tab shows a "these were checked N months ago" warning of its
@@ -228,3 +244,28 @@ from. The app links out to the official NZ, Australia and
 Canada immigration sites. Always verify before booking anything around these dates. The same
 goes for the Apply tab's certificate suggestions and named employers/platforms — real and
 current as of when they were checked, but worth a quick verify before relying on any of them.
+
+## The People tab
+
+Added because the app previously assumed a network that probably isn't there. Every "keep in
+touch with your contacts from Open Room Records" and "reconnecting on return is a warm re-entry,
+not a cold restart" has been removed — those roles ended around 2022 and none of them is live.
+
+The correction runs in both directions, though. "No network" and "a network nobody has touched in
+four years" are different starting points, and the second is much better than it feels from the
+inside. Every name in `EMPLOYMENT_HISTORY` is a real person who worked with him and would
+recognise him — dormant, not dead, and far cheaper to reopen than a new contact is to make. So
+the tab leads with a ranked list of who to message first and roughly what to type, because "reach
+out to your network" is exactly the useless advice this replaces.
+
+Alongside that:
+
+- **A contacts log** — name, what they do, where he met them, how to reach them *later* (a
+  personal number or Instagram, not a company address that stops working), when they last spoke.
+- **A gone-quiet nudge** after 120 days, so maintaining a network is two messages every few
+  months rather than an annual panic.
+- **A referee tracker**, because references are the thing most likely to catch him out — asked
+  for after an interview has already gone well. The Apply tab now covers what to do when the
+  second referee is hard to reach (character references, employment verification), and the Kit
+  checklist has getting referee contact details *before leaving the UK* as its own item: a
+  five-minute conversation in Kent, a genuinely hard problem from Australia three years later.
