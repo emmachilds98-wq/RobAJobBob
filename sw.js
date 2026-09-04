@@ -52,13 +52,34 @@ self.addEventListener('message', event => {
   );
 });
 
+/* cache.put() rejects on anything that isn't a cacheable GET of a real
+   http(s) response — a POST, a chrome-extension:// URL, an error, or an
+   opaque cross-origin response. Every put below used to be unguarded, so a
+   single one of those produced an unhandled rejection inside the fetch
+   handler and, on a bad day, a failed navigation. Checking first is cheaper
+   than catching, but catch anyway: storage quota can refuse a write that
+   passes every other test. */
+function cacheable(request, response) {
+  return request.method === 'GET'
+    && /^https?:$/.test(new URL(request.url).protocol)
+    && response
+    && response.status === 200
+    && response.type !== 'opaque'
+    && response.type !== 'opaqueredirect';
+}
+function safePut(cache, request, response) {
+  if (!cacheable(request, response)) return Promise.resolve();
+  return cache.put(request, response).catch(() => {});
+}
+
 function networkFirst(cache, request) {
   return fetch(request)
     .then(response => {
+      if (!cacheable(request, response)) return response;
       const copy = response.clone();
       return cache.match(PAGE_URL).then(old => {
-        const keepOld = old ? cache.put(PREV_URL, old) : Promise.resolve();
-        return keepOld.then(() => cache.put(PAGE_URL, copy)).then(() => response);
+        const keepOld = old ? cache.put(PREV_URL, old).catch(() => {}) : Promise.resolve();
+        return keepOld.then(() => cache.put(PAGE_URL, copy)).catch(() => {}).then(() => response);
       });
     })
     .catch(() => cache.match(request).then(hit => hit || cache.match(PAGE_URL)));
@@ -84,11 +105,17 @@ self.addEventListener('fetch', event => {
     );
     return;
   }
+  /* Cache-first for everything else. The webfont CSS and font files are
+     cross-origin but CORS-enabled, so they cache normally and the app keeps
+     its typography offline; anything that comes back opaque or errored is
+     served through untouched rather than poisoning the cache with it. */
   event.respondWith(
     caches.match(event.request).then(hit => hit || fetch(event.request).then(response => {
       const copy = response.clone();
-      caches.open(CACHE).then(cache => cache.put(event.request, copy));
+      caches.open(CACHE).then(cache => safePut(cache, event.request, copy));
       return response;
-    }))
+    /* Don't fall back to the page here — handing index.html back in answer to
+       a font or icon request is worse than an honest network error. */
+    }).catch(() => Response.error()))
   );
 });

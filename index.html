@@ -146,6 +146,10 @@
   .callout.teal .icon, .callout.teal h3 { color: var(--teal-ink); }
   .callout.sky { background: var(--sky-tint); border-color: var(--sky); }
   .callout.sky .icon, .callout.sky h3 { color: var(--sky-ink); }
+  /* Coral is the loudest of the four and is kept for one thing only: the plan
+     as drawn no longer fits inside the visa age cap. */
+  .callout.coral { background: var(--coral-tint); border-color: var(--coral); }
+  .callout.coral .icon, .callout.coral h3 { color: var(--coral-ink); }
 
   /* ---------------- nav grid (home) ---------------- */
   .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -205,8 +209,24 @@
   .ticket p.focus { font-size: 0.88rem; color: var(--ink-soft); margin: 0 0 10px; }
   .ticket .link-note { display: flex; gap: 8px; font-size: 0.82rem; background: var(--teal-tint); color: var(--teal-ink); border-radius: var(--radius-s); padding: 9px 12px; }
   .ticket .link-note .icon { width: 15px; height: 15px; margin-top: 1px; }
-  .age-note { display: flex; gap: 8px; font-size: 0.82rem; background: var(--mustard-tint); color: var(--mustard-ink); border-radius: var(--radius-s); padding: 9px 12px; margin-top: 8px; }
-  .age-note .icon { width: 15px; height: 15px; margin-top: 1px; }
+  /* The plain note carries a lodge-by date (useful, not alarming); .warn is
+     reserved for a leg that genuinely doesn't fit inside the age cap, so the
+     two never read as the same level of problem. */
+  /* Marks where a match came from, so a hit off something added later is as
+     traceable as one off the built-in bank. */
+  /* The application currently loaded in the box above, so it's obvious which
+     one an "Update" would overwrite. */
+  .card.editing { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-tint); }
+  .due-flag { color: var(--coral-ink); font-weight: 650; }
+
+  .stale-note { display: flex; gap: 8px; align-items: flex-start; font-size: 0.83rem; background: var(--mustard-tint); color: var(--mustard-ink); border: 1px solid var(--mustard); border-radius: var(--radius-s); padding: 10px 12px; margin: 10px 0 0; }
+  .stale-note .icon { width: 15px; height: 15px; margin-top: 2px; flex: none; }
+
+  .src-chip { display: inline-block; vertical-align: middle; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.02em; padding: 2px 8px; border-radius: 999px; background: var(--teal-tint); color: var(--teal-ink); border: 1px solid var(--teal); margin-left: 4px; }
+
+  .age-note { display: flex; gap: 8px; font-size: 0.82rem; background: var(--sky-tint); color: var(--sky-ink); border-radius: var(--radius-s); padding: 9px 12px; margin-top: 8px; }
+  .age-note.warn { background: var(--coral-tint); color: var(--coral-ink); border: 1px solid var(--coral); }
+  .age-note .icon { width: 15px; height: 15px; margin-top: 1px; flex: none; }
   .progress { height: 6px; border-radius: 999px; background: var(--paper-sunk); overflow: hidden; margin-top: 10px; }
   .progress > span { display: block; height: 100%; background: var(--coral); }
 
@@ -532,6 +552,21 @@ const DEFAULT_PROFILE = {
 const VISA_ELIGIBLE_THROUGH_AGE = 35;
 const VISA_CUTOFF_AGE = 36;
 
+/* Every fee, scheme length and tax rule in this app was true on this date and
+   is a guess after it. Rather than let that rot silently — which is how a
+   planning app quietly becomes a misleading one — this drives a visible
+   "checked N months ago" line, and a nudge once it's old enough to actually
+   matter. Bump it whenever the numbers below are genuinely re-checked
+   against the official sites, not just whenever the file is edited. */
+const FACTS_LAST_VERIFIED = "2026-08-01";
+const FACTS_STALE_AFTER_MONTHS = 6;
+function factsAge() {
+  const checked = new Date(FACTS_LAST_VERIFIED);
+  if (isNaN(checked.getTime())) return null;
+  const months = (new Date() - checked) / (1000 * 60 * 60 * 24 * 30.44);
+  return { checked, months, stale: months >= FACTS_STALE_AFTER_MONTHS, label: fmtDate(checked) };
+}
+
 /* Real, dated employment history — the source of truth the Apply tab's
    matching engine and pitch generator both draw on. Kept separate from
    profile.background (a human-readable summary) so it can be rendered as
@@ -733,7 +768,7 @@ const CAREER_CATEGORIES = [
 ];
 
 const VISA_DEFAULTS = {
-  australia: { label: "Australia — Working Holiday (417/462)", extendNote: "UK passport: since the 2024 UK–Australia trade deal, a 2nd and 3rd 417 visa (36 months total) need no specified work at all. Most other nationalities still need 6 months of regional work. Fees rose 1 July 2026: ~AUD 840 for the 1st visa, ~AUD 1,000 each for the 2nd and 3rd." },
+  australia: { label: "Australia — Working Holiday (417/462)", extendNote: "UK passport: since the 2024 UK–Australia trade deal, a 2nd and 3rd 417 visa (36 months total) need no specified work at all. Most other nationalities still need 6 months of regional work. Budget roughly AUD 650–1,000 per application — the charge has risen most years and each of the 2nd and 3rd applications is charged separately, so check the current figure on immi.homeaffairs.gov.au rather than budgeting from this." },
   newzealand: { label: "New Zealand — Working Holiday", extendNote: "UK passport: apply for 12, 23, or up to 36 months total. Most others get a flat 12 months. ~15,000 UK places/year, from NZD 770." },
   canada: { label: "Canada — IEC Working Holiday", extendNote: "UK passport: up to 36 months across two participations (24 + 12), mixing Working Holiday / Young Professionals / Co-op streams. Most others get one 12-month entry. Pool-based, not guaranteed." },
 };
@@ -857,7 +892,25 @@ function saveCustomEvidence(list) { storeSet(K.customEvidence, JSON.stringify(li
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 function addMonths(d, m) { const r = new Date(d); r.setMonth(r.getMonth() + m); return r; }
 function fmtDate(d) { return d.toLocaleDateString(undefined, { year: "numeric", month: "short" }); }
-function currentAge() { return profile.birthYear ? new Date().getFullYear() - profile.birthYear : null; }
+/* Age has to be birthday-aware, not a year subtraction — "2026 minus 1994"
+   reads 32 from January onward even though he doesn't turn 32 until August.
+   On an app whose whole premise is an age cut-off, being a year out for
+   two thirds of every year is not a rounding error. */
+function ageOn(birthDateStr, at) {
+  if (!birthDateStr) return null;
+  const b = new Date(birthDateStr);
+  if (isNaN(b.getTime())) return null;
+  const on = at || new Date();
+  let age = on.getFullYear() - b.getFullYear();
+  const monthDiff = on.getMonth() - b.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && on.getDate() < b.getDate())) age--;
+  return age;
+}
+function currentAge() {
+  const exact = ageOn(profile.birthDate);
+  if (exact !== null) return exact;
+  return profile.birthYear ? new Date().getFullYear() - profile.birthYear : null;
+}
 /* The hard cut-off: working-holiday age eligibility is assessed against age
    at the point of applying/lodging (or, for Canada, being invited), not age
    when the visa is actually used — and on all three, that's "through 35",
@@ -865,10 +918,58 @@ function currentAge() { return profile.birthYear ? new Date().getFullYear() - pr
 function ageCapCutoffDate() {
   if (!profile.birthDate) return null;
   const b = new Date(profile.birthDate);
+  if (isNaN(b.getTime())) return null;
   return new Date(b.getFullYear() + VISA_CUTOFF_AGE, b.getMonth(), b.getDate());
 }
 function fmtFullDate(d) { return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }); }
 function daysUntil(d) { return Math.ceil((d - new Date()) / (1000 * 60 * 60 * 24)); }
+
+/* ---------- the deadline engine ----------
+   Knowing the 36th birthday is the cut-off is only half of it. What actually
+   decides whether this plan survives is when each *leg* needs its application
+   in — so these turn one birthday into a date per leg, and then into the one
+   number that matters most: the latest the whole trip can start and still
+   include every country on the list.
+
+   The lead times are deliberately conservative rules of thumb (processing
+   times move constantly and are worth checking on the day), not quoted
+   service standards. Canada's is the longest because IEC is pool-based:
+   you need a profile in, an invitation out, and a permit issued, and only
+   the invitation has to beat the birthday. */
+const LODGE_LEAD_MONTHS = { australia: 3, australia_ext: 3, newzealand: 3, canada: 6 };
+/* Once granted, all three schemes give roughly a year to make first entry.
+   So a leg starting a little after the cut-off is still reachable on a visa
+   lodged before it — a leg starting well after is not reachable at all. */
+const FIRST_ENTRY_WINDOW_MONTHS = 12;
+
+function lodgeByDate(phase) {
+  if (!phase.country) return null;
+  return addMonths(phase.from, -(LODGE_LEAD_MONTHS[phase.monthsKey] ?? 3));
+}
+/* Three honest verdicts per leg, rather than one vague "you'd be about 35
+   around here" note:
+     ok      — the leg starts before the cut-off, apply on the normal lead time
+     tight   — starts after it, but inside the first-entry window, so it only
+               works if the application goes in early and entry lands on time
+     blocked — starts so far past the cut-off that no application lodged in
+               time could still be used for it */
+function legEligibility(phase, cutoff) {
+  if (!cutoff || !phase.country) return null;
+  if (phase.from < cutoff) return { level: "ok", lodgeBy: lodgeByDate(phase) };
+  const latestUsableStart = addMonths(cutoff, FIRST_ENTRY_WINDOW_MONTHS);
+  return { level: phase.from < latestUsableStart ? "tight" : "blocked", lodgeBy: cutoff };
+}
+/* Work the whole thing backwards: how late can the trip begin and still have
+   the final country leg start before the cut-off? Everything upstream of that
+   date is slack; everything past it costs a country. */
+function latestViableStart(built, cutoff) {
+  if (!cutoff || !built.length) return null;
+  const countryLegs = built.filter(p => p.country);
+  if (!countryLegs.length) return null;
+  const last = countryLegs[countryLegs.length - 1];
+  const offsetMonths = built.slice(0, built.indexOf(last)).reduce((sum, p) => sum + p.months, 0);
+  return { date: addMonths(cutoff, -offsetMonths), leg: last, offsetMonths };
+}
 
 let profile = loadProfile();
 let toastTimer = null;
@@ -1214,7 +1315,8 @@ function renderNav() {
   document.getElementById("sidebarnav-inner").innerHTML = TABS.map(t => `<button class="sidenavbtn" data-tab="${t.key}">${t.icon}<span>${t.label}</span></button>`).join("");
   document.querySelectorAll(".navbtn, .sidenavbtn").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.tab)));
 }
-function switchTab(id) {
+function switchTab(id, fromHistory) {
+  if (!TABS.some(t => t.key === id)) id = "home";
   /* Home is a read-only dashboard fed by state that changes on every other
      tab (checklist, saved applications, the experience log) — re-render it
      fresh on every visit so its stats never go stale. Other tabs hold
@@ -1227,7 +1329,19 @@ function switchTab(id) {
   document.querySelectorAll(`[data-tab="${id}"]`).forEach(b => b.classList.add("active"));
   document.getElementById("main").scrollTo({ top: 0, behavior: "smooth" });
   window.scrollTo({ top: 0, behavior: "smooth" });
+  /* Installed on a home screen there's no browser chrome to go back with, so
+     the phone's own back gesture is the only one there is — without this it
+     closes the app from any tab. Putting each tab in history makes back mean
+     "the tab before this one", which is what it looks like it should do. */
+  if (!fromHistory) {
+    const hash = `#${id}`;
+    if (location.hash !== hash) history.pushState({ tab: id }, "", hash);
+  }
 }
+window.addEventListener("popstate", e => {
+  const id = (e.state && e.state.tab) || (location.hash || "#home").slice(1);
+  switchTab(id, true);
+});
 
 /* ===================================== HOME ===================================== */
 function renderHome() {
@@ -1241,16 +1355,24 @@ function renderHome() {
   const activeLabel = activePhase.country ? COUNTRY_META[activePhase.country].short : activePhase.title;
   const apps = loadApplications();
   const log = loadExperienceLog();
+  const cutoff = ageCapCutoffDate();
+  const cutoffDays = cutoff ? daysUntil(cutoff) : null;
+  const latest = cutoff ? latestViableStart(phases, cutoff) : null;
+  /* An application with a "next step by" date that's today or earlier is the
+     one thing on this dashboard that's actually asking for something back. */
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const dueApps = apps.filter(a => a.nextAction && a.nextAction <= todayKey && !["rejected", "withdrawn", "offer"].includes(a.status || "not-sent"));
   el.innerHTML = `
     <section class="hero">
       <div class="hero-eyebrow">Personal plan · updated for what you told us</div>
       <h1>Right, ${esc(profile.name)} — let's line up the next five years</h1>
-      <p>Two things, side by side: the long-term career you haven't fully decided on yet, and the working-holiday run through New Zealand, Australia and Canada you're excited about. They're built to feed each other, not compete.</p>
+      <p>Two things, side by side: the long-term career you haven't fully decided on yet, and the working-holiday run through ${esc(countryOrderPhrase())} you're excited about. They're built to feed each other, not compete.</p>
       <div class="hero-stats">
         <span class="hero-stat">✅ Kit ${kitPct}% ready</span>
         <span class="hero-stat">🗺️ ${activeStatus === "current" ? "Now" : "Next"}: ${esc(activeLabel)} · ${fmtDate(activePhase.from)}</span>
         ${apps.length ? `<span class="hero-stat">📨 ${apps.length} application${apps.length === 1 ? "" : "s"} saved</span>` : ""}
         ${log.length ? `<span class="hero-stat">📒 ${log.length} logged</span>` : ""}
+        ${dueApps.length ? `<span class="hero-stat">⏰ ${dueApps.length} follow-up${dueApps.length === 1 ? "" : "s"} due</span>` : ""}
       </div>
     </section>
 
@@ -1259,10 +1381,21 @@ function renderHome() {
         ${ICONS.cake}
         <div>
           <h3>Timing is the thing to get right</h3>
-          <p>UK working-holiday eligibility runs right through age 35 on all three — Australia, New Zealand and Canada — so the real cut-off is your 36th birthday, not your 35th${profile.birthYear ? ` — and at ${currentAge()}, you've got about ${Math.max(VISA_CUTOFF_AGE - currentAge(), 0)} years before that cut-off hits` : ""}, with no firm dates yet. That's not a problem, but it does mean the sooner this starts, the more of the plan is realistically achievable — check the <strong>Route</strong> tab for your exact cut-off date.</p>
+          <p>UK working-holiday eligibility runs right through age 35 on all three — Australia, New Zealand and Canada — so the real cut-off is your 36th birthday, not your 35th${cutoff ? `: <strong>${fmtFullDate(cutoff)}</strong>, ${cutoffDays.toLocaleString()} days away, when you're ${currentAge()} now` : ""}. Every application has to be lodged before then, not finished by then.${latest ? ` And working backwards from the route as it currently stands, the trip itself has to start by <strong>${fmtFullDate(latest.date)}</strong> for ${esc(COUNTRY_META[latest.leg.country] ? COUNTRY_META[latest.leg.country].short : latest.leg.title)} to still fit.` : ""} The <strong>Route</strong> tab has the leg-by-leg version.</p>
         </div>
       </div>
     </section>
+
+    ${dueApps.length ? `
+    <section>
+      <div class="callout coral">
+        ${ICONS.send}
+        <div>
+          <h3>${dueApps.length === 1 ? "One application needs chasing" : `${dueApps.length} applications need chasing`}</h3>
+          <p>${dueApps.slice(0, 4).map(a => `<strong>${esc(a.label)}</strong> (due ${new Date(a.nextAction).toLocaleDateString()})`).join(", ")}${dueApps.length > 4 ? `, and ${dueApps.length - 4} more` : ""}. Open the <strong>Apply</strong> tab to update where each one stands.</p>
+        </div>
+      </div>
+    </section>` : ""}
 
     <section>
       <div class="section-head"><h2>Get into it</h2></div>
@@ -1340,6 +1473,15 @@ function renderCareer() {
 }
 
 /* ===================================== ROADMAP ===================================== */
+/* The country order is editable on the You tab, so any copy that names the
+   countries has to read from it — hardcoding "New Zealand, Australia and
+   Canada" quietly contradicted the plan the rest of the tab was drawing. */
+function countryOrderPhrase() {
+  const order = (profile.countryOrder && profile.countryOrder.length) ? profile.countryOrder : DEFAULT_PROFILE.countryOrder;
+  const names = order.map(c => (COUNTRY_META[c] || {}).short).filter(Boolean);
+  if (names.length < 2) return names[0] || "";
+  return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+}
 function buildPhases() {
   const includeExt = loadExt();
   const order = (profile.countryOrder && profile.countryOrder.length) ? profile.countryOrder : DEFAULT_PROFILE.countryOrder;
@@ -1384,14 +1526,23 @@ function renderRoadmap() {
   const built = computeRoadmap(startVal || undefined);
   const cutoff = ageCapCutoffDate();
   const cutoffDays = cutoff ? daysUntil(cutoff) : null;
+  const latest = latestViableStart(built, cutoff);
+  const blockedLegs = cutoff ? built.filter(p => (legEligibility(p, cutoff) || {}).level === "blocked") : [];
+  const tightLegs = cutoff ? built.filter(p => (legEligibility(p, cutoff) || {}).level === "tight") : [];
+  /* The plan as drawn either fits inside the age cap or it doesn't. Saying
+     which, in one line at the top, is the single most useful thing this tab
+     can do — everything below it is detail on the same question. */
+  const slackDays = latest ? daysUntil(latest.date) : null;
+  const facts = factsAge();
 
   el.innerHTML = `
     <div class="eyebrow">${ICONS.route} 5-year plan</div>
     <h1 class="page-title">The Travel Route</h1>
-    <p class="page-lede">A working-holiday run through New Zealand, Australia and Canada, laid out against realistic visa lengths. Everything below is editable.</p>
+    <p class="page-lede">A working-holiday run through ${esc(countryOrderPhrase())}, laid out against realistic visa lengths. Everything below is editable.</p>
 
     <details class="info" style="margin-bottom:22px;">
-      <summary>${ICONS.info} Visa lengths change — what we checked, and when (Aug 2026)</summary>
+      <summary>${ICONS.info} Visa lengths change — what we checked, and when (${facts ? esc(facts.label) : "unknown"})</summary>
+      ${facts && facts.stale ? `<p class="stale-note">${ICONS.flag} These were last checked ${Math.round(facts.months)} months ago. Visa fees and scheme rules move most years, so treat every number on this tab as a starting point and re-check the three official sites below before acting on any of it.</p>` : ""}
       <ul>
         <li><strong>Age eligibility:</strong> UK citizens are accepted through age 35 on all three schemes (most other nationalities are capped at 30) — so the real cut-off on each is the 36th birthday, not the 35th. Assessed at application time for Australia and New Zealand, and at invitation time for Canada.</li>
         <li><strong>Australia 417:</strong> since the 2024 UK–Australia trade deal, a UK 2nd &amp; 3rd year (36 months total) needs no specified work at all. Most other nationalities still need 6 months of regional work.</li>
@@ -1424,6 +1575,32 @@ function renderRoadmap() {
         </div>
       </div>
     </section>
+    ${latest ? `
+    <section>
+      <div class="callout ${blockedLegs.length ? "coral" : tightLegs.length ? "mustard" : "teal"}">
+        ${blockedLegs.length || tightLegs.length ? ICONS.flag : ICONS.check}
+        <div>
+          <h3>${blockedLegs.length
+            ? `As drawn, ${blockedLegs.length === 1 ? "one leg doesn't fit" : `${blockedLegs.length} legs don't fit`}`
+            : tightLegs.length ? "It fits, but only just" : "The whole route fits inside your cap"}</h3>
+          <p>
+            ${startVal ? "Starting on the date set above" : "Starting today"}, the last country on the list — ${esc((COUNTRY_META[latest.leg.country] || {}).short || latest.leg.title)} — begins ${fmtDate(latest.leg.from)}.
+            ${blockedLegs.length
+              ? `That's past what an application lodged before ${fmtFullDate(cutoff)} could still be used for. Something has to give: an earlier start, a shorter leg, or a country dropped.`
+              : tightLegs.length
+                ? `That's after ${fmtFullDate(cutoff)}, so it only works by lodging early and entering inside the grant's first-entry window. It works, but nothing can slip.`
+                : `That's inside the cap with room to spare — nothing about this plan is currently at risk from your age.`}
+          </p>
+          <p style="margin-top:8px;">
+            <strong>The date that actually matters: ${fmtFullDate(latest.date)}.</strong>
+            Push the start past that and the last leg stops fitting${slackDays > 0 ? ` — which gives you ${slackDays.toLocaleString()} days of slack from today` : `, which has already passed, so the plan needs reshaping rather than more time`}.
+            ${latest.offsetMonths ? `It's ${fmtFullDate(cutoff)} minus the ${latest.offsetMonths} months of route ahead of that leg, so shortening anything above it buys the same amount back.` : ""}
+          </p>
+        </div>
+      </div>
+    </section>
+    ` : ""}
+
     <section>
       <div class="section-head"><h2>Getting the most out of each scheme before then</h2></div>
       <div class="card">
@@ -1438,7 +1615,7 @@ function renderRoadmap() {
     <section>
       <div class="section-head"><h2>Why this order, and what would change it</h2></div>
       <div class="card">
-        <p style="font-size:0.87rem; color:var(--ink-soft); margin:0 0 10px;">The default order below — Australia, then New Zealand, then Canada — isn't arbitrary. Reorder it on the <strong>You</strong> tab any time; here's the reasoning so a change is a deliberate one:</p>
+        <p style="font-size:0.87rem; color:var(--ink-soft); margin:0 0 10px;">Your order is currently ${esc(countryOrderPhrase())}${JSON.stringify(profile.countryOrder || DEFAULT_PROFILE.countryOrder) === JSON.stringify(DEFAULT_PROFILE.countryOrder) ? ", which is the default, and it isn't arbitrary" : ", changed from the default of Australia, New Zealand, Canada"}. Reorder it on the <strong>You</strong> tab any time; here's the reasoning behind the default so a change is a deliberate one:</p>
         <ul style="margin:0 0 10px; padding-left:18px; font-size:0.87rem; color:var(--ink-soft);">
           <li><strong>Australia first:</strong> as a UK passport holder you get up to 3 years there with zero specified-work requirement, the biggest hospitality/events job market of the three, and the least red tape to get started — the easiest place to land, start earning fast, and bank savings for the rest of the trip.</li>
           <li><strong>New Zealand second:</strong> smaller and more seasonal, and genuinely better done once there's a savings buffer and some routine established — the Queenstown/Wanaka adventure-tourism scene rewards showing up ready to work, not needing the first few weeks to find your feet.</li>
@@ -1530,11 +1707,22 @@ function renderRoadmap() {
             const pct = Math.min(100, Math.max(0, ((now - phase.from) / (phase.to - phase.from)) * 100));
             progressHtml = `<div class="progress"><span style="width:${pct.toFixed(0)}%"></span></div>`;
           }
+          const elig = legEligibility(phase, cutoff);
           let ageHtml = "";
-          if (profile.birthYear) {
-            const ageAtStart = phase.from.getFullYear() - profile.birthYear;
-            if (ageAtStart >= VISA_ELIGIBLE_THROUGH_AGE) {
-              ageHtml = `<div class="age-note">${ICONS.cake}<span>You'd be turning ~${ageAtStart} around this leg — fine if that visa was already lodged before your 36th birthday (see the cut-off note further up), but double-check eligibility if it hasn't been applied for yet.</span></div>`;
+          if (elig) {
+            const ageAtStart = ageOn(profile.birthDate, phase.from);
+            if (elig.level === "ok") {
+              /* Only worth saying once it's close enough to act on — a lodge-by
+                 date four years out is noise, one inside the next 18 months is
+                 the whole point of this tab. */
+              const monthsAway = (elig.lodgeBy - new Date()) / (1000 * 60 * 60 * 24 * 30.44);
+              if (monthsAway < 18) {
+                ageHtml = `<div class="age-note">${ICONS.calendar}<span><strong>Get the application in by ${fmtFullDate(elig.lodgeBy)}</strong> to land on time — you'd be ${ageAtStart} at the start of this leg, comfortably inside the cap.</span></div>`;
+              }
+            } else if (elig.level === "tight") {
+              ageHtml = `<div class="age-note warn">${ICONS.flag}<span><strong>Tight — this leg starts after your cut-off.</strong> You'd be ${ageAtStart} by ${fmtDate(phase.from)}, so the only way this works is lodging before ${fmtFullDate(cutoff)} and using the roughly ${FIRST_ENTRY_WINDOW_MONTHS}-month first-entry window the grant gives you. Doable, but there's no slack in it.</span></div>`;
+            } else {
+              ageHtml = `<div class="age-note warn">${ICONS.flag}<span><strong>This leg doesn't fit.</strong> It starts ${fmtDate(phase.from)}, when you'd be ${ageAtStart} — too far past ${fmtFullDate(cutoff)} for a visa lodged in time to still be usable. Start earlier, shorten a leg above it, or drop this country.</span></div>`;
             }
           }
           return `
@@ -1566,7 +1754,7 @@ function renderRoadmap() {
         </div>
         <div class="card">
           <h3 style="font-size:0.98rem; margin-bottom:6px;">💷 Your UK State Pension record doesn't have to pause</h3>
-          <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">Time spent working abroad doesn't automatically count toward the 35 qualifying years needed for a full UK State Pension. Since April 2026 the cheaper Class 2 voluntary National Insurance rate for people abroad has ended — Class 3 is still available (given at least 10 years of prior UK NI contributions, which the work history here already clears), just pricier. Worth checking your NI record on your <a href="https://www.gov.uk/check-national-insurance-record" target="_blank" rel="noopener">Personal Tax Account</a> before you leave, and deciding then whether it's worth paying voluntarily while away.</p>
+          <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">Time spent working abroad doesn't automatically count toward the 35 qualifying years needed for a full UK State Pension, so five years away can leave a five-year hole in it. You can usually fill that by paying voluntary National Insurance while abroad — there are two classes at very different prices, and which one you qualify for depends on your circumstances and on rules that have changed more than once recently. Don't take a number from this app for it: check your record on your <a href="https://www.gov.uk/check-national-insurance-record" target="_blank" rel="noopener">Personal Tax Account</a>, then read <a href="https://www.gov.uk/voluntary-national-insurance-contributions" target="_blank" rel="noopener">gov.uk on voluntary contributions</a> and form NI38, before you leave. The decision itself is simple — it's whether five qualifying years is worth what they're charging that year — but it's much cheaper to make before you go than to backfill later.</p>
         </div>
         <div class="card">
           <h3 style="font-size:0.98rem; margin-bottom:6px;">🛬 Coming home is a tax event too, not just leaving</h3>
@@ -1638,6 +1826,10 @@ function renderJobs() {
    "bump-in"), so only single, alphanumeric-only keywords get the boundary
    treatment; phrases keep substring matching since they're specific enough
    not to false-positive. */
+/* The number of distinct keyword hits at which an ad counts as asking for
+   everything you'd be able to speak to — past this, more hits don't make the
+   fit any stronger, they just mean a longer ad. */
+const DEPTH_SATURATION_HITS = 12;
 function keywordHits(norm, keywords) {
   return keywords.filter(k => {
     if (/^[a-z0-9]+$/i.test(k)) {
@@ -1646,18 +1838,74 @@ function keywordHits(norm, keywords) {
     return norm.includes(k);
   });
 }
+/* Words that would match half the job ads on the internet, so they're stripped
+   before an Experience Log entry is turned into keywords. Deliberately short:
+   the length filter below does most of the work, this just catches the words
+   long enough to survive it but too generic to mean anything. */
+const LOG_STOPWORDS = new Set([
+  "with", "from", "that", "this", "they", "them", "were", "have", "been", "into", "over", "when", "which",
+  "some", "more", "than", "also", "just", "like", "very", "much", "made", "make", "doing", "done", "work",
+  "worked", "working", "shift", "shifts", "role", "week", "weeks", "month", "months", "year", "years",
+  "day", "days", "time", "times", "good", "great", "really", "about", "after", "before", "there", "here",
+  "would", "could", "should", "their", "your", "mine", "first", "last", "next", "well", "back",
+]);
+/* Every Experience Log entry is evidence too. Five years in it will be most of
+   the evidence there is — so the log feeds the same matching, pitches and CV
+   bullets as everything built in, rather than sitting in the Kit tab being
+   ignored by the one tab that needs it. Keywords are derived from what was
+   actually written, and shown on the match card, so it stays as inspectable
+   as the hand-written bank. */
+function experienceEvidence() {
+  return loadExperienceLog().map((e, i) => {
+    const text = `${e.title} ${e.detail || ""} ${e.careerPath || ""}`.toLowerCase();
+    const keywords = [...new Set(text.split(/[^a-z0-9]+/).filter(w => w.length > 3 && !LOG_STOPWORDS.has(w)))].slice(0, 14);
+    const place = LOG_PLACES.find(pl => pl.key === e.country);
+    const where = place && place.key !== "other" ? ` in ${place.short}` : "";
+    const dateLabel = e.date ? new Date(e.date).toLocaleDateString(undefined, { year: "numeric", month: "long" }) : "";
+    return {
+      id: `log-${i}`, source: "log", keywords,
+      headline: e.title,
+      detail: `${e.title}${where}${dateLabel ? ` (${dateLabel})` : ""}${e.detail ? ` — ${e.detail}` : ""}`,
+      pitch: `I've done this directly — ${e.title.charAt(0).toLowerCase() + e.title.slice(1)}${where}${e.detail ? `, where ${e.detail.charAt(0).toLowerCase() + e.detail.slice(1)}` : ""}.`,
+      star: `From your own Experience Log${dateLabel ? `, ${dateLabel}` : ""}. Situation/Task: what the job actually was and what was on you. Action: what you did that you'd want an interviewer to hear. Result: how it went — you logged it at the time, so use the detail you wrote then rather than reconstructing it now.`,
+    };
+  }).filter(e => e.keywords.length);
+}
+
 function analyseJobSpec(text) {
   const norm = text.toLowerCase();
-  const bank = [...EVIDENCE_BANK, ...loadCustomEvidence()];
+  const core = EVIDENCE_BANK.map(e => ({ ...e, source: "core" }));
+  const own = loadCustomEvidence().map(e => ({ ...e, source: "own" }));
+  const bank = [...core, ...own, ...experienceEvidence()];
   const matched = bank
     .map(e => ({ ...e, hits: keywordHits(norm, e.keywords) }))
     .filter(e => e.hits.length)
     .sort((a, b) => b.hits.length - a.hits.length);
   const gaps = GAP_SUGGESTIONS.filter(g => !g.autoSatisfied && keywordHits(norm, g.keywords).length);
   const covered = GAP_SUGGESTIONS.filter(g => g.autoSatisfied && keywordHits(norm, g.keywords).length);
-  const fitRatio = matched.length / bank.length;
+  /* Fit is scored on two things, because either one alone lies:
+       breadth — how many different areas of the background the ad touches
+       depth   — how many specific things it asks for that you can point at
+     Breadth alone called a bar-supervisor ad "a stretch" because it only hit
+     one area, ignoring that it hit that one area a dozen times over. Depth
+     alone would over-rate an ad that says "customer service" six times.
+     Averaging them lands much closer to how an ad actually reads.
+
+     Both are measured against the fixed built-in bank, with your own
+     additions (talking points, Experience Log entries) able to lift the score
+     but never lower it — scoring against the whole merged bank, as this used
+     to, meant every piece of real evidence you added made every job look like
+     a worse fit, which is exactly backwards. */
+  const coreMatches = matched.filter(m => m.source === "core");
+  const coreMatched = coreMatches.length;
+  const ownMatched = matched.length - coreMatched;
+  const coreHits = coreMatches.reduce((n, m) => n + m.hits.length, 0);
+  const breadth = coreMatched / EVIDENCE_BANK.length;
+  const depth = Math.min(coreHits / DEPTH_SATURATION_HITS, 1);
+  const ownBonus = Math.min(ownMatched, 3) * 0.05;
+  const fitRatio = (breadth + depth) / 2 + ownBonus;
   const fitLevel = matched.length === 0 ? "none" : fitRatio >= 0.5 ? "strong" : fitRatio >= 0.25 ? "decent" : "stretch";
-  return { matched, gaps, covered, fitLevel, bankSize: bank.length };
+  return { matched, gaps, covered, fitLevel, coreMatched, ownMatched, coreHits, bankSize: EVIDENCE_BANK.length };
 }
 function buildPitch(matched) {
   if (!matched.length) return "";
@@ -1689,7 +1937,7 @@ const FIT_COPY = {
   none: { label: "No direct match found", tone: "mustard", note: "Nothing in the job text matched your background bank — try pasting more of the actual requirements list, or this genuinely may not be the right fit." },
 };
 function renderApplyResults(container, text) {
-  const { matched, gaps, covered, fitLevel, bankSize } = analyseJobSpec(text);
+  const { matched, gaps, covered, fitLevel, coreMatched, ownMatched, coreHits, bankSize } = analyseJobSpec(text);
   if (!text.trim()) {
     container.innerHTML = `<p class="page-lede">Paste a job description above, then hit <strong>Analyse</strong>.</p>`;
     return;
@@ -1699,7 +1947,7 @@ function renderApplyResults(container, text) {
   container.innerHTML = `
     <div class="callout ${fit.tone}" style="margin-bottom:20px;">
       ${ICONS.sparkle}
-      <div><h3>${esc(fit.label)}${matched.length ? ` — ${matched.length} of ${bankSize} evidence areas matched` : ""}</h3><p>${esc(fit.note)}</p></div>
+      <div><h3>${esc(fit.label)}${matched.length ? ` — ${coreMatched} of ${bankSize} core areas, ${coreHits} specific thing${coreHits === 1 ? "" : "s"} in the ad you can point at${ownMatched ? `, plus ${ownMatched} from what you've added yourself` : ""}` : ""}</h3><p>${esc(fit.note)}</p></div>
     </div>
 
     <div class="section-head"><h2>What matches from your background</h2></div>
@@ -1707,7 +1955,7 @@ function renderApplyResults(container, text) {
       <div class="stack">
         ${matched.map(m => `
           <div class="card">
-            <h3 style="font-size:0.95rem; margin-bottom:4px;">${esc(m.headline)}${m.isCustom ? ` <span class="status-chip applied" style="text-transform:none; font-weight:600;">Added by you</span>` : ""}</h3>
+            <h3 style="font-size:0.95rem; margin-bottom:4px;">${esc(m.headline)}${m.source === "own" ? ` <span class="src-chip">Added by you</span>` : m.source === "log" ? ` <span class="src-chip">From your Experience Log</span>` : ""}</h3>
             <p style="font-size:0.85rem; color:var(--ink-soft); margin:0;">${esc(m.detail)}</p>
           </div>`).join("")}
       </div>` : `<p class="page-lede">Nothing matched directly — paste more of the actual job text (the full requirements list works best), or this one may just be a stretch.</p>`}
@@ -1771,9 +2019,17 @@ function renderApplyResults(container, text) {
   if (copyBulletsBtn) copyBulletsBtn.addEventListener("click", () => copyText(matched.map(m => "• " + m.detail).join("\n"), copyBulletsBtn));
 }
 
+/* The pasted spec, its label, and which saved application (if any) is being
+   edited. Held outside the render so saving, deleting or restatusing an
+   application doesn't throw away a job ad that was just pasted in and
+   analysed — which is exactly what re-rendering the tab used to do. */
+let applyDraft = { text: "", label: "", editIndex: null };
+
 function renderApply() {
   const el = document.getElementById("view-apply");
   const saved = loadApplications();
+  /* An index into a list that just changed underneath us is worse than none. */
+  if (applyDraft.editIndex !== null && !saved[applyDraft.editIndex]) applyDraft.editIndex = null;
   el.innerHTML = `
     <div class="eyebrow">${ICONS.send} Job applications</div>
     <h1 class="page-title">Apply</h1>
@@ -1806,7 +2062,7 @@ function renderApply() {
       <div class="card">
         <div class="field">
           <label for="apply-jobtext">Job description / ad text</label>
-          <textarea id="apply-jobtext" rows="8" placeholder="Paste the full job ad here — the more of the actual requirements list, the better the match."></textarea>
+          <textarea id="apply-jobtext" rows="8" placeholder="Paste the full job ad here — the more of the actual requirements list, the better the match.">${esc(applyDraft.text)}</textarea>
         </div>
         <div class="btn-row">
           <button class="btn" id="apply-analyse">${ICONS.sparkle} Analyse</button>
@@ -1819,14 +2075,16 @@ function renderApply() {
     </section>
 
     <section>
-      <div class="section-head"><h2>Save this one</h2></div>
+      <div class="section-head"><h2>${applyDraft.editIndex !== null ? "Update this one" : "Save this one"}</h2></div>
       <div class="card">
+        ${applyDraft.editIndex !== null ? `<p class="save-note" style="margin:0 0 10px;">Editing <strong>${esc(saved[applyDraft.editIndex].label)}</strong> — saving replaces it rather than adding a second copy.</p>` : ""}
         <div class="field">
           <label for="apply-label">Job title / company, for your own reference</label>
-          <input type="text" id="apply-label" placeholder="e.g. Bar Supervisor, The Fox Hotel" />
+          <input type="text" id="apply-label" placeholder="e.g. Bar Supervisor, The Fox Hotel" value="${esc(applyDraft.label)}" />
         </div>
         <div class="btn-row">
-          <button class="btn ghost small" id="apply-save">Save this application</button>
+          <button class="btn ghost small" id="apply-save">${applyDraft.editIndex !== null ? "Update this application" : "Save this application"}</button>
+          ${applyDraft.editIndex !== null ? `<button class="btn ghost small" id="apply-save-new">Save as a separate one</button>` : ""}
         </div>
       </div>
     </section>
@@ -1840,25 +2098,45 @@ function renderApply() {
   `;
 
   const jobtext = document.getElementById("apply-jobtext");
+  const labelInput = document.getElementById("apply-label");
   const resultsEl = document.getElementById("apply-results");
-  renderApplyResults(resultsEl, "");
+  renderApplyResults(resultsEl, applyDraft.text);
+
+  jobtext.addEventListener("input", () => { applyDraft.text = jobtext.value; });
+  labelInput.addEventListener("input", () => { applyDraft.label = labelInput.value; });
 
   document.getElementById("apply-analyse").addEventListener("click", () => {
+    applyDraft.text = jobtext.value;
     renderApplyResults(resultsEl, jobtext.value);
     resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  document.getElementById("apply-save").addEventListener("click", () => {
-    const label = document.getElementById("apply-label").value.trim();
+  function saveCurrent(asNew) {
+    const label = labelInput.value.trim();
     if (!jobtext.value.trim()) { toast("Paste a job spec first"); return; }
     if (!label) { toast("Give it a label first"); return; }
     const { matched, gaps } = analyseJobSpec(jobtext.value);
     const list = loadApplications();
-    list.unshift({ label, date: new Date().toISOString(), matchedCount: matched.length, gapCount: gaps.length, text: jobtext.value.slice(0, 4000), status: "not-sent" });
+    const fields = { label, matchedCount: matched.length, gapCount: gaps.length, text: jobtext.value.slice(0, 4000) };
+    if (!asNew && applyDraft.editIndex !== null && list[applyDraft.editIndex]) {
+      /* Keep everything the tracker owns — status, notes, the follow-up date
+         and the original date applied — and replace only what came from the
+         box above. Re-analysing on save is the point: the match counts move
+         as the evidence bank grows. */
+      list[applyDraft.editIndex] = { ...list[applyDraft.editIndex], ...fields, isExample: false };
+      toast("Updated");
+    } else {
+      list.unshift({ ...fields, date: new Date().toISOString(), status: "not-sent", notes: "", nextAction: "" });
+      applyDraft.editIndex = 0;
+      toast("Saved");
+    }
     saveApplications(list);
-    toast("Saved");
     renderApply();
-  });
+    renderHome();
+  }
+  document.getElementById("apply-save").addEventListener("click", () => saveCurrent(false));
+  const saveNewBtn = document.getElementById("apply-save-new");
+  if (saveNewBtn) saveNewBtn.addEventListener("click", () => saveCurrent(true));
 
   const historyEl = document.getElementById("apply-history");
   if (historyEl) {
@@ -1868,38 +2146,93 @@ function renderApply() {
     if (summaryEl) {
       summaryEl.textContent = APPLICATION_STATUSES.filter(s => counts[s.key]).map(s => `${counts[s.key]} ${s.label.toLowerCase()}`).join(" · ");
     }
-    historyEl.innerHTML = saved.map((a, i) => `
-      <div class="card" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:120px;">
-          <div style="font-weight:650; font-size:0.92rem;">${esc(a.label)}${a.isExample ? ` <span class="status-chip not-sent" style="text-transform:none; font-weight:600;">Example — delete any time</span>` : ""}</div>
-          <div style="font-size:0.78rem; color:var(--ink-faint);">${new Date(a.date).toLocaleDateString()} · ${a.matchedCount} matched, ${a.gapCount} to address</div>
+    const todayKey = new Date().toISOString().slice(0, 10);
+    historyEl.innerHTML = saved.map((a, i) => {
+      const overdue = a.nextAction && a.nextAction <= todayKey && !["rejected", "withdrawn", "offer"].includes(a.status || "not-sent");
+      return `
+      <div class="card ${applyDraft.editIndex === i ? "editing" : ""}">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:120px;">
+            <div style="font-weight:650; font-size:0.92rem;">${esc(a.label)}${a.isExample ? ` <span class="src-chip">Example — delete any time</span>` : ""}</div>
+            <div style="font-size:0.78rem; color:var(--ink-faint);">${new Date(a.date).toLocaleDateString()} · ${a.matchedCount} matched, ${a.gapCount} to address${a.nextAction ? ` · <span class="${overdue ? "due-flag" : ""}">${overdue ? "chase by" : "next step by"} ${new Date(a.nextAction).toLocaleDateString()}</span>` : ""}</div>
+          </div>
+          <span class="status-chip ${a.status || "not-sent"}">${esc((APPLICATION_STATUSES.find(s => s.key === (a.status || "not-sent")) || APPLICATION_STATUSES[0]).label)}</span>
+          <select class="status-select" data-status="${i}" aria-label="Status for ${esc(a.label)}">
+            ${APPLICATION_STATUSES.map(s => `<option value="${s.key}" ${(a.status || "not-sent") === s.key ? "selected" : ""}>${esc(s.label)}</option>`).join("")}
+          </select>
+          <button class="btn-mini" data-reload="${i}" title="Load back into the box to re-analyse or edit">${ICONS.chevron}</button>
+          <button class="btn-mini" data-remove="${i}" title="Delete">✕</button>
         </div>
-        <span class="status-chip ${a.status || "not-sent"}">${esc((APPLICATION_STATUSES.find(s => s.key === (a.status || "not-sent")) || APPLICATION_STATUSES[0]).label)}</span>
-        <select class="status-select" data-status="${i}">
-          ${APPLICATION_STATUSES.map(s => `<option value="${s.key}" ${(a.status || "not-sent") === s.key ? "selected" : ""}>${esc(s.label)}</option>`).join("")}
-        </select>
-        <button class="btn-mini" data-reload="${i}" title="Load back into the box">${ICONS.chevron}</button>
-        <button class="btn-mini" data-remove="${i}" title="Delete">✕</button>
-      </div>`).join("");
+        <details class="disclose" style="margin-top:10px;">
+          <summary>${ICONS.chevron} Notes &amp; next step${a.notes ? " · has notes" : ""}</summary>
+          <div class="field" style="margin-top:10px;">
+            <label for="app-note-${i}">Notes <span class="hint">(who you spoke to, what was said, what to mention next time)</span></label>
+            <textarea id="app-note-${i}" rows="3" data-note="${i}" placeholder="e.g. Spoke to Sam on the 4th — they want to see the events portfolio before interviewing.">${esc(a.notes || "")}</textarea>
+          </div>
+          <div class="field">
+            <label for="app-next-${i}">Next step by</label>
+            <input type="date" id="app-next-${i}" data-next="${i}" value="${esc(a.nextAction || "")}" />
+          </div>
+          <p class="save-note">Saves as you type. Anything dated today or earlier shows up on the Home tab as a chase.</p>
+        </details>
+      </div>`;
+    }).join("");
+
     historyEl.querySelectorAll("[data-reload]").forEach(b => b.addEventListener("click", () => {
-      const item = saved[parseInt(b.dataset.reload, 10)];
-      jobtext.value = item.text;
-      renderApplyResults(resultsEl, item.text);
-      document.getElementById("apply-label").value = item.label;
+      const idx = parseInt(b.dataset.reload, 10);
+      const item = saved[idx];
+      applyDraft = { text: item.text, label: item.label, editIndex: idx };
+      renderApply();
+      /* In web view it's #main that scrolls, not the window — scrolling only
+         the window here left the reloaded spec off-screen on desktop. */
+      document.getElementById("main").scrollTo({ top: 0, behavior: "smooth" });
       window.scrollTo({ top: 0, behavior: "smooth" });
+      toast("Loaded back in");
     }));
     historyEl.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", () => {
+      const idx = parseInt(b.dataset.remove, 10);
       const list = loadApplications();
-      list.splice(parseInt(b.dataset.remove, 10), 1);
+      if (!confirm(`Delete "${list[idx].label}"? This can't be undone.`)) return;
+      list.splice(idx, 1);
       saveApplications(list);
+      if (applyDraft.editIndex === idx) applyDraft.editIndex = null;
+      else if (applyDraft.editIndex !== null && applyDraft.editIndex > idx) applyDraft.editIndex--;
       renderApply();
+      renderHome();
     }));
+    /* Status, notes and the follow-up date all write straight to storage and
+       update only what changed. A full re-render here would close the panel
+       being typed into and drop the job spec pasted above it. */
     historyEl.querySelectorAll("[data-status]").forEach(sel => sel.addEventListener("change", () => {
       const list = loadApplications();
       const idx = parseInt(sel.dataset.status, 10);
       list[idx].status = sel.value;
       saveApplications(list);
-      renderApply();
+      const chip = sel.parentElement.querySelector(".status-chip");
+      chip.className = `status-chip ${sel.value}`;
+      chip.textContent = (APPLICATION_STATUSES.find(x => x.key === sel.value) || APPLICATION_STATUSES[0]).label;
+      renderHome();
+    }));
+    let noteTimer = null;
+    historyEl.querySelectorAll("[data-note]").forEach(area => {
+      const commit = () => {
+        const list = loadApplications();
+        const idx = parseInt(area.dataset.note, 10);
+        if (!list[idx]) return;
+        list[idx].notes = area.value;
+        saveApplications(list);
+      };
+      area.addEventListener("input", () => { clearTimeout(noteTimer); noteTimer = setTimeout(commit, 400); });
+      area.addEventListener("blur", () => { clearTimeout(noteTimer); commit(); });
+    });
+    historyEl.querySelectorAll("[data-next]").forEach(input => input.addEventListener("change", () => {
+      const list = loadApplications();
+      const idx = parseInt(input.dataset.next, 10);
+      if (!list[idx]) return;
+      list[idx].nextAction = input.value;
+      saveApplications(list);
+      renderHome();
+      toast(input.value ? "Follow-up set" : "Follow-up cleared");
     }));
   }
 }
@@ -1918,6 +2251,14 @@ function renderToolkit() {
   const done = TOOLKIT_CHECKLIST_TEMPLATE.filter(i => checklist[i.id]).length;
   const pct = Math.round((done / TOOLKIT_CHECKLIST_TEMPLATE.length) * 100);
   const log = loadExperienceLog();
+  /* "12 entries" says less than "12 entries, covering Mar 2027 – Sep 2029" —
+     the span is the bit that reads as a track record. */
+  const logDates = log.map(e => e.date).filter(Boolean).sort();
+  const logSpan = logDates.length
+    ? (logDates[0] === logDates[logDates.length - 1]
+        ? fmtDate(new Date(logDates[0]))
+        : `${fmtDate(new Date(logDates[0]))} – ${fmtDate(new Date(logDates[logDates.length - 1]))}`)
+    : "";
 
   el.innerHTML = `
     <div class="eyebrow">${ICONS.check} Prep</div>
@@ -1960,7 +2301,10 @@ function renderToolkit() {
         </div>
       </div>
       ${log.length ? `
-      <p class="page-lede" style="margin-bottom:10px;">${log.length} entr${log.length === 1 ? "y" : "ies"} logged so far.</p>
+      <div class="section-head" style="margin-bottom:10px;">
+        <p class="page-lede" style="margin:0;">${log.length} entr${log.length === 1 ? "y" : "ies"} logged so far${logSpan ? `, covering ${esc(logSpan)}` : ""}. The <strong>Apply</strong> tab matches job specs against these too, alongside everything built in.</p>
+        <button class="btn ghost small" id="log-copy" style="flex:none;">${ICONS.copy} Copy as CV bullets</button>
+      </div>
       <div class="stack" id="log-list">
         ${log.map((e, i) => {
           const place = LOG_PLACES.find(p => p.key === e.country) || LOG_PLACES[4];
@@ -1985,13 +2329,36 @@ function renderToolkit() {
       </div>
     </section>
   `;
+  /* Ticking a box used to re-render the whole tab, which threw away a
+     half-typed log entry, an unsaved note and the focus ring along with it.
+     Update just the row and the progress bar instead — nothing else on this
+     tab depends on a checkbox. */
+  const progressBar = el.querySelector(".progress-row .progress span");
+  const progressPct = el.querySelector(".progress-row .pct");
+  function syncChecklistProgress() {
+    const state = loadCheck();
+    const n = TOOLKIT_CHECKLIST_TEMPLATE.filter(i => state[i.id]).length;
+    const p = Math.round((n / TOOLKIT_CHECKLIST_TEMPLATE.length) * 100);
+    if (progressBar) progressBar.style.width = `${p}%`;
+    if (progressPct) progressPct.textContent = `${p}%`;
+  }
   TOOLKIT_CHECKLIST_TEMPLATE.forEach(item => {
-    document.getElementById(`chk-${item.id}`).addEventListener("change", e => {
-      const s = loadCheck(); s[item.id] = e.target.checked; saveCheck(s); renderToolkit();
+    const box = document.getElementById(`chk-${item.id}`);
+    box.addEventListener("change", e => {
+      const state = loadCheck();
+      state[item.id] = e.target.checked;
+      saveCheck(state);
+      box.closest(".check-row").classList.toggle("done", e.target.checked);
+      syncChecklistProgress();
+      renderHome();
     });
   });
   let t = null;
-  document.getElementById("notes-area").addEventListener("input", e => { clearTimeout(t); t = setTimeout(() => saveNotes(e.target.value), 400); });
+  const notesArea = document.getElementById("notes-area");
+  notesArea.addEventListener("input", e => { clearTimeout(t); t = setTimeout(() => saveNotes(e.target.value), 400); });
+  /* Flush immediately on the way out too — a 400ms debounce is a long time if
+     the next thing that happens is closing the app or switching tabs. */
+  notesArea.addEventListener("blur", e => { clearTimeout(t); saveNotes(e.target.value); });
 
   document.getElementById("log-add").addEventListener("click", () => {
     const title = document.getElementById("log-title").value.trim();
@@ -2007,14 +2374,31 @@ function renderToolkit() {
     list.unshift(entry);
     list.sort((a, b) => b.date.localeCompare(a.date));
     saveExperienceLog(list);
-    toast("Logged");
+    toast("Logged — the Apply tab can match on this now too");
     renderToolkit();
+    renderHome();
   });
+  /* The whole point of keeping this for five years is being able to get it
+     back out again. The JSON backup in Settings restores a device; this gets
+     the log into a CV or an email in one tap. */
+  const logCopy = document.getElementById("log-copy");
+  if (logCopy) logCopy.addEventListener("click", () => {
+    const lines = loadExperienceLog().map(e => {
+      const place = LOG_PLACES.find(pl => pl.key === e.country);
+      const where = place && place.key !== "other" ? `, ${place.short}` : "";
+      const when = e.date ? new Date(e.date).toLocaleDateString(undefined, { year: "numeric", month: "long" }) : "";
+      return `• ${e.title}${where}${when ? ` (${when})` : ""}${e.detail ? ` — ${e.detail}` : ""}`;
+    });
+    copyText(lines.join("\n"), logCopy);
+  });
+
   const logList = document.getElementById("log-list");
   if (logList) {
     logList.querySelectorAll("[data-log-remove]").forEach(b => b.addEventListener("click", () => {
       const list = loadExperienceLog();
-      list.splice(parseInt(b.dataset.logRemove, 10), 1);
+      const idx = parseInt(b.dataset.logRemove, 10);
+      if (!confirm(`Delete "${list[idx].title}" from the log? This can't be undone.`)) return;
+      list.splice(idx, 1);
       saveExperienceLog(list);
       renderToolkit();
     }));
@@ -2254,7 +2638,10 @@ function renderAll() {
 }
 renderNav();
 renderAll();
-switchTab("home");
+/* A shared or bookmarked #apply link should open on Apply, not bounce to Home. */
+const bootTab = (location.hash || "").slice(1);
+switchTab(TABS.some(t => t.key === bootTab) ? bootTab : "home", true);
+history.replaceState({ tab: TABS.some(t => t.key === bootTab) ? bootTab : "home" }, "", location.hash || "#home");
 </script>
 
 <script>
