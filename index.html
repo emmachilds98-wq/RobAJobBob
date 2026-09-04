@@ -2022,6 +2022,7 @@ function renderToolkit() {
 }
 
 /* ===================================== PROFILE ===================================== */
+let ceEditIndex = null;
 function renderProfile() {
   const el = document.getElementById("view-profile");
   const photo = loadPhoto();
@@ -2091,12 +2092,14 @@ function renderProfile() {
       <div class="section-head"><h2>Your own talking points</h2></div>
       <p class="page-lede" style="margin-bottom:12px;">The Apply tab's matching starts from what's already known here, but it doesn't have to stay fixed to it — add anything else worth using in an application (a project, a specific achievement, a skill that isn't captured above) and it's matched against every job spec from then on, right alongside everything else, including in the draft pitch and CV bullets.</p>
       <div class="card" style="margin-bottom:16px;">
-        <div class="field"><label for="ce-headline">Headline <span class="hint">(short label for the match card)</span></label><input type="text" id="ce-headline" placeholder="e.g. Ran a 200-person charity gig from scratch" /></div>
-        <div class="field"><label for="ce-detail">The detail <span class="hint">(shown when this matches, and used as a CV bullet)</span></label><textarea id="ce-detail" rows="2" placeholder="Write it however reads naturally — third person is fine"></textarea></div>
-        <div class="field"><label for="ce-pitch">Pitch phrasing <span class="hint">(optional — first-person, for the cover letter; defaults to the detail above)</span></label><textarea id="ce-pitch" rows="2" placeholder="e.g. I planned and ran a 200-person charity gig from scratch, from booking to budget to the night itself."></textarea></div>
-        <div class="field"><label for="ce-keywords">Keywords to match on <span class="hint">(comma-separated — what a job spec would actually say)</span></label><input type="text" id="ce-keywords" placeholder="e.g. events, budget, stakeholder, planning" /></div>
+        ${ceEditIndex !== null ? `<p class="save-note" style="margin:0 0 10px;">Editing — changes replace this entry once saved.</p>` : ""}
+        <div class="field"><label for="ce-headline">Headline <span class="hint">(short label for the match card)</span></label><input type="text" id="ce-headline" placeholder="e.g. Ran a 200-person charity gig from scratch" value="${ceEditIndex !== null ? esc(customEvidence[ceEditIndex].headline) : ""}" /></div>
+        <div class="field"><label for="ce-detail">The detail <span class="hint">(shown when this matches, and used as a CV bullet)</span></label><textarea id="ce-detail" rows="2" placeholder="Write it however reads naturally — third person is fine">${ceEditIndex !== null ? esc(customEvidence[ceEditIndex].detail) : ""}</textarea></div>
+        <div class="field"><label for="ce-pitch">Pitch phrasing <span class="hint">(optional — first-person, for the cover letter; defaults to the detail above)</span></label><textarea id="ce-pitch" rows="2" placeholder="e.g. I planned and ran a 200-person charity gig from scratch, from booking to budget to the night itself.">${ceEditIndex !== null && customEvidence[ceEditIndex].pitch !== customEvidence[ceEditIndex].detail ? esc(customEvidence[ceEditIndex].pitch) : ""}</textarea></div>
+        <div class="field"><label for="ce-keywords">Keywords to match on <span class="hint">(comma-separated — what a job spec would actually say)</span></label><input type="text" id="ce-keywords" placeholder="e.g. events, budget, stakeholder, planning" value="${ceEditIndex !== null ? esc(customEvidence[ceEditIndex].keywords.join(", ")) : ""}" /></div>
         <div class="btn-row">
-          <button class="btn" id="ce-add">${ICONS.check} Add this</button>
+          <button class="btn" id="ce-add">${ceEditIndex !== null ? `${ICONS.check} Save changes` : `${ICONS.check} Add this`}</button>
+          ${ceEditIndex !== null ? `<button class="btn ghost" id="ce-cancel">Cancel</button>` : ""}
         </div>
       </div>
       ${customEvidence.length ? `
@@ -2108,6 +2111,7 @@ function renderProfile() {
               <p style="font-size:0.85rem; color:var(--ink-soft); margin:4px 0 0;">${esc(c.detail)}</p>
               <div style="font-size:0.76rem; color:var(--ink-faint); margin-top:6px;">Matches on: ${c.keywords.map(k => esc(k)).join(", ")}</div>
             </div>
+            <button class="btn-mini" data-ce-edit="${i}" title="Edit">✎</button>
             <button class="btn-mini" data-ce-remove="${i}" title="Delete">✕</button>
           </div>`).join("")}
       </div>` : `<p class="page-lede">Nothing added yet — everything the Apply tab knows right now is what's built in above.</p>`}
@@ -2207,18 +2211,34 @@ function renderProfile() {
     if (!headline || !detail) { toast("Give it a headline and a detail first"); return; }
     if (!keywords.length) { toast("Add at least one keyword to match it on"); return; }
     const list = loadCustomEvidence();
-    list.unshift({ id: `custom-${Date.now()}`, headline, detail, pitch: pitch || detail, keywords, isCustom: true });
-    saveCustomEvidence(list);
-    toast("Added");
+    if (ceEditIndex !== null) {
+      const existing = list[ceEditIndex];
+      list[ceEditIndex] = { ...existing, headline, detail, pitch: pitch || detail, keywords };
+      ceEditIndex = null;
+      saveCustomEvidence(list);
+      toast("Saved");
+    } else {
+      list.unshift({ id: `custom-${Date.now()}`, headline, detail, pitch: pitch || detail, keywords, isCustom: true });
+      saveCustomEvidence(list);
+      toast("Added");
+    }
     renderProfile();
   });
+  const ceCancel = document.getElementById("ce-cancel");
+  if (ceCancel) ceCancel.addEventListener("click", () => { ceEditIndex = null; renderProfile(); });
   const ceList = document.getElementById("ce-list");
   if (ceList) {
     ceList.querySelectorAll("[data-ce-remove]").forEach(b => b.addEventListener("click", () => {
       const list = loadCustomEvidence();
       list.splice(parseInt(b.dataset.ceRemove, 10), 1);
+      if (ceEditIndex === parseInt(b.dataset.ceRemove, 10)) ceEditIndex = null;
       saveCustomEvidence(list);
       renderProfile();
+    }));
+    ceList.querySelectorAll("[data-ce-edit]").forEach(b => b.addEventListener("click", () => {
+      ceEditIndex = parseInt(b.dataset.ceEdit, 10);
+      renderProfile();
+      document.getElementById("ce-headline").scrollIntoView({ behavior: "smooth", block: "center" });
     }));
   }
 }
