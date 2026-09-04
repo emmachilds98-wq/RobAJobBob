@@ -13,6 +13,8 @@ TreebySound and helps him think through three things at once:
    and a wider set of generalist corporate options (project coordination, procurement, business
    operations, recruitment, marketing) that don't need years of retraining to start, so there's a
    genuinely broad set of directions on the table, not just the ones tied to the music industry.
+   A filter (Music & Events / Corporate / Hospitality & Travel) keeps 13 cards easy to scan
+   instead of one long scroll.
 2. **A 5-year working holiday** across New Zealand, Australia and Canada — sequenced against
    realistic working-holiday visa lengths (with UK-specific rules baked in, since that's his
    passport), with a Casual Jobs Explorer naming real platforms and employers per country, not
@@ -21,8 +23,11 @@ TreebySound and helps him think through three things at once:
    history, surfaces what to lead with, flags what's worth covering off first (with free options
    named where they exist), and drafts a tailored pitch, CV bullets and STAR-format interview
    prep — no external AI calls, just a transparent keyword-matching engine running entirely
-   on-device. Saved applications track a real status (applied / interview / offer / rejected),
-   so it works as a lightweight job-search tracker, not just a pitch-generator history.
+   on-device. It isn't fixed to what was known when this was built either: a "Your own talking
+   points" section on the You tab lets him add anything else worth using — a project, a specific
+   achievement — and it's matched right alongside everything else from then on. Saved
+   applications track a real status (applied / interview / offer / rejected), so it works as a
+   lightweight job-search tracker, not just a pitch-generator history.
 4. **What happens after** — the Kit tab's Experience Log lets him record a dated entry every time
    he works something, anywhere, optionally tagged to a Career Compass path. Five years from now
    that's real, specific evidence for whatever comes next — travelling on, a role picked up
@@ -78,7 +83,10 @@ GitHub Pages, and easy to hand-edit without a build step.
   Search for the `DATA` comment block near the top of the `<script>` section to find:
   - `EMPLOYMENT_HISTORY` — his real, dated work history (source of truth for the Apply tab)
   - `EVIDENCE_BANK` — keyword → real-experience mappings the Apply tab matches job specs against,
-    each also carrying a `star` field (an interview-prep prompt for that piece of evidence)
+    each also carrying a `star` field (an interview-prep prompt for that piece of evidence).
+    Anything he adds himself via the You tab's "Your own talking points" lives in
+    `localStorage` under the same shape and is merged in at match time — `EVIDENCE_BANK` alone
+    isn't the full picture once he's used that.
   - `GAP_SUGGESTIONS` — common job-spec asks (certs etc.) not covered by the evidence bank, each
     with a real next step and whether it's free
   - `JOB_SEARCH_PLATFORMS` — real job boards/agencies, grouped UK-corporate vs AU/NZ/Canada
