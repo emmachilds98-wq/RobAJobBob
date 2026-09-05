@@ -3,10 +3,10 @@
 A personal career & travel planning app built for one specific person — Rob (Robert Kirkpatrick),
 not a generic product. It's an installable, phone-first PWA — built to live on his iPhone home
 screen, with a full responsive web view too — that sits alongside his day-to-day life at
-TreebySound and helps him think through three things at once:
+Bespoke Events and helps him think through three things at once:
 
 1. **Long-term career** — he's not sure yet, and that's fine. The Career Compass turns his real
-   background (TreebySound, running the bar solo at Cheeky Clucker, a Music Management degree
+   background (Bespoke Events, running the bar solo at Cheeky Clucker, a Music Management degree
    from BIMM, and real label/artist-management/promotions roles at Open Room Records, Sleeping
    Dog Promotions, Bang Bang Merch and Madway Brewery) into 13 concrete, realistic directions,
    each with the actual steps to get there — spanning the obvious music/events/hospitality paths
@@ -33,7 +33,7 @@ TreebySound and helps him think through three things at once:
 4. **Building a network from nothing** — the working assumption is now that he has no live
    professional contacts. The roles at Open Room Records, Sleeping Dog Promotions, Bang Bang
    Merch, Madway Brewery, Foot Asylum and Tesco all ended around 2022 and none of them is a
-   relationship any more; what's actually live is Dave at TreebySound, and possibly someone at
+   relationship any more; what's actually live is Dave at Bespoke Events, and possibly someone at
    Cheeky Clucker. The **People** tab treats that as the starting position rather than pretending
    otherwise — a contacts log with a gone-quiet nudge and a referee tracker, a ranked list of who
    from his own history is worth messaging first (dormant is not the same as dead), and a
@@ -167,7 +167,7 @@ keywords like "av" match as whole words only, so they don't false-positive insid
   additions can lift a score but never lower one — scoring against the merged bank meant every
   piece of real evidence he added made every job look like a *worse* fit, which is backwards.
 - **What matches** — which parts of his real history line up, sorted by how strongly each one
-  matched, each traceable back to a named employer (TreebySound, Cheeky Clucker, Foot Asylum,
+  matched, each traceable back to a named employer (Bespoke Events, Cheeky Clucker, Foot Asylum,
   Tesco, Open Room Records, Sleeping Dog Promotions, Bang Bang Merch, Madway Brewery) or, for
   the two self-extending sources, labelled *Added by you* / *From your Experience Log* so a hit
   off something recorded last month is as traceable as one off the built-in bank.
@@ -300,3 +300,37 @@ one scrolling region inside it, and the tab bar as an ordinary flex row that can
 wrongly because it isn't positioned at all. If you change `.app-frame`'s height or add a second
 scrolling ancestor, re-check that the tab bar and the settings sheet are still on screen after
 scrolling a long tab — that's the regression to watch for.
+
+## Links, and what "verified" can honestly mean here
+
+Every named platform in the Jobs and Apply tabs now carries the address to actually reach it, so
+a plan made on the sofa becomes an open tab rather than a thing to look up later. Casual-job
+cards show an **Apply here** row on the card face rather than folded away behind the disclosure,
+because the links are the actionable part.
+
+Two deliberate limits, both worth understanding before adding more:
+
+- **Only long-standing top-level domains are linked.** Deep links into a category page or a saved
+  search rot within months, and a dead link is worse than a name you can search. Anything niche
+  — regional crewing agencies, individual cruise lines — stays a plain name on purpose, not by
+  oversight.
+- **These were written from knowledge, not opened and checked.** The environment this is built in
+  has no outbound network access, so nothing here has been confirmed live. They carry the same
+  `FACTS_LAST_VERIFIED` caveat as every other fact in the app: right when written, worth a glance
+  before relying on. If you can open them, do, and bump that constant.
+
+The social row is deliberate too. A lot of casual events and hospitality work in all three
+countries never reaches a job board — it goes out on a venue's Instagram story or in a city's
+backpacker Facebook group. Naming those as a channel matters more than any single link.
+
+## LinkedIn
+
+The People tab's reconnect playbook sends Rob to message people on LinkedIn, so the app now
+covers what those people find when they click through — which, after four quiet years, answers
+"what happened to Rob" before he gets to. It's sequenced first on the tab for that reason.
+
+Alongside the checklist (headline, photo and banner, About, every role listed, skills because
+search runs on them, private "open to work", custom URL) it generates a **draft headline and
+About section** from `DEFAULT_PROFILE` and `EMPLOYMENT_HISTORY`, with copy buttons — the same
+pattern the Apply tab uses for pitches. They're drafts to edit into his own voice, not text to
+paste flat, and they update on their own if the profile data changes.
