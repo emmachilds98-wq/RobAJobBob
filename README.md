@@ -139,6 +139,12 @@ GitHub Pages, and easy to hand-edit without a build step.
   - `JOB_SEARCH_PLATFORMS` — real job boards/agencies, grouped UK-corporate vs AU/NZ/Canada
   - `CAREER_PATHS`, `CASUAL_JOBS`, `VISA_DEFAULTS`, `TOOLKIT_CHECKLIST_TEMPLATE` — the rest of
     the content. **These are the blocks to edit** if specifics change.
+  The one piece of layout worth knowing before editing the CSS: `.app-frame` is **exactly one
+  screen tall** (`height: 100dvh`) and is a flex column — top strip, then `.webshell` as the only
+  scrolling region, then the tab bar. Everything pinned to the app (the settings sheet, its
+  backdrop, the toast) is positioned against that frame. Don't give the frame `min-height` or let
+  it grow with content: that reintroduces the bug described below, where "bottom of the app"
+  silently means "bottom of an 11,000-pixel document".
 - `manifest.webmanifest` / `sw.js` / `robajobbob-icon.png` — makes it an installable,
   offline-capable PWA. `sw.js` also powers the Settings panel's "use previous version"
   rollback by keeping one snapshot of the app from before the last update.
@@ -192,9 +198,12 @@ LinkedIn Jobs, Indeed UK, Reed.co.uk, Totaljobs, CV-Library and Hays/Reed Specia
 Recruitment/Michael Page/Adecco/Randstad for UK corporate roles now, plus Seek.com.au, Seek.co.nz,
 Trade Me Jobs, Indeed.ca and Job Bank Canada for once he's travelling.
 
-## Settings (the cog, top right)
+## Settings (the cog, top right — or the button on the You tab)
 
-Tap the gear icon on any screen for:
+Reachable two ways: the ⚙ button in the top strip, which is on screen on every tab, or a
+labelled **Settings & appearance** button on the **You** tab, since that's where people look for
+personalisation. It opens as a sheet with a pinned header, so **Done** is always reachable
+without scrolling back up through it.
 
 - **Colour theme** — 15 full-app colour themes (not just an accent swap — background, text
   and all four accent colours shift together), generated at runtime from one seed hue per
@@ -269,3 +278,25 @@ Alongside that:
   second referee is hard to reach (character references, employment verification), and the Kit
   checklist has getting referee contact details *before leaving the UK* as its own item: a
   five-minute conversation in Kent, a genuinely hard problem from Australia three years later.
+
+## A note on the app shell
+
+`.app-frame` is exactly one screen tall and scrolls internally. That sounds like a detail and
+isn't: it used to have `min-height` and grow to the height of the page, and everything pinned to
+the "bottom of the app" was positioned against it. On a long tab — the Route tab renders around
+11,000 pixels — that meant:
+
+- the **tab bar** sat roughly 10,000px below the fold, so the app's primary navigation was only
+  reachable by scrolling to the very bottom of whatever tab you were on;
+- the **settings sheet** opened somewhere far below the viewport, and scrolling down would drag
+  you into it part-way up the screen on your way past.
+
+Both were invisible above 560px, where the frame is a bounded phone mockup, and invisible to
+browser automation, because clicking an element scrolls it into view first. It only shows up when
+a person actually scrolls a real phone.
+
+The fix is structural rather than a pile of `position: fixed` patches: one screen-sized frame,
+one scrolling region inside it, and the tab bar as an ordinary flex row that can't be positioned
+wrongly because it isn't positioned at all. If you change `.app-frame`'s height or add a second
+scrolling ancestor, re-check that the tab bar and the settings sheet are still on screen after
+scrolling a long tab — that's the regression to watch for.
