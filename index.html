@@ -182,6 +182,43 @@
   .bridge-row .to { color: var(--teal-ink); font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 0.83rem; }
   .bridge-row .to .icon { width: 15px; height: 15px; }
 
+  /* ---------------- Skills tab ----------------
+     Three registers of the same claim, stacked, each individually copyable —
+     the whole point is grabbing the right one straight into whatever field
+     the application is asking for. */
+  .lookup { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-m); padding: 16px; box-shadow: var(--shadow-sm); margin-bottom: 18px; }
+  .lookup label { display: block; font-size: 0.84rem; font-weight: 650; color: var(--ink); margin-bottom: 4px; }
+  .lookup .hint { display: block; font-size: 0.78rem; color: var(--ink-faint); font-weight: 500; margin-bottom: 10px; }
+  .lookup input { width: 100%; border: 1.5px solid var(--line); border-radius: var(--radius-s); padding: 11px 13px; font: inherit; font-size: 0.9rem; background: var(--paper); color: var(--ink); }
+  .lookup input:focus { outline: none; border-color: var(--coral); }
+  .lookup-result { font-size: 0.8rem; color: var(--ink-faint); margin: 10px 0 0; }
+  .lookup-result strong { color: var(--ink); }
+
+  .skill-head { display: flex; gap: 11px; align-items: flex-start; margin-bottom: 8px; }
+  .skill-emoji { font-size: 1.35rem; line-height: 1.2; flex: none; }
+  .skill-head h3 { font-size: 0.98rem; line-height: 1.3; margin: 0; }
+  .skill-what { font-size: 0.84rem; color: var(--ink-soft); margin: 0 0 12px; }
+
+  .proof-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 6px; }
+  /* Flowing text rather than a two-column grid: employer names run from three
+     letters to twenty, and aligning the lines off the longest one left every
+     short row stranded halfway across the card. */
+  .proof-list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .proof-list li { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; }
+  .proof-where { font-weight: 650; color: var(--ink); }
+
+  .say-block { border: 1px solid var(--line); border-radius: var(--radius-s); padding: 11px 12px; margin-bottom: 8px; background: var(--paper); }
+  .say-block:last-of-type { margin-bottom: 0; }
+  .say-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 5px; }
+  .say-kind { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--coral-ink); }
+  .say-copy { border: 1px solid var(--line); background: var(--paper-raised); color: var(--ink-soft); border-radius: 999px; font-size: 0.72rem; font-weight: 650; padding: 4px 11px; cursor: pointer; flex: none; }
+  .say-copy:active { transform: scale(0.96); }
+  .say-text { font-size: 0.85rem; color: var(--ink-soft); margin: 0; line-height: 1.55; }
+
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+  .skill-tag { border: 1.5px solid var(--line); background: var(--paper); color: var(--ink-soft); border-radius: 999px; padding: 5px 11px; font-size: 0.78rem; font-weight: 600; cursor: pointer; text-align: left; }
+  .skill-tag:active { transform: scale(0.97); }
+
   .path-card { display: flex; flex-direction: column; gap: 10px; }
   .path-top { display: flex; align-items: center; gap: 10px; }
   .path-badge { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--paper-sunk); color: var(--ink); font-size: 1.2rem; }
@@ -314,8 +351,14 @@
   /* ---------------- bottom nav ---------------- */
   .bottomnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--paper-raised); border-top: 1px solid var(--line); box-shadow: 0 -6px 20px -12px rgba(24,35,56,0.3); padding-bottom: env(safe-area-inset-bottom, 0); }
   .bottomnav-inner { display: flex; }
-  .navbtn { flex: 1; background: none; border: none; padding: 9px 4px 7px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--ink-faint); font-size: 0.64rem; font-weight: 600; }
-  .navbtn .icon { width: 21px; height: 21px; }
+  /* Eight tabs on a 320px-wide phone is about 39px each, so the horizontal
+     padding goes and the label is allowed to sit tight rather than wrap. */
+  .navbtn { flex: 1; min-width: 0; background: none; border: none; padding: 9px 1px 7px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--ink-faint); font-size: 0.58rem; font-weight: 600; letter-spacing: -0.02em; }
+  .navbtn span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .navbtn .icon { width: 20px; height: 20px; }
+  /* Eight labels stop fitting on a 320px-wide phone before they stop fitting
+     anywhere else, so that width alone gets the smaller type. */
+  @media (max-width: 360px) { .navbtn { font-size: 0.55rem; } .navbtn .icon { width: 19px; height: 19px; } }
   .navbtn.active { color: var(--coral-ink); }
 
   .toast { position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%) translateY(14px); background: var(--hero-bg); color: var(--hero-fg); padding: 10px 20px; border-radius: 999px; font-size: 0.84rem; font-weight: 600; box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; z-index: 60; }
@@ -813,6 +856,7 @@
       <section id="view-roadmap" class="view"></section>
       <section id="view-jobs" class="view"></section>
       <section id="view-apply" class="view"></section>
+      <section id="view-skills" class="view"></section>
       <section id="view-toolkit" class="view"></section>
       <section id="view-profile" class="view"></section>
       <p class="footnote"><span class="made-by">✈️ Graciously made by Emma for Rob</span> — so he can finally do what he said he would. Not official immigration or career advice. Verify visa details on the official sites before booking anything.</p>
@@ -913,6 +957,7 @@ const ICONS = {
   send: '<svg class="icon" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7.5 3L14 21l7-18Z"/><path d="M10.5 13.5 21 3"/></svg>',
   sparkle: '<svg class="icon" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/></svg>',
   copy: '<svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+  quote: '<svg class="icon" viewBox="0 0 24 24"><path d="M20 14.5A2.5 2.5 0 0 1 17.5 17H10l-4.5 3.2V17A2.5 2.5 0 0 1 4 14.5v-7A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5Z"/><path d="M8.5 9.2h7M8.5 12.4h4.5"/></svg>',
   linkedin: '<svg class="icon" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M7.5 10v6.5M7.5 7.2v.1M11.5 16.5V10M11.5 12.7c0-1.5 1-2.7 2.5-2.7s2.5 1.2 2.5 2.7v3.8" fill="none"/></svg>',
 };
 
@@ -924,7 +969,7 @@ const DEFAULT_PROFILE = {
   phone: "",
   location: "Chatham, Kent, UK",
   currentRole: "Logistics coordinator & on-site support for bespoke events — not audio, tech or management specifically, but the all-rounder who handles shipment deliveries in and outside of normal hours and turns up for hands-on support wherever the event needs it",
-  currentCompany: "TreebySound (working alongside Dave Treeby)",
+  currentCompany: "Bespoke Events",
   education: "BA in Business (Music Management), BIMM Brighton, 2019–2022",
   background: "Led the bar on its own floor at Cheeky Clucker — regularly the supervisor and often ran it entirely solo, including closing up, for a year or more, inside a busy high-street restaurant. Supervisor at Foot Asylum (retail) before that, and Shift Leader at Tesco all the way through the BIMM degree. Alongside the degree: marketing assistant at Bang Bang Merch, Head of Marketing & Assistant Label Manager at Open Room Records, Artist Manager & Promoter at Sleeping Dog Promotions, and business/marketing/promotions assistant at Madway Brewery. A genuine, long-standing music fan outside of work too — gig-going and following bands since his early teens, more recently drawn further into electronic and festival culture (Boomtown among them), and staying close to the current scene day to day through the artists he follows.",
   nationalityNote: "UK citizen",
@@ -962,16 +1007,52 @@ function factsAge() {
 /* Real, dated employment history — the source of truth the Apply tab's
    matching engine and pitch generator both draw on. Kept separate from
    profile.background (a human-readable summary) so it can be rendered as
-   an actual timeline and reasoned about programmatically. */
+   an actual timeline and reasoned about programmatically.
+
+   `cv` is that role written the way a CV writes it: present tense for the
+   current job, past tense for the rest, one claim per line. It belongs here
+   rather than being assembled from SKILL_STORIES, because a skill's wording
+   spans several jobs on purpose ("three separate employers handed me the
+   shift") and pasting that under one employer would put other people's jobs
+   in it. */
 const EMPLOYMENT_HISTORY = [
-  { title: "All-Rounder — Operations & Events Support", company: "TreebySound", period: "Current", detail: "Deliveries, event setup & pack-down, and general operations support across a live-audio/events business, working directly under the owner-operator." },
-  { title: "Bartender & Server", company: "Cheeky Clucker", period: "Jul 2022 – present on your last CV", detail: "Led the bar on its own floor — regularly supervisor, often fully solo including closing, inside a busy high-street restaurant." },
-  { title: "Supervisor", company: "Foot Asylum", period: "Mar 2022 – Jul 2022", detail: "Retail supervisor role — customer service, team leadership, day-to-day store operations." },
-  { title: "Shift Leader", company: "Tesco", period: "Sep 2019 – Mar 2022", detail: "Held throughout the BIMM degree — shift leadership, team coordination, customer service at scale." },
-  { title: "Head of Marketing & Assistant Label Manager", company: "Open Room Records", period: "During BIMM (2019–2022)", detail: "Coordinated releases, press materials and artist promotions; liaised directly with artists and industry professionals." },
-  { title: "Artist Manager & Promoter", company: "Sleeping Dog Promotions", period: "During BIMM (2019–2022)", detail: "Managed and promoted artists' performances; organised promotional events for diverse audiences." },
-  { title: "Marketing Assistant", company: "Bang Bang Merch", period: "During BIMM (2019–2022)", detail: "Executed promotional campaigns for merchandise products; conducted market and competitor analysis." },
-  { title: "Business, Marketing & Promotions Assistant", company: "Madway Brewery", period: "During BIMM (2019–2022)", detail: "Business operations, marketing and promotions experience within a local drinks startup." },
+  { id: "bespoke", title: "Logistics Coordinator & On-Site Events Support", company: "Bespoke Events", period: "Current", detail: "Shipment deliveries in and outside normal hours, on-site setup and pack-down, and hands-on support wherever an event needs it — the all-rounder across a bespoke events business.", cv: [
+    "Coordinate shipment deliveries for bespoke events — scheduling, loading and routing time-critical drops in and outside normal working hours, against event dates that cannot move.",
+    "Set up and pack down event sites on the day, and provide hands-on support wherever the event needs it.",
+    "Work across the supplier and cost side of event delivery — what is hired, what is bought, and what it costs to get it on site.",
+    "Operate as the generalist across a small business, with sight of how logistics, suppliers, on-site production and the client all connect.",
+  ] },
+  { id: "clucker", title: "Bartender & Server", company: "Cheeky Clucker", period: "Jul 2022 – present on your last CV", detail: "Led the bar on its own floor — regularly supervisor, often fully solo including closing, inside a busy high-street restaurant.", cv: [
+    "Ran the bar on its own floor entirely solo, including opening, closing and cash-up procedures, inside a busy high-street restaurant.",
+    "Held supervisor responsibility on the bar — directing service and handling escalations at peak times.",
+    "Resolved customer issues at the point they happened, with no supervisor on the floor to escalate to.",
+  ] },
+  { id: "footasylum", title: "Supervisor", company: "Foot Asylum", period: "Mar 2022 – Jul 2022", detail: "Retail supervisor role — customer service, team leadership, day-to-day store operations.", cv: [
+    "Supervised the retail floor — service standards, team direction and day-to-day store operations.",
+    "Handled customer complaints and escalations as the supervisor on shift.",
+  ] },
+  { id: "tesco", title: "Shift Leader", company: "Tesco", period: "Sep 2019 – Mar 2022", detail: "Held throughout the BIMM degree — shift leadership, team coordination, customer service at scale.", cv: [
+    "Led shifts in a high-volume supermarket for two and a half years, coordinating staff and customer service at scale.",
+    "Acted as the shift's escalation point for customer and operational issues.",
+    "Held the role throughout a full-time degree — alongside study rather than instead of it.",
+  ] },
+  { id: "openroom", title: "Head of Marketing & Assistant Label Manager", company: "Open Room Records", period: "During BIMM (2019–2022)", detail: "Coordinated releases, press materials and artist promotions; liaised directly with artists and industry professionals.", cv: [
+    "Led the label's marketing output as Head of Marketing, alongside assistant label management.",
+    "Coordinated record releases, press materials and artist promotions to fixed release dates.",
+    "Liaised directly with artists and industry professionals on behalf of the label.",
+  ] },
+  { id: "sleepingdog", title: "Artist Manager & Promoter", company: "Sleeping Dog Promotions", period: "During BIMM (2019–2022)", detail: "Managed and promoted artists' performances; organised promotional events for diverse audiences.", cv: [
+    "Managed and promoted artists' live performances, from booking through to the night itself.",
+    "Organised promotional events for a range of audiences, owning turnout as well as delivery.",
+  ] },
+  { id: "bangbang", title: "Marketing Assistant", company: "Bang Bang Merch", period: "During BIMM (2019–2022)", detail: "Executed promotional campaigns for merchandise products; conducted market and competitor analysis.", cv: [
+    "Executed promotional campaigns for merchandise products.",
+    "Conducted market and competitor analysis to inform campaign direction.",
+  ] },
+  { id: "madway", title: "Business, Marketing & Promotions Assistant", company: "Madway Brewery", period: "During BIMM (2019–2022)", detail: "Business operations, marketing and promotions experience within a local drinks startup.", cv: [
+    "Supported business operations, marketing and promotions inside a small drinks startup.",
+    "Worked across several functions at once in a small team, from promotion through to day-to-day operations.",
+  ] },
 ];
 
 /* ===================================== APPLY: matching engine data =====================================
@@ -1022,10 +1103,10 @@ const EVIDENCE_BANK = [
   {
     id: "events-production",
     keywords: ["event", "events", "production", "logistics", "run sheet", "runsheet", "bump-in", "bump in", "bump-out", "bump out", "crew", "stage", "av", "sound", "audio", "operations", "deliveries", "delivery", "equipment", "gear", "setup", "set-up", "pack down", "packdown"],
-    headline: "Hands-on events & operations support at TreebySound",
-    detail: "All-rounder support role across a live-audio/events company — deliveries, event setup and pack-down, and general operations, working directly under the owner-operator.",
-    pitch: "I currently support end-to-end event operations at TreebySound, a live-audio/events company — deliveries, on-site setup/pack-down and general production support.",
-    star: "Pick one event at TreebySound that didn't go smoothly — a tight get-in, a last-minute change, a delivery problem. Situation/Task: what the day actually demanded. Action: what you did to keep it on track. Result: how it landed, and what Dave or the client actually said or did afterward.",
+    headline: "Logistics & on-site events support at Bespoke Events",
+    detail: "Logistics coordinator and on-site all-rounder at Bespoke Events — shipment deliveries in and outside normal hours, event setup and pack-down, and hands-on support wherever the event needs it.",
+    pitch: "I currently coordinate logistics and on-site support for bespoke events — running shipment deliveries in and outside normal hours, and turning up hands-on wherever the event needs it, from setup through to pack-down.",
+    star: "Pick one event at Bespoke Events that didn't go smoothly — a tight get-in, a last-minute change, a delivery problem. Situation/Task: what the day actually demanded. Action: what you did to keep it on track. Result: how it landed, and what the client or your manager actually said or did afterward.",
   },
   {
     id: "driving",
@@ -1047,7 +1128,7 @@ const EVIDENCE_BANK = [
     headline: "Broad, adaptable work history",
     detail: "A genuinely varied work history spanning hospitality, retail and the music industry — used to picking up a new environment fast.",
     pitch: "I've got a genuinely varied work background across hospitality, retail and the music industry, and I'm quick to adapt to a new environment.",
-    star: "Pick a moment you had to switch mode fast — moving between TreebySound, Cheeky Clucker and label work in the same week, say. Situation/Task: what was actually competing for your attention. Action: how you actually handled the switch. Result: what got delivered, and what you'd say this proves about how you work.",
+    star: "Pick a moment you had to switch mode fast — moving between Bespoke Events, Cheeky Clucker and label work in the same week, say. Situation/Task: what was actually competing for your attention. Action: how you actually handled the switch. Result: what got delivered, and what you'd say this proves about how you work.",
   },
 ];
 
@@ -1111,7 +1192,7 @@ const GAP_SUGGESTIONS = [
   { keywords: ["dbs", "background check", "police check", "criminal record check"], label: "DBS / background check", advice: "Might have an old one, but treat it as unconfirmed and expired — a fresh DBS check is quick and cheap to arrange if a role asks for a current one.", free: false },
   { keywords: ["security licence", "crowd control"], label: "Security/crowd control licence", advice: "A state-specific security licence (needed for some AU event/crowd roles) is a paid, multi-day course — only worth it if a specific role requires it.", free: false },
   { keywords: ["digital marketing", "social media manager", "seo", "google ads"], label: "Marketing / social media certification", advice: "Not a blocker given the real marketing experience already, but Google's free Digital Garage \"Fundamentals of Digital Marketing\" or HubSpot Academy's free courses are quick, recognised credentials worth adding.", free: true },
-  { keywords: ["dante", "networked audio"], label: "Dante certification", advice: "Free, self-paced, and directly relevant to the TreebySound background — Audinate's own Dante Level 1 certification takes about an afternoon.", free: true },
+  { keywords: ["dante", "networked audio"], label: "Dante certification", advice: "Free, self-paced, and directly relevant to the live-events background — Audinate's own Dante Level 1 certification takes about an afternoon.", free: true },
   { keywords: ["degree", "bachelor", "university degree", "bachelor's"], label: "Degree requirement", advice: "Covered — BA in Business (Music Management), BIMM Brighton.", free: null, autoSatisfied: true },
   { keywords: ["driving licence", "driver's licence"], label: "Driving licence", advice: "Covered — full UK driving licence already held.", free: null, autoSatisfied: true },
 ];
@@ -1121,22 +1202,237 @@ const SKILLS_BRIDGE = [
   { from: "Assistant Label Manager (Open Room Records) & Artist Manager/Promoter (Sleeping Dog Promotions), on top of a BIMM Music Management degree", to: "Actual industry-side experience in artist management, label operations and promotion — not just theory" },
   { from: "Supervisor at Foot Asylum, Shift Leader at Tesco all through your degree", to: "A repeated pattern of being handed team-leadership responsibility, in more than one workplace" },
   { from: "Marketing/promotions work across four different companies (Bang Bang Merch, Madway Brewery, Open Room Records, Sleeping Dog Promotions)", to: "Genuine, varied marketing experience most entry-level hires don't have" },
-  { from: "Loading, driving & delivering gear for events at TreebySound", to: "Logistics planning, route/scheduling, supply chain thinking" },
-  { from: "Setting up & packing down event sites at TreebySound", to: "Production management, site management, H&S awareness" },
-  { from: "Being the go-to support person across the business at TreebySound", to: "Operations management, project coordination, generalist management track" },
-  { from: "Seeing sound, procurement, events & delivery all from the inside", to: "Whole-business fluency most people take a decade to get" },
-  { from: "Working directly under an owner-operator (Dave)", to: "Front-row seat on how a small business is actually run day to day" },
+  { from: "Coordinating and driving shipment deliveries for events at Bespoke Events, in and outside normal hours", to: "Logistics planning, route/scheduling, supply chain thinking" },
+  { from: "Setting up & packing down event sites at Bespoke Events", to: "Production management, site management, H&S awareness" },
+  { from: "Being the go-to all-rounder wherever an event needs it at Bespoke Events", to: "Operations management, project coordination, generalist management track" },
+  { from: "Seeing logistics, suppliers, on-site production & client delivery all from the inside", to: "Whole-business fluency most people take a decade to get" },
+  { from: "Working inside a bespoke events business rather than a big machine", to: "Front-row seat on how a business is actually run day to day — quoting, suppliers, clients, delivery" },
 ];
 
+/* ===================================== SKILLS: turning a real job into the words on an application =====================================
+   The Apply tab answers "does this ad fit me?". This answers the question that
+   lands immediately afterwards and is genuinely the harder one: "I have done
+   that — but how do I say it?"
+
+   Each entry names one transferable skill, points at the actual jobs that
+   prove it (by EMPLOYMENT_HISTORY id, so the two can't quietly drift apart),
+   and writes the same claim three ways, because an application asks for it
+   three ways: a CV bullet, a line in a cover letter or supporting statement,
+   and something you'd actually say out loud in a room.
+
+   `keywords` are what a job ad says when it's asking for this — matched with
+   the same engine the Apply tab uses, so a pasted ad can surface the exact
+   wording to answer it with, and the lookup box can answer "they've asked for
+   X, what do I say?" in one go. Deliberately NOT scored into the fit engine:
+   this is the same underlying experience as EVIDENCE_BANK, re-phrased, and
+   counting it twice would inflate every match. */
+const SKILL_STORIES = [
+  {
+    id: "solo", icon: "🔑", title: "Working unsupervised — and being trusted with it",
+    what: "Being left to run something on your own and it still going right. This is what almost every ad means by “able to work independently”, and most applicants can only assert it. You can name the shift.",
+    keywords: ["independently", "independent", "unsupervised", "minimal supervision", "without supervision", "own initiative", "self-sufficient", "autonomous", "lone working", "work alone", "trusted", "keyholder", "closing", "cash up", "reliable"],
+    proof: [
+      { job: "clucker", line: "Ran the bar on its own floor entirely solo — regularly, including closing and cashing up — inside a busy high-street restaurant." },
+      { job: "bespoke", line: "Handles shipment deliveries in and outside normal working hours, unsupervised, to a time the event can't move." },
+      { job: "tesco", line: "Shift Leader responsibility held throughout a full-time degree — the shift was yours to run." },
+    ],
+    cv: "Ran a bar operation solo on its own floor in a busy high-street restaurant, including opening, closing and cash-up procedures, with no supervisor on the floor.",
+    letter: "I'm used to being handed something and left to finish it. At Cheeky Clucker I regularly ran the bar on its own floor entirely on my own — closing and cashing up included — and in my current role I run deliveries in and outside normal hours without anyone standing over me.",
+    interview: "Honestly, it's how I prefer to work. At Cheeky Clucker I'd often have a whole floor's bar to myself for a shift, closing it down at the end of the night, so being trusted with something start to finish is normal to me rather than a step up.",
+    star: "Pick the busiest night you ran that bar alone. Situation: how busy, and what made it harder than a normal night. Task: what was actually yours that night — service, stock, the till, locking up. Action: the calls you made when it got tight. Result: how the night ended and what the manager found the next morning.",
+  },
+  {
+    id: "lead", icon: "🧑‍🤝‍🧑", title: "Leading a shift and the people on it",
+    what: "Not “management” in a job-title sense — the practical version: telling people what's happening, covering gaps, taking the escalation. You've been handed it in three separate workplaces, which is the part worth saying out loud.",
+    keywords: ["supervisor", "supervisory", "supervise", "supervising", "team leader", "team lead", "leading a team", "line manage", "delegate", "delegation", "mentor", "train staff", "training", "rota", "rostering", "shift lead", "people management", "escalation", "motivate"],
+    proof: [
+      { job: "tesco", line: "Shift Leader for two and a half years — team coordination and customer service at supermarket scale." },
+      { job: "footasylum", line: "Retail Supervisor — floor leadership, service standards and day-to-day store operations." },
+      { job: "clucker", line: "Regularly the supervisor on the bar, on top of running it solo." },
+    ],
+    cv: "Held team-leadership responsibility in three separate workplaces — Shift Leader (Tesco), Supervisor (Foot Asylum) and bar supervisor (Cheeky Clucker) — directing staff on shift and handling escalations.",
+    letter: "Team leadership isn't a one-off on my CV: I was Shift Leader at Tesco throughout my degree, Supervisor at Foot Asylum, and regularly the supervisor on the bar at Cheeky Clucker. Three different employers decided independently that I was the person to hand the shift to.",
+    interview: "I've been given the shift to run in three different jobs — Tesco, Foot Asylum and Cheeky Clucker. What I've taken from it is that most of leading a shift is just being clear early: people are fine with a hard night, they're not fine with not knowing what's going on.",
+    star: "Pick a shift where you were short-staffed or someone didn't turn up. Situation/Task: what the shift needed and what you actually had. Action: how you re-cut the work and what you told the team. Result: what still got done, and what you'd do differently.",
+  },
+  {
+    id: "logistics", icon: "🚚", title: "Logistics — getting the right things to the right place on time",
+    what: "The bit of your current job that reads as unglamourous and is actually the most transferable thing on here. Every industry pays someone to do this; most of them call it coordination, scheduling or supply chain.",
+    keywords: ["logistics", "deliveries", "delivery", "transport", "driving", "drive", "driver", "routing", "scheduling", "dispatch", "warehouse", "stock", "inventory", "goods in", "supply chain", "fleet", "loading", "distribution", "shipment", "shipping"],
+    proof: [
+      { job: "bespoke", line: "Coordinates shipment deliveries for bespoke events — loading, routing and time-critical drops, in and outside normal hours." },
+    ],
+    cv: "Coordinated shipment deliveries for a bespoke events business — scheduling, loading, routing and time-critical drops in and outside normal working hours, against fixed event dates that could not move.",
+    letter: "In my current role I coordinate deliveries for bespoke events, which in practice means working backwards from a date that can't move: what has to be loaded, in what order, to be on site and unloaded in time. That's the same discipline whether the deadline is an event or a shipment.",
+    interview: "The thing about event logistics is there's no such thing as a bit late — the event happens at seven whether the kit's there or not. So I plan backwards from the on-site time rather than forwards from when I set off, and I build in the fact that something always goes wrong.",
+    star: "Pick a delivery that nearly didn't make it — traffic, a late load, wrong address, a vehicle problem. Situation/Task: the drop and the deadline. Action: what you actually changed. Result: whether it landed on time, and what you now do differently as standard.",
+  },
+  {
+    id: "onsite", icon: "🎪", title: "Turning a plan into a live event on the day",
+    what: "Plans are easy; the day is not. You've been the person on site when the schedule meets reality — which is exactly what events, production and venue employers are screening for.",
+    keywords: ["event", "events", "on-site", "onsite", "setup", "set-up", "set up", "bump-in", "bump in", "bump-out", "get-in", "pack down", "packdown", "de-rig", "derig", "install", "venue", "production", "crew", "run sheet", "runsheet", "stage", "festival", "conference", "exhibition"],
+    proof: [
+      { job: "bespoke", line: "On-site setup and pack-down, plus hands-on support wherever the event needs it on the day." },
+      { job: "sleepingdog", line: "Organised and ran promotional events and artist performances for a range of audiences." },
+      { label: "BIMM Brighton", line: "Booked and ran live gigs as part of the Music Management degree." },
+    ],
+    cv: "Delivered on-site event setup, live support and pack-down for bespoke events, plus organised and ran promotional events and artist performances independently.",
+    letter: "I've done the on-the-day side of events from both directions — currently setting up, supporting and packing down bespoke events, and previously organising and running promotional events and artist performances myself at Sleeping Dog Promotions. I know what a run sheet looks like when it stops matching the day.",
+    interview: "Events all look the same on paper and never on the day. My job is basically to be the person who notices the thing that's about to go wrong an hour before it does — whether that's a delivery that hasn't landed or a setup that isn't going to fit the space.",
+    star: "Pick an event where the plan changed on the day. Situation/Task: what was meant to happen and what you were responsible for. Action: what you spotted and what you did about it. Result: whether the client or audience ever knew.",
+  },
+  {
+    id: "suppliers", icon: "🧾", title: "Suppliers, quotes and what things actually cost",
+    what: "You've seen the commercial side of a small business from the inside rather than in a training module — what gets bought, from whom, and what it does to the margin. That's procurement in everything but the job title.",
+    keywords: ["procurement", "purchasing", "supplier", "suppliers", "vendor", "quote", "quotes", "quoting", "budget", "budgets", "cost control", "costs", "negotiation", "negotiate", "invoices", "invoicing", "purchase order", "contracts", "sourcing", "commercial"],
+    proof: [
+      { job: "bespoke", line: "Works with the supplier and cost side of event delivery day to day — what's hired, what's bought, what it costs to get it there." },
+      { job: "madway", line: "Business, marketing and promotions support inside a small drinks startup — close enough to see how the money actually moved." },
+    ],
+    cv: "Worked across the supplier and cost side of event delivery — sourcing and hire, delivery costs and the practical trade-offs behind a quote — within a small business where those decisions are visible.",
+    letter: "Working in a small events business means the commercial side isn't hidden from you: I see what gets hired versus bought, what a delivery actually costs, and where a quote has room in it. I'd rather build on that formally than start from scratch in a purely administrative purchasing role.",
+    interview: "In a small business you can't help learning the numbers — you're the one collecting the thing that got hired, so you know what it cost and whether it was worth it. That's the part of procurement I've already got; the formal process side is what I'd be learning.",
+    star: "Pick a job where a cheaper or closer option changed the plan. Situation/Task: what was needed and what the constraint was. Action: what you suggested or arranged. Result: what it saved — time, money, or a headache on the day.",
+  },
+  {
+    id: "coordination", icon: "🗓️", title: "Coordinating other people's diaries, deadlines and deliverables",
+    what: "Chasing artists, suppliers and colleagues so a date lands — with no authority over any of them. Corporate job ads call this stakeholder management or project coordination and pay well for it.",
+    keywords: ["coordinate", "coordinating", "coordination", "coordinator", "diary management", "scheduling", "deadline", "deadlines", "project", "projects", "stakeholder", "stakeholders", "administration", "admin", "itinerary", "planning", "prioritise", "prioritize", "organised", "organized", "attention to detail", "timelines", "multiple projects"],
+    proof: [
+      { job: "openroom", line: "Coordinated releases, press materials and artist promotions, liaising directly with artists and industry professionals." },
+      { job: "sleepingdog", line: "Managed and promoted artists' performances — bookings, dates and everyone who had to be in the right place." },
+      { job: "bespoke", line: "Works to fixed event dates that everything else has to be sequenced backwards from." },
+    ],
+    cv: "Coordinated record releases, press materials and artist promotions to fixed dates, liaising directly with artists, industry contacts and suppliers to keep multiple commitments on schedule.",
+    letter: "At Open Room Records I coordinated releases and press to fixed dates, and at Sleeping Dog Promotions I managed artists' performance schedules — in both cases getting things out of people I had no authority over, which is most of what coordination actually is.",
+    interview: "Coordinating artists teaches you something useful: you can't order anyone about, so you get good at making the deadline feel like theirs, and at chasing early enough that chasing is still polite.",
+    star: "Pick a release or a booking with a hard date. Situation/Task: the date and everything that had to land before it. Action: how you tracked it and who you had to chase. Result: whether it went out on time and what nearly derailed it.",
+  },
+  {
+    id: "clients", icon: "💬", title: "Talking to customers, clients and artists when it matters",
+    what: "Six employers' worth of front-line communication, including the difficult end of it. Say the difficult end — anyone can claim to be a people person.",
+    keywords: ["customer service", "customer-facing", "customer facing", "client", "clients", "communication", "communicate", "interpersonal", "front of house", "liaise", "liaison", "complaints", "professional manner", "rapport", "relationship", "verbal", "written communication", "confident"],
+    proof: [
+      { job: "clucker", line: "Front of house on a busy bar, including the end of the night when service gets harder." },
+      { job: "tesco", line: "Customer service at supermarket scale, as the person escalations reached." },
+      { job: "footasylum", line: "Retail floor service and complaint handling as supervisor." },
+      { job: "openroom", line: "Direct contact with artists and industry professionals on behalf of a label." },
+    ],
+    cv: "Handled customer and client contact across hospitality, retail and the music industry — including complaints, escalations and direct artist/industry liaison on behalf of a label.",
+    letter: "I've dealt with people at the front line in hospitality, in retail as the supervisor escalations came to, and professionally with artists and industry contacts at Open Room Records. I'm as comfortable with the awkward conversation as the easy one.",
+    interview: "Bar work at closing time teaches you more about handling people than any course — you learn to be firm without making it a fight. That's carried into every job since, including dealing with artists and clients where the stakes are different but the skill isn't.",
+    star: "Pick a complaint or a difficult customer you personally turned around. Situation/Task: what they were unhappy about and what you could actually offer. Action: what you said. Result: how they left, and whether they came back.",
+  },
+  {
+    id: "music", icon: "🎧", title: "Music industry credibility — earned, not claimed",
+    what: "The most distinctive thing on your CV and the easiest to let read as a hobby. There are three separate things here — a degree in the business side of this industry, two real industry roles held at the same time as it, and a genuine listening life underneath both. Say all three: most applicants have one.",
+    keywords: ["music", "music industry", "artist", "artists", "label", "record label", "a&r", "gig", "gigs", "live music", "band", "bands", "festival", "festivals", "touring", "tour", "promoter", "promoting", "booking", "bookings", "release", "releases", "press release", "electronic music", "dance music", "passion for music", "passionate about music", "music fan", "entertainment", "roster", "publisher", "agent", "venue"],
+    proof: [
+      { label: "BIMM Brighton", line: "BA in Business (Music Management), 2019–2022 — the commercial side of this industry studied formally, not picked up on the way past." },
+      { job: "openroom", line: "Head of Marketing & Assistant Label Manager — releases, press and artist promotion from inside a working label." },
+      { job: "sleepingdog", line: "Artist Manager & Promoter — managed and promoted artists' performances directly." },
+      { label: "Outside work", line: "Gig-going and following bands since your early teens, more recently further into electronic and festival culture (Boomtown among them), and still close to what's current through the artists you follow." },
+    ],
+    cv: "BA in Business (Music Management), BIMM Brighton — held alongside Head of Marketing & Assistant Label Manager at Open Room Records and Artist Manager & Promoter at Sleeping Dog Promotions.",
+    letter: "My music background is both formal and practical: a BA in Business (Music Management) from BIMM Brighton, held at the same time as working as Head of Marketing and Assistant Label Manager at Open Room Records and as an Artist Manager and Promoter at Sleeping Dog Promotions. It isn't only professional either — I've been going to gigs since my early teens and I'm still close to what's actually happening in electronic and festival music.",
+    interview: "I came at it from both ends — I studied the business side at BIMM and was working in a label and in artist management at the same time, and I've been a proper fan since I was a teenager. So I can talk about a roster commercially and still know what's actually any good.",
+    star: "Pick one release or one show you promoted, at Open Room Records or Sleeping Dog Promotions. Situation/Task: what it had to achieve — a turnout, a release date, an artist kept happy. Action: what you actually did, including the part that didn't go to plan. Result: the number if you have one, and what you'd do differently next time.",
+  },
+  {
+    id: "marketing", icon: "📣", title: "Marketing, promotion and getting people through the door",
+    what: "Four companies' worth of real marketing work alongside a business degree. This is a genuine specialism, not a transferable-skills stretch — lead with it whenever an ad mentions marketing at all.",
+    keywords: ["marketing", "promotion", "promotions", "promotional", "promoting", "promote", "social media", "content", "campaign", "campaigns", "brand", "branding", "copywriting", "audience", "engagement", "press", "pr", "public relations", "advertising", "market research", "competitor analysis", "digital"],
+    proof: [
+      { job: "openroom", line: "Head of Marketing & Assistant Label Manager — releases, press materials and artist promotion." },
+      { job: "bangbang", line: "Marketing Assistant — ran promotional campaigns for merchandise, plus market and competitor analysis." },
+      { job: "madway", line: "Marketing and promotions support for a local drinks startup." },
+      { job: "sleepingdog", line: "Promoted artists and events to build turnout for real shows." },
+    ],
+    cv: "Delivered marketing and promotional campaigns across four companies — as Head of Marketing at a record label, Marketing Assistant on merchandise campaigns, and marketing/promotions support at a drinks startup — including market and competitor analysis.",
+    letter: "Marketing isn't adjacent experience for me: I was Head of Marketing and Assistant Label Manager at Open Room Records, Marketing Assistant at Bang Bang Merch running merchandise campaigns and competitor analysis, and did marketing and promotions at Madway Brewery — all alongside a business degree in Music Management.",
+    interview: "Most of my marketing experience is the kind where you find out immediately whether it worked — you promote a show and either people come or they don't. That makes you fairly unsentimental about what's actually moving the numbers.",
+    star: "Pick one campaign or one show. Situation/Task: what it had to achieve and who it was aimed at. Action: the channels and the angle you actually chose, and why. Result: turnout, sales or engagement — a number if you have one.",
+  },
+  {
+    id: "problems", icon: "🧯", title: "Fixing it on the day rather than escalating it",
+    what: "The single most-requested thing in job ads, phrased a dozen different ways. It's also the easiest to prove badly — so answer it with a specific thing that went wrong, never with an adjective.",
+    keywords: ["problem solving", "problem-solving", "solve problems", "troubleshoot", "troubleshooting", "under pressure", "fast-paced", "fast paced", "calm", "resilient", "resilience", "initiative", "solutions", "decision making", "decisions", "think on your feet", "adaptable", "adaptability", "flexible", "ambiguity", "proactive"],
+    proof: [
+      { job: "bespoke", line: "On site when the plan meets the day — the person who deals with the delivery that hasn't landed or the setup that doesn't fit." },
+      { job: "clucker", line: "Solo on a bar with no one to escalate to, so problems got solved where they happened." },
+      { job: "tesco", line: "Shift Leader — the escalation point rather than the person escalating." },
+    ],
+    cv: "Resolved on-the-day operational problems independently across events and hospitality — as the sole person on a bar, as the shift's escalation point in retail, and on site when event plans changed.",
+    letter: "Running a bar solo means there's nobody to escalate to, so you learn to make the call and stand behind it. That's carried directly into event work, where something always changes on the day and the client mostly shouldn't notice that it did.",
+    interview: "The version I'd give is: I've spent a lot of my working life in situations with no one to pass it up to — solo on a bar, on a delivery, on site at an event. You stop looking for permission and start looking for the fix.",
+    star: "Pick something that went wrong with no one around to ask. Situation/Task: what broke and what was riding on it. Action: the decision you made, including what you ruled out. Result: how it landed, and whether anyone above you agreed afterwards.",
+  },
+  {
+    id: "hours", icon: "🌙", title: "Unsociable hours, weekends and whatever the job actually needs",
+    what: "Genuinely worth saying, and often decisive. A lot of events, hospitality and logistics roles are really screening for whether you'll turn up at six in the morning or eleven at night without it becoming a conversation.",
+    keywords: ["unsociable hours", "anti-social hours", "out of hours", "outside normal hours", "evenings", "weekends", "weekend work", "flexible", "flexibility", "shifts", "shift work", "early starts", "late finishes", "overtime", "on call", "availability", "travel required", "long hours"],
+    proof: [
+      { job: "bespoke", line: "Deliveries handled in and outside normal working hours as standard, not as a favour." },
+      { job: "clucker", line: "Late bar shifts through to closing, in a restaurant that ran on evenings and weekends." },
+      { job: "tesco", line: "Shift work held down alongside a full-time degree for two and a half years." },
+    ],
+    cv: "Worked consistently outside standard hours — event deliveries in and outside normal working hours, late hospitality shifts through to close, and supermarket shift work held alongside a full-time degree.",
+    letter: "The hours side of this kind of role isn't an issue for me — my current job involves deliveries in and outside normal working hours, and before that I was closing a bar and holding down supermarket shift work through a full-time degree.",
+    interview: "I've never really had a nine-to-five job, so unusual hours don't feel like a sacrifice — they feel normal. What I'd want to know is whether the schedule is predictable, not whether it's early.",
+    star: "Pick a stretch where the hours were genuinely hard — an event run, a Christmas period, a term where the degree and the job overlapped badly. Situation/Task: what you were carrying at once. Action: how you actually kept it going. Result: what you got done, and what you'd protect next time.",
+  },
+  {
+    id: "learning", icon: "📚", title: "Teaching yourself the thing before anyone asks you to",
+    what: "Ads ask for a “quick learner” and almost nobody evidences it. You can: an industry lighting desk you're teaching yourself for no reason other than wanting to, and a degree carried alongside two and a half years of shift work.",
+    keywords: ["quick learner", "fast learner", "self-taught", "self taught", "willingness to learn", "eager to learn", "training", "new systems", "software", "technical", "upskill", "development", "learn", "curious", "initiative", "proactive"],
+    proof: [
+      { label: "Own time", line: "Teaching yourself Avolites Titan, an industry-standard lighting control platform, off your own back." },
+      { job: "tesco", line: "Held Shift Leader down for two and a half years while completing a full-time degree." },
+      { job: "bespoke", line: "Picked up the events, delivery and on-site side of a business without arriving as a specialist in any of it." },
+    ],
+    cv: "Self-taught Avolites Titan lighting control software off own initiative; completed a full-time BA while holding Shift Leader responsibility for two and a half years.",
+    letter: "I'm currently teaching myself Avolites Titan, an industry-standard lighting control platform, entirely off my own back — nobody asked me to. I did my degree the same way, alongside two and a half years as a Shift Leader at Tesco rather than instead of working.",
+    interview: "I'd rather show it than say it: I'm learning Avolites Titan at the moment purely because it's the next useful thing in the world I work in. That's roughly how I've picked up everything I know how to do.",
+    star: "Pick something you learned without being told to — Titan, a bar skill, a piece of software, a whole degree alongside a job. Situation/Task: why it mattered to you. Action: how you actually went about it. Result: what you can now do that you couldn't, and where it's already been useful.",
+  },
+  {
+    id: "wholebusiness", icon: "🔭", title: "Seeing a whole business, not just one desk of it",
+    what: "The strongest thing about a small-business background, and the easiest to undersell. Big-company applicants have only ever seen their own slice; you've seen deliveries, suppliers, the client and the day itself.",
+    keywords: ["operations", "business operations", "generalist", "all-rounder", "all rounder", "varied", "wear many hats", "many hats", "small team", "startup", "start-up", "cross-functional", "business support", "office", "end-to-end", "end to end", "broad", "versatile", "multi-task", "multitask"],
+    proof: [
+      { job: "bespoke", line: "The go-to all-rounder across a bespoke events business — deliveries, suppliers, on-site production and whatever else the day needs." },
+      { job: "madway", line: "Business, marketing and promotions across a small drinks startup at once." },
+      { job: "openroom", line: "Marketing and label operations held together in the same role." },
+    ],
+    cv: "Operated as the generalist across a small events business — logistics, supplier contact, on-site production and client-facing support — with visibility of how each part depends on the others.",
+    letter: "Working in a small business, I've seen every part of it rather than one department: what's promised to the client, what it costs to buy in, how it gets there and what happens on the day. That whole-business view is what I'd bring to an operations role, and it's not something a larger employer can usually give someone at my stage.",
+    interview: "The advantage of a small business is that nothing's hidden from you. I can follow a job from the quote through to loading the van and standing on site at the end of it — most people my age have only ever seen one link in that chain.",
+    star: "Pick a job you followed from one end to the other. Situation/Task: what the client wanted and what it took. Action: the parts you personally touched. Result: what you understood by the end that you wouldn't have from one department.",
+  },
+];
+
+/* Reverse index: which skills does a given job prove? Derived rather than
+   written down twice, so adding a proof line above is all it takes for the
+   Skills tab's by-job view to pick it up. */
+function skillsForJob(jobId) {
+  return SKILL_STORIES.filter(s => s.proof.some(p => p.job === jobId));
+}
+function jobById(id) { return EMPLOYMENT_HISTORY.find(h => h.id === id) || null; }
+function proofLabel(p) {
+  if (p.label) return p.label;
+  const job = jobById(p.job);
+  return job ? job.company : p.job;
+}
+
 const CAREER_PATHS = [
-  { icon: "🎪", category: "music", title: "Event Production & Operations Manager", tagline: "The direct next step up from where you already stand.", why: "You're already doing the on-the-ground work — this is the same world, just with more planning, budget and people responsibility layered on top. Between the BIMM degree, the label/promotions roles at Open Room Records and Sleeping Dog Promotions, and effectively running a bar solo at Cheeky Clucker, the operational and industry grounding is already there — this path is about formalising it, not starting it.", from: "Currently: hands-on support role at TreebySound, plus a BIMM degree and hands-on solo leadership from Cheeky Clucker.", steps: ["Start owning one small event end-to-end (budget, run sheet, crew) as a stretch project at TreebySound", "Learn the commercial side: quoting, supplier costs, client comms", "Pick up a recognised events/production short course or certificate", "Build a portfolio of events you've run or co-run", "Aim for Production Manager / Operations Manager title within 2–4 years"], timeframe: "2–4 years", portable: "Event production is one of the most transferable career tracks going — every city in Australia, NZ and Canada runs venues and festivals that need crew and coordinators, so this can genuinely be built up across all three countries, then walked straight back into a UK production role with a fatter portfolio than most people your age." },
-  { icon: "🎤", category: "music", title: "Live Events, Festivals & Touring Production", tagline: "Bigger stages, bigger crews, more travel built into the job itself.", why: "This is arguably the closest fit on paper: a completed Music Management degree from BIMM plus real promotions/label experience is formal and practical grounding in exactly this industry — not just adjacent skills. Add the sound/event exposure at TreebySound and it scales up naturally to festivals, tours and large-scale production, which also travels a lot.", from: "Currently: sound & event setup exposure through TreebySound, plus a BIMM Music Management degree and real promotions experience.", steps: ["Get on the crew list for a few festivals or larger shows as casual/freelance crew — in Australia, Sidekicker, Event-Crew Australia and ESA Group are real places to register", "Specialise in one lane first — stage management, technical production or logistics", "Network hard — this industry runs on who's reliable and who you know", "Keep a running portfolio of every show worked, wherever in the world it happens", "Long-term: touring production manager or festival site manager"], timeframe: "3–5 years", portable: "Festival and touring circuits exist in every country on the route — Melbourne, Auckland/Wellington and Toronto all have their own serious festival seasons — and crew experience from any of them reads as international credibility back in the UK, not a gap year." },
+  { icon: "🎪", category: "music", title: "Event Production & Operations Manager", tagline: "The direct next step up from where you already stand.", why: "You're already doing the on-the-ground work — this is the same world, just with more planning, budget and people responsibility layered on top. Between the BIMM degree, the label/promotions roles at Open Room Records and Sleeping Dog Promotions, and effectively running a bar solo at Cheeky Clucker, the operational and industry grounding is already there — this path is about formalising it, not starting it.", from: "Currently: logistics coordination and on-site events support at Bespoke Events, plus a BIMM degree and hands-on solo leadership from Cheeky Clucker.", steps: ["Start owning one small event end-to-end (budget, run sheet, crew) as a stretch project at Bespoke Events", "Learn the commercial side: quoting, supplier costs, client comms", "Pick up a recognised events/production short course or certificate", "Build a portfolio of events you've run or co-run", "Aim for Production Manager / Operations Manager title within 2–4 years"], timeframe: "2–4 years", portable: "Event production is one of the most transferable career tracks going — every city in Australia, NZ and Canada runs venues and festivals that need crew and coordinators, so this can genuinely be built up across all three countries, then walked straight back into a UK production role with a fatter portfolio than most people your age." },
+  { icon: "🎤", category: "music", title: "Live Events, Festivals & Touring Production", tagline: "Bigger stages, bigger crews, more travel built into the job itself.", why: "This is arguably the closest fit on paper: a completed Music Management degree from BIMM plus real promotions/label experience is formal and practical grounding in exactly this industry — not just adjacent skills. Add the on-site events and logistics exposure at Bespoke Events and it scales up naturally to festivals, tours and large-scale production, which also travels a lot.", from: "Currently: event logistics and on-site setup exposure through Bespoke Events, plus a BIMM Music Management degree and real promotions experience.", steps: ["Get on the crew list for a few festivals or larger shows as casual/freelance crew — in Australia, Sidekicker, Event-Crew Australia and ESA Group are real places to register", "Specialise in one lane first — stage management, technical production or logistics", "Network hard — this industry runs on who's reliable and who you know", "Keep a running portfolio of every show worked, wherever in the world it happens", "Long-term: touring production manager or festival site manager"], timeframe: "3–5 years", portable: "Festival and touring circuits exist in every country on the route — Melbourne, Auckland/Wellington and Toronto all have their own serious festival seasons — and crew experience from any of them reads as international credibility back in the UK, not a gap year." },
   { icon: "🎙️", category: "music", title: "Artist Management, Label & Music Promotions", tagline: "Not a stretch — literally what you already did.", why: "This isn't hypothetical: you were Head of Marketing & Assistant Label Manager at Open Room Records and Artist Manager & Promoter at Sleeping Dog Promotions, on top of the BIMM degree itself. It's paused, not abandoned — and the travel years are a natural excuse to widen the network before picking it back up seriously.", from: "Currently: real prior experience in label management, artist management and promotions.", steps: ["Keep in touch with contacts from Open Room Records and Sleeping Dog Promotions — this industry runs on relationships that don't need to go cold just because you're travelling", "Use the travel years to build a wider network — every city in NZ/AU/Canada has its own local labels, promoters and venues worth knowing", "Consider freelance artist promotion or social media/marketing work that can be done remotely, even while travelling", "Long-term: return to label/artist management, or use the broadened network to launch something independent"], timeframe: "Can restart any time — the experience doesn't expire", portable: "This is the one that works everywhere at once, including while you're not physically doing it: stay a member of the Music Managers Forum (musicmanagersforum.co.uk) and the Association of Independent Music (aim.org.uk) throughout the trip — both run online events, directories and member communities you can dip into from any country — so the UK network is still there, warmer than when you left, the day you're ready to pick this back up." },
   { icon: "🚚", category: "corporate", title: "Logistics & Supply Chain Coordinator", tagline: "Turns delivery-driving into a proper career track.", why: "Already planning routes, loading gear and hitting deadlines — that's the core of logistics coordination, and it's a stable career that exists everywhere.", from: "Currently: deliveries & equipment handling.", steps: ["Get familiar with basic inventory/warehouse software (even free tools)", "Look at a logistics or supply chain fundamentals course", "Target a coordinator role at a hire company, event supplier or freight business", "Build toward warehouse/ops manager or dispatch supervisor"], timeframe: "1–3 years", portable: "Logistics is about as portable as a career gets — warehouses, hire companies and freight operators exist in every city you'll pass through, and the skills map straight back onto UK logistics roles with zero retraining needed." },
-  { icon: "🏛️", category: "travel", title: "Venue & Hospitality Management", tagline: "Run the building instead of the one-off event.", why: "You've already done a version of this, not just adjacent work — leading the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more, plus a supervisor stint at Foot Asylum before that. This path is a straightforward scale-up of something already proven twice over, with steadier, more local hours than touring once the travel years are done.", from: "Currently: events + general operations support at TreebySound, plus real solo bar leadership at Cheeky Clucker and retail supervision at Foot Asylum.", steps: ["Pick up shifts in a venue, bar or hospitality management setting", "Learn rostering, licensing basics and front-of-house operations", "Move into assistant venue manager, then venue/general manager"], timeframe: "2–5 years", portable: "Bars, restaurants and venues need duty managers everywhere — this is the steadiest possible income while travelling and it converts cleanly to a UK hospitality management role on return, no gap in the CV to explain." },
+  { icon: "🏛️", category: "travel", title: "Venue & Hospitality Management", tagline: "Run the building instead of the one-off event.", why: "You've already done a version of this, not just adjacent work — leading the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more, plus a supervisor stint at Foot Asylum before that. This path is a straightforward scale-up of something already proven twice over, with steadier, more local hours than touring once the travel years are done.", from: "Currently: events logistics + on-site support at Bespoke Events, plus real solo bar leadership at Cheeky Clucker and retail supervision at Foot Asylum.", steps: ["Pick up shifts in a venue, bar or hospitality management setting", "Learn rostering, licensing basics and front-of-house operations", "Move into assistant venue manager, then venue/general manager"], timeframe: "2–5 years", portable: "Bars, restaurants and venues need duty managers everywhere — this is the steadiest possible income while travelling and it converts cleanly to a UK hospitality management role on return, no gap in the CV to explain." },
   { icon: "🧭", category: "travel", title: "Travel & Adventure Tourism Operations", tagline: "Turn the travel years into the actual career, not just a break from it.", why: "If the 5-year trip lights you up, this path takes everything learned doing excursions/tours and turns it into running tourism operations rather than just guiding them.", from: "Currently: interest in excursions, adventure & meeting people.", steps: ["Use travel years to work front-line in tours/excursions across NZ, AU & Canada — in Queenstown specifically, AJ Hackett Bungy and Skyline are real, well-regarded operators worth applying to directly", "Note what each operator does well and badly — this becomes instinct for running one", "Pick up a first-aid, guiding or tourism qualification relevant to the region", "Move into lead guide, then operations/booking coordinator for a tour company", "Long-term: operations manager or a small tour outfit of your own"], timeframe: "Runs alongside the travel plan", portable: "The honest trade-off on this one: it's brilliant while you're actually in NZ/AU/Canada, but UK adventure tourism is a much smaller market — so treat it as the strongest path to enjoy the trip itself, and lean on Event Production or Venue Management as the one that carries back to the UK afterwards." },
   { icon: "✈️", category: "travel", title: "Aviation — Cabin Crew → Ground Operations", tagline: "Start as flight attendant, land in airline operations — worth checking eligibility before counting on it.", why: "Flight attendant work is a genuine gateway into aviation, not just a travel job — airlines promote operationally-minded crew into ground ops, crew scheduling and base management. But this one needs a reality check first: Qantas explicitly requires Australian/NZ permanent residency (or UK right-to-work) for cabin crew, so a standard working-holiday visa likely doesn't qualify at the major carriers. Confirm directly with each airline before treating this as part of the plan.", from: "Currently: interest in flight attendant work as a travel job.", steps: ["Check current visa eligibility directly on careers.qantas.com, careers.jetstar.com and any Canadian carrier's careers page — don't assume a WHV is enough", "If AU/NZ/Canada doesn't work out on a working holiday visa, consider UK-based cabin crew (easyJet, Jet2, British Airways) as the entry point instead, before or after the travel years", "If it does check out somewhere, treat it as a career entry, not a stopgap — track performance & training", "After 2–3 years, look sideways into crew scheduling, base ops or training roles", "Long-term: ground operations manager or airline base management"], timeframe: "3–6 years", portable: "Aviation careers are genuinely global — cabin crew experience anywhere transfers to any airline's ground ops or a UK-based carrier afterwards, visa eligibility permitting." },
-  { icon: "🚀", category: "music", title: "Start Your Own Thing", tagline: "The long shot with the best ceiling — running an event/hire, label, or promotions business.", why: "Working across every part of TreebySound (delivery, sound, procurement, events, ops) is exactly the broad exposure someone needs before starting their own company — and it's backed by a Music Management degree that covers the business side of this industry specifically, plus direct proof you can actually run something yourself: leading a bar solo at Cheeky Clucker, and real label/artist-management roles at Open Room Records and Sleeping Dog Promotions.", from: "Currently: full-spectrum exposure to how a small events business runs, a Music Management degree, and hands-on experience running a bar and a record label solo.", steps: ["Keep absorbing the commercial side at TreebySound — ask Dave questions, don't just execute", "Save & build a client/supplier network over the travel years", "Test a small side venture (mobile bar, event styling, gear hire) at low stakes", "Long-term: launch once there's capital, contacts and confidence"], timeframe: "5–10 years", portable: "Whatever you test abroad — a mobile bar shift, styling one event, helping run a small local label — becomes proof of concept either way: worth continuing where you are, or worth bringing home and starting properly in the UK with contacts already made in three countries." },
+  { icon: "🚀", category: "music", title: "Start Your Own Thing", tagline: "The long shot with the best ceiling — running an event/hire, label, or promotions business.", why: "Working across every part of a bespoke events business (deliveries, logistics, suppliers, on-site production, ops) is exactly the broad exposure someone needs before starting their own company — and it's backed by a Music Management degree that covers the business side of this industry specifically, plus direct proof you can actually run something yourself: leading a bar solo at Cheeky Clucker, and real label/artist-management roles at Open Room Records and Sleeping Dog Promotions.", from: "Currently: full-spectrum exposure to how a small events business runs, a Music Management degree, and hands-on experience running a bar and a record label solo.", steps: ["Keep absorbing the commercial side at Bespoke Events — ask how jobs are quoted and costed, don't just execute", "Save & build a client/supplier network over the travel years", "Test a small side venture (mobile bar, event styling, gear hire) at low stakes", "Long-term: launch once there's capital, contacts and confidence"], timeframe: "5–10 years", portable: "Whatever you test abroad — a mobile bar shift, styling one event, helping run a small local label — becomes proof of concept either way: worth continuing where you are, or worth bringing home and starting properly in the UK with contacts already made in three countries." },
 
   /* Wider, generalist corporate options — deliberately not restricted to the
      music/events world. Each one is still grounded in something real from
@@ -1146,9 +1442,9 @@ const CAREER_PATHS = [
      corporate track (project management, procurement, operations) is a
      genuinely realistic option worth seeing next to the industry-specific
      ones, not because it's assumed to be the right fit. */
-  { icon: "📊", category: "corporate", title: "Project Coordinator → Project Manager", tagline: "Corporate project delivery — the same coordination work, salaried and structured.", why: "Owning an event end-to-end at TreebySound (budget, run sheet, crew, deadline) and coordinating releases at Open Room Records is, functionally, project coordination already — just without the job title or the corporate tools. This is one of the fastest routes into a stable, well-paid office career without years of retraining, and it's a genuinely huge job market in every country on the route.", from: "Currently: hands-on coordination of events, budgets, crews and deadlines at TreebySound, plus release/promo coordination at Open Room Records and Sleeping Dog Promotions.", steps: ["Get comfortable with a mainstream project tool (Trello, Asana or MS Project — free tiers exist for all three)", "Take the APM Project Fundamentals Qualification (PFQ) — a genuine entry-level UK qualification, no prior experience needed, roughly 34 hours of self-study and a single multiple-choice exam", "Target Project Coordinator / Project Support Officer roles — these rarely ask for a specific degree, just organisation and follow-through", "Once in, work toward PRINCE2 Foundation or an Agile/Scrum certificate, both widely asked for", "Aim for full Project Manager within 3–5 years"], timeframe: "2–4 years", portable: "Project coordination is asked for in every industry, in every country on this route, and PRINCE2/Agile/APM qualifications are recognised the same way in the UK, Australia, NZ and Canada — arguably the single most portable corporate option here." },
-  { icon: "🧾", category: "corporate", title: "Procurement & Supplier Coordinator", tagline: "Corporate purchasing — cost negotiation and supplier relationships, already half-learned on the job.", why: "Sourcing gear, negotiating supplier costs and managing deliveries at TreebySound is the practical side of procurement — companies pay well for people who can do this formally, and it's a career track most people fall into sideways rather than study for from day one.", from: "Currently: supplier and cost exposure through TreebySound's deliveries and event logistics.", steps: ["Look at CIPS (Chartered Institute of Procurement & Supply) Level 2 or 3 Certificate — the standard UK entry qualification, needs no prior experience, roughly £1,000–1,500 all-in for tuition, exams and membership", "Target Procurement Assistant / Junior Buyer roles — a specific degree is rarely required at this level", "Events/AV procurement specifically is a niche worth owning, given the background — few candidates can speak to it directly", "Build toward Procurement Coordinator or Buyer within 2–3 years"], timeframe: "2–3 years", portable: "Every company everywhere buys things — procurement roles and the CIPS qualification are recognised identically in the UK, Australia, NZ and Canada, and it converts straight back into a UK procurement role afterwards." },
-  { icon: "🗂️", category: "corporate", title: "Business Operations / Admin Coordinator", tagline: "The generalist desk-job version of what's already happening day to day.", why: "Being the go-to support person across the whole of TreebySound — a bit of everything, understanding how all the parts connect — is functionally business operations already. This path just moves that same generalist role from a small events business into any office, and it's one of the lowest-barrier-to-entry corporate jobs going.", from: "Currently: general operations support across the whole of TreebySound's business.", steps: ["Get comfortable with core office tools (Excel/Google Sheets, basic reporting/dashboards)", "Target Operations Assistant / Business Support Administrator roles — genuinely open to varied backgrounds, not degree-gated", "Use the TreebySound generalist experience directly — 'saw every part of a small business run' is a strong, honest pitch", "Build toward Operations Coordinator, then Executive Assistant or Operations Manager"], timeframe: "1–2 years", portable: "The safest, fastest-to-land corporate option on this list — every office everywhere needs this role, and it converts straight back into a UK office job with zero retraining." },
+  { icon: "📊", category: "corporate", title: "Project Coordinator → Project Manager", tagline: "Corporate project delivery — the same coordination work, salaried and structured.", why: "Owning an event end-to-end at Bespoke Events (budget, run sheet, crew, deadline) and coordinating releases at Open Room Records is, functionally, project coordination already — just without the job title or the corporate tools. This is one of the fastest routes into a stable, well-paid office career without years of retraining, and it's a genuinely huge job market in every country on the route.", from: "Currently: hands-on coordination of event logistics, deliveries, crews and deadlines at Bespoke Events, plus release/promo coordination at Open Room Records and Sleeping Dog Promotions.", steps: ["Get comfortable with a mainstream project tool (Trello, Asana or MS Project — free tiers exist for all three)", "Take the APM Project Fundamentals Qualification (PFQ) — a genuine entry-level UK qualification, no prior experience needed, roughly 34 hours of self-study and a single multiple-choice exam", "Target Project Coordinator / Project Support Officer roles — these rarely ask for a specific degree, just organisation and follow-through", "Once in, work toward PRINCE2 Foundation or an Agile/Scrum certificate, both widely asked for", "Aim for full Project Manager within 3–5 years"], timeframe: "2–4 years", portable: "Project coordination is asked for in every industry, in every country on this route, and PRINCE2/Agile/APM qualifications are recognised the same way in the UK, Australia, NZ and Canada — arguably the single most portable corporate option here." },
+  { icon: "🧾", category: "corporate", title: "Procurement & Supplier Coordinator", tagline: "Corporate purchasing — cost negotiation and supplier relationships, already half-learned on the job.", why: "Sourcing gear, working with supplier costs and running deliveries at Bespoke Events is the practical side of procurement — companies pay well for people who can do this formally, and it's a career track most people fall into sideways rather than study for from day one.", from: "Currently: supplier and cost exposure through Bespoke Events' deliveries and event logistics.", steps: ["Look at CIPS (Chartered Institute of Procurement & Supply) Level 2 or 3 Certificate — the standard UK entry qualification, needs no prior experience, roughly £1,000–1,500 all-in for tuition, exams and membership", "Target Procurement Assistant / Junior Buyer roles — a specific degree is rarely required at this level", "Events/AV procurement specifically is a niche worth owning, given the background — few candidates can speak to it directly", "Build toward Procurement Coordinator or Buyer within 2–3 years"], timeframe: "2–3 years", portable: "Every company everywhere buys things — procurement roles and the CIPS qualification are recognised identically in the UK, Australia, NZ and Canada, and it converts straight back into a UK procurement role afterwards." },
+  { icon: "🗂️", category: "corporate", title: "Business Operations / Admin Coordinator", tagline: "The generalist desk-job version of what's already happening day to day.", why: "Being the go-to all-rounder across the whole of Bespoke Events — a bit of everything, understanding how all the parts connect — is functionally business operations already. This path just moves that same generalist role from a small events business into any office, and it's one of the lowest-barrier-to-entry corporate jobs going.", from: "Currently: general operations and logistics support across the whole of Bespoke Events' business.", steps: ["Get comfortable with core office tools (Excel/Google Sheets, basic reporting/dashboards)", "Target Operations Assistant / Business Support Administrator roles — genuinely open to varied backgrounds, not degree-gated", "Use the Bespoke Events generalist experience directly — 'saw every part of an events business run' is a strong, honest pitch", "Build toward Operations Coordinator, then Executive Assistant or Operations Manager"], timeframe: "1–2 years", portable: "The safest, fastest-to-land corporate option on this list — every office everywhere needs this role, and it converts straight back into a UK office job with zero retraining." },
   { icon: "🤝", category: "corporate", title: "Recruitment Consultant", tagline: "Sales-driven and people-first — reads people fast, trains on the job, pays commission on top of base almost everywhere.", why: "Years of reading people fast behind a bar, building relationships through promotions and artist management, and hitting targets in retail add up to exactly what recruitment agencies actually hire for — personality and drive over qualifications. Agencies train from scratch, so this needs the least formal preparation of anything on this list.", from: "Currently: people-facing, relationship-building, target-driven background across hospitality, retail and music promotions.", steps: ["Apply directly to major agencies — Hays, Reed and Michael Page all run trainee/graduate recruitment consultant schemes with paid on-the-job training and no experience required", "Ask to specialise somewhere the background actually helps — hospitality/events or music-industry recruitment would be a genuinely rare, valuable niche", "Build a track record of placements/billings", "Move up to senior consultant, then team lead"], timeframe: "1–3 years", portable: "Recruitment agencies operate the same way in the UK, Australia, NZ and Canada — one of the easiest corporate sectors to walk straight into in any of the four countries, no retraining needed either way." },
   { icon: "📣", category: "corporate", title: "Marketing Coordinator (any industry)", tagline: "The same marketing instincts, applied beyond music — a wider net without leaving the skillset behind.", why: "Four real companies' worth of marketing and promotions experience (Bang Bang Merch, Madway Brewery, Open Room Records, Sleeping Dog Promotions), backed by a business degree, translates directly to any company's in-house marketing team — not just music ones. Worth keeping open as an option even if the music-industry path stays the first choice.", from: "Currently: real marketing/promotions experience across four companies, plus a BA in Business (Music Management).", steps: ["Pull together a short portfolio of actual campaigns run, screenshots and outcomes where known", "Target Marketing Assistant / Marketing Coordinator roles in any sector — retail, hospitality, tech, whatever's hiring", "Add a free Google Digital Garage or HubSpot Academy certificate to round out the CV", "Specialise once inside a company — social, events marketing or content are all natural next steps"], timeframe: "1–3 years", portable: "Marketing coordinator roles exist in every industry, in every country on the route, and a portfolio of real campaigns travels well regardless of what product it was originally for." },
 ];
@@ -1181,7 +1477,7 @@ const CASUAL_JOBS = [
   { icon: "🍹", title: "Bar & Hospitality Work", blurb: "The easiest way to fund travel almost anywhere — flexible hours, social, and tips.", fit: "Not a first-time job for you — you've led the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more. Don't undersell that: aim straight for supervisor/duty-manager-track roles, not first-rung barback work.", howTo: "In Australia and NZ, walking in with a printed CV to bars in tourist/backpacker areas (Bondi, Surry Hills, Queenstown, Wanaka) still works and is often faster than applying online.", whereTo: "Australia: SEEK, Backpacker Job Board (backpackerjobboard.com.au), and the Sidekicker app — a gig-shift marketplace that's quick to onboard and a good way to start earning within days of landing. New Zealand: SEEK NZ, Backpacker Job Board NZ, BackpackerBoard.co.nz. Canada: Backpacker Job Board Canada, Job Bank Canada, plus direct walk-ins in Whistler/Vancouver/Toronto.", countries: ["australia", "newzealand", "canada"], visaAngle: "Standard casual work — counts toward general working-holiday hours, not 'specified work'.", certNote: "Australia: RSA certificate — same-day online courses exist for around AUD 25–40 (e.g. onlinersa.com.au, galaxytraining.com.au); some states want a short in-person top-up too, so check the state you land in. New Zealand: no personal certificate needed to pour drinks — only the LCQ (Licence Controller Qualification) if you later step up to running a shift as duty manager, which needs 6 months of NZ hospitality experience first — realistic given your bar background. Canada (BC/Whistler): Serving It Right certificate, ~CAD 40, valid 5 years, required for all servers and managers.", drivingHelps: false },
   { icon: "🧗", title: "Excursions & Tour Guiding", blurb: "Leading day trips, adventure activities or sightseeing tours — social, active, outdoors.", fit: "Directly feeds the Adventure Tourism Operations career path.", howTo: "Local tour operators, hostels and adventure companies hire seasonally. A first-aid certificate helps a lot, and a driving licence unlocks more roles (minibus/shuttle driving, remote-site guiding).", whereTo: "New Zealand (Queenstown especially): AJ Hackett Bungy NZ (bungy.co.nz/careers — pays above minimum wage for entry roles), Skyline Queenstown, and adventuretourismjobs.co.nz which lists roles across most NZ operators in one place. Also worth checking SEEK NZ's adventure jobs category directly. Australia/Canada: fewer dedicated boards — go direct to operator websites and Backpacker Job Board's events/promotions category.", countries: ["newzealand", "australia", "canada"], visaAngle: "Regional excursion work in Australia can sometimes count toward specified work — verify per role/region.", certNote: "", drivingHelps: true },
   { icon: "✈️", title: "Flight Attendant / Cabin Crew", blurb: "Travel built into the job, plus a genuine airline career on-ramp.", fit: "Matches the interest in flight attendant work — but check this one before counting on it, more than any other job on this list.", howTo: "Confirmed directly with Qantas: mainline cabin crew requires Australian/NZ permanent residency or (for UK applicants) the right to live and work in the UK — a standard working-holiday visa does not appear to qualify on its own. Budget/regional carriers (Jetstar, and Canadian carriers) may have different rules, but this needs confirming directly with each airline's recruitment page before it's treated as part of the plan.", whereTo: "Check current eligibility directly: careers.qantas.com, careers.jetstar.com, and each airline's own careers site — don't rely on general advice here, the rules are airline-specific and change. Worth also considering UK-based cabin crew roles (easyJet, Jet2, British Airways etc.) as a route into the industry before or after the travel years, since right-to-work isn't a barrier there.", countries: ["australia", "newzealand", "canada"], visaAngle: "Likely needs PR or a different visa status at the major carriers — treat this as \"worth investigating\", not a reliable part of the funding plan, until confirmed.", certNote: "", drivingHelps: false },
-  { icon: "🎪", title: "Event & Festival Crew", blurb: "Bump-in/bump-out, stagehand, box office, bar or runner work at concerts and festivals.", fit: "Directly on-theme — builds on the live gigs you already booked and ran at university during your Music Management degree, plus the events work at TreebySound, just abroad.", howTo: "Sign up with casual crewing agencies before you need the work, not after — most run an onboarding/registration step that's worth doing in your first week.", whereTo: "Australia: Sidekicker (fast app-based onboarding, good early-days income), Event-Crew Australia (eventcrew.au), Event Staff Australia, and ESA Group (theesagroup.com.au — runs casual recruiting over Zoom, worth registering with directly). New Zealand/Canada: fewer dedicated agencies — follow venues and festival promoters directly on socials for casual call-outs, and check Backpacker Job Board's local events category.", countries: ["australia", "newzealand", "canada"], visaAngle: "Great CV-builder for Live Events & Festival Production — keep a running list of every show worked.", certNote: "", drivingHelps: false },
+  { icon: "🎪", title: "Event & Festival Crew", blurb: "Bump-in/bump-out, stagehand, box office, bar or runner work at concerts and festivals.", fit: "Directly on-theme — builds on the live gigs you already booked and ran at university during your Music Management degree, plus the events work at Bespoke Events, just abroad.", howTo: "Sign up with casual crewing agencies before you need the work, not after — most run an onboarding/registration step that's worth doing in your first week.", whereTo: "Australia: Sidekicker (fast app-based onboarding, good early-days income), Event-Crew Australia (eventcrew.au), Event Staff Australia, and ESA Group (theesagroup.com.au — runs casual recruiting over Zoom, worth registering with directly). New Zealand/Canada: fewer dedicated agencies — follow venues and festival promoters directly on socials for casual call-outs, and check Backpacker Job Board's local events category.", countries: ["australia", "newzealand", "canada"], visaAngle: "Great CV-builder for Live Events & Festival Production — keep a running list of every show worked.", certNote: "", drivingHelps: false },
   { icon: "🎿", title: "Ski Resort & Adventure Tourism", blurb: "A full winter season working lift ops, hospitality or guiding at a ski town.", fit: "High energy, very social, and stacks hospitality + outdoor experience in one go.", howTo: "Resort hiring runs on fixed seasonal windows — missing one means waiting a full year, so timing the application matters more here than almost anywhere else on this list.", whereTo: "New Zealand (Queenstown/Wanaka): Cardrona & Treble Cone (cardrona-treblecone.com/employment) and NZSki/other resorts recruit general mountain roles roughly late March–April, instructor roles from February — apply directly on each resort's site, or browse SnowSeasonCentral / BackpackerBoard NZ's ski-season listings. Canada (Whistler/Banff/Jasper/Lake Louise): Whistler Blackcomb's own careers site, plus in-person hiring events (recent ones ran mid-June for the Nov/Dec start) bookable through the Backpacker Job Board Canada Job Hub — video interviews are common if you can't attend in person. Australia (Perisher etc.): apply directly via the resort's careers page.", countries: ["newzealand", "canada", "australia"], visaAngle: "Seasonal accommodation is often bundled with the job — budget-friendly for a working holiday.", certNote: "", drivingHelps: true },
   { icon: "🏕️", title: "Hostel & Work Exchange", blurb: "Reception, cleaning or bar work at a hostel in exchange for free accommodation.", fit: "Cheap way to stretch savings between paid seasonal jobs, fast way to meet other travellers.", howTo: "Work-exchange platforms, or just ask directly at hostels in smaller towns — this one's genuinely often first-come, first-served if you turn up in person and ask.", whereTo: "Backpacker-focused hostel chains with lots of NZ/AU locations (Nomads, Base, YHA) are a reliable place to start since they hire this way constantly. Work-exchange platforms like Workaway also list options across all three countries.", countries: ["australia", "newzealand", "canada"], visaAngle: "Useful as a bridge between seasons rather than a main income source.", certNote: "", drivingHelps: false },
   { icon: "🚢", title: "Cruise Ship Crew", blurb: "Hospitality, entertainment or events roles on cruise lines that circuit the Pacific.", fit: "Another genuine hospitality/events career thread, with contracts that fund travel between them.", howTo: "Apply directly to cruise lines or crew agencies; contracts are usually 4–8 months on.", whereTo: "Apply directly on cruise line career pages rather than third-party agencies where possible — fewer fees, clearer process.", countries: ["australia", "newzealand", "canada"], visaAngle: "Sits outside the standard working-holiday timeline — an alternative branch, not a filler.", certNote: "", drivingHelps: false },
@@ -1202,7 +1498,7 @@ const TOOLKIT_CHECKLIST_TEMPLATE = [
   { id: "cv-corporate", label: "Build a second CV suited to corporate applications (project/procurement/ops/marketing roles)" },
   { id: "linkedin", label: "Set up or update a LinkedIn profile that matches the CV" },
   { id: "photo", label: "Sort a proper professional photo for LinkedIn/CV" },
-  { id: "references", label: "Line up two references (e.g. Dave at TreebySound, a manager from Cheeky Clucker or Foot Asylum) and give them a heads-up" },
+  { id: "references", label: "Line up two references (e.g. your manager at Bespoke Events, a manager from Cheeky Clucker or Foot Asylum) and give them a heads-up" },
   { id: "portfolio", label: "Add the first entry to your Experience Log below — start the habit early" },
   { id: "bank", label: "Set up a fee-free international bank card" },
   { id: "checkin", label: "Set a 6-monthly check-in with yourself: still on the right country/lane?" },
@@ -1233,8 +1529,8 @@ const PALETTES = [
 
 /* ===================================== STORAGE ===================================== */
 /* Every key shares the robajobbob- prefix so the backup export/import below can
-   sweep up everything with one loop, the same way TreebySound and Thorn
-   Procurement do it. */
+   sweep up everything with one loop, without having to keep a hand-written
+   list of keys in step with this one. */
 const PFX = "robajobbob-";
 const K = {
   profile: PFX + "profile", visa: PFX + "visa", ext: PFX + "ext",
@@ -1403,8 +1699,7 @@ function toast(msg) {
 }
 
 /* ===================================== COLOUR ENGINE =====================================
-   Ported from TreebySound's Appearance panel, but generative rather than one
-   hand-written CSS block per theme: give it a hue (and whether it's a muted
+   Generative rather than one hand-written CSS block per theme: give it a hue (and whether it's a muted
    or dark run) and it derives the whole token set — page/card/line surfaces,
    three ink weights, and four accent colours each with a text and a tint
    variant — so every theme in PALETTES gets full-surface treatment, not just
@@ -1730,10 +2025,11 @@ applyLayout();
 /* ===================================== NAV ===================================== */
 const TABS = [
   { key: "home", label: "Home", icon: ICONS.home },
-  { key: "career", label: "Compass", icon: ICONS.compass },
+  { key: "career", label: "Career", icon: ICONS.compass },
   { key: "roadmap", label: "Route", icon: ICONS.route },
   { key: "jobs", label: "Jobs", icon: ICONS.ticket },
   { key: "apply", label: "Apply", icon: ICONS.send },
+  { key: "skills", label: "Skills", icon: ICONS.quote },
   { key: "toolkit", label: "Kit", icon: ICONS.check },
   { key: "profile", label: "You", icon: ICONS.user },
 ];
@@ -1854,6 +2150,7 @@ function renderHome() {
         <button class="nav-card acc-teal" data-goto="roadmap"><span class="tile">${ICONS.route}</span><strong>Travel Route</strong><span>5 years, visa-checked</span></button>
         <button class="nav-card acc-mustard" data-goto="jobs"><span class="tile">${ICONS.ticket}</span><strong>Casual Jobs</strong><span>What funds the trip</span></button>
         <button class="nav-card acc-sky" data-goto="apply"><span class="tile">${ICONS.send}</span><strong>Apply</strong><span>${apps.length ? `${apps.length} application${apps.length === 1 ? "" : "s"} tracked` : "Match a job spec"}</span></button>
+        <button class="nav-card acc-coral" data-goto="skills"><span class="tile">${ICONS.quote}</span><strong>Skills &amp; Stories</strong><span>How to word ${SKILL_STORIES.length} of them</span></button>
         <button class="nav-card acc-teal" data-goto="toolkit"><span class="tile">${ICONS.check}</span><strong>Prep Kit</strong><span>Checklist, log &amp; notes</span></button>
       </div>
     </section>
@@ -1879,7 +2176,7 @@ function renderCareer() {
   el.innerHTML = `
     <div class="eyebrow">${ICONS.compass} Long-term</div>
     <h1 class="page-title">Career Compass</h1>
-    <p class="page-lede">Long-term is still open — that's normal. Here are ${CAREER_PATHS.length} real directions that build on what's already happening at TreebySound, the Music Management degree from BIMM, the label/promotions and marketing roles, and leading a bar solo at Cheeky Clucker — from the obvious next step and the ambitious long shot, to a wider set of generalist corporate options that don't need years of retraining to start.</p>
+    <p class="page-lede">Long-term is still open — that's normal. Here are ${CAREER_PATHS.length} real directions that build on what's already happening at Bespoke Events, the Music Management degree from BIMM, the label/promotions and marketing roles, and leading a bar solo at Cheeky Clucker — from the obvious next step and the ambitious long shot, to a wider set of generalist corporate options that don't need years of retraining to start.</p>
 
     <section>
       <div class="section-head"><h2>Skills already in hand</h2></div>
@@ -1890,6 +2187,7 @@ function renderCareer() {
             <div class="to">${ICONS.arrowRight}${esc(b.to)}</div>
           </div>`).join("")}
       </div>
+      <div class="btn-row"><button class="btn ghost small" data-goto="skills">${ICONS.quote} Now say them in an application</button></div>
     </section>
 
     <section>
@@ -1920,6 +2218,7 @@ function renderCareer() {
     </section>
   `;
   el.querySelectorAll("[data-career-filter]").forEach(b => b.addEventListener("click", () => { careerFilter = b.dataset.careerFilter; renderCareer(); }));
+  el.querySelectorAll("[data-goto]").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.goto)));
 }
 
 /* ===================================== ROADMAP ===================================== */
@@ -2362,7 +2661,16 @@ function analyseJobSpec(text) {
   const ownBonus = Math.min(ownMatched, 3) * 0.05;
   const fitRatio = (breadth + depth) / 2 + ownBonus;
   const fitLevel = matched.length === 0 ? "none" : fitRatio >= 0.5 ? "strong" : fitRatio >= 0.25 ? "decent" : "stretch";
-  return { matched, gaps, covered, fitLevel, coreMatched, ownMatched, coreHits, bankSize: EVIDENCE_BANK.length };
+  /* Deliberately outside the scoring above: SKILL_STORIES is the same
+     underlying experience as the evidence bank, re-phrased for the
+     application itself, so counting it would inflate every fit. It's here to
+     answer "what do I actually write?", not "am I a fit?". */
+  const phrasing = SKILL_STORIES
+    .map(s => ({ skill: s, hits: keywordHits(norm, s.keywords) }))
+    .filter(x => x.hits.length)
+    .sort((a, b) => b.hits.length - a.hits.length)
+    .slice(0, 5);
+  return { matched, gaps, covered, fitLevel, coreMatched, ownMatched, coreHits, phrasing, bankSize: EVIDENCE_BANK.length };
 }
 function buildPitch(matched) {
   if (!matched.length) return "";
@@ -2394,7 +2702,7 @@ const FIT_COPY = {
   none: { label: "No direct match found", tone: "mustard", note: "Nothing in the job text matched your background bank — try pasting more of the actual requirements list, or this genuinely may not be the right fit." },
 };
 function renderApplyResults(container, text) {
-  const { matched, gaps, covered, fitLevel, coreMatched, ownMatched, coreHits, bankSize } = analyseJobSpec(text);
+  const { matched, gaps, covered, fitLevel, coreMatched, ownMatched, coreHits, phrasing, bankSize } = analyseJobSpec(text);
   if (!text.trim()) {
     container.innerHTML = `<p class="page-lede">Paste a job description above, then hit <strong>Analyse</strong>.</p>`;
     return;
@@ -2416,6 +2724,20 @@ function renderApplyResults(container, text) {
             <p style="font-size:0.85rem; color:var(--ink-soft); margin:0;">${esc(m.detail)}</p>
           </div>`).join("")}
       </div>` : `<p class="page-lede">Nothing matched directly — paste more of the actual job text (the full requirements list works best), or this one may just be a stretch.</p>`}
+
+    ${phrasing.length ? `
+      <div class="section-head" style="margin-top:24px;"><h2>How to actually say it</h2></div>
+      <p class="page-lede" style="margin-bottom:12px;">This ad asked for ${phrasing.length} thing${phrasing.length === 1 ? "" : "s"} you can genuinely back up. Here's the wording for each, ready to paste — the full set, with the jobs behind every line, is on the <strong>Skills</strong> tab.</p>
+      <div class="stack">
+        ${phrasing.map(({ skill: s, hits }) => `
+          <div class="card">
+            <div class="skill-head"><span class="skill-emoji">${s.icon}</span><h3>${esc(s.title)}</h3></div>
+            <p class="skill-what" style="margin-bottom:10px;">The ad asked for ${hits.slice(0, 4).map(h => `<strong>${esc(h)}</strong>`).join(", ")}${hits.length > 4 ? ` and ${hits.length - 4} more like it` : ""}.</p>
+            ${sayBlock(s.id, "letter", "In a cover letter", s.letter)}
+            ${sayBlock(s.id, "cv", "On a CV", s.cv)}
+          </div>`).join("")}
+      </div>
+      <div class="btn-row"><button class="btn ghost small" id="apply-open-skills">${ICONS.quote} All ${SKILL_STORIES.length} on the Skills tab</button></div>` : ""}
 
     ${gaps.length ? `
       <div class="section-head" style="margin-top:24px;"><h2>Worth addressing</h2></div>
@@ -2474,6 +2796,9 @@ function renderApplyResults(container, text) {
   if (copyLetterBtn) copyLetterBtn.addEventListener("click", () => copyText(buildCoverLetter(pitch), copyLetterBtn));
   const copyBulletsBtn = document.getElementById("apply-copy-bullets");
   if (copyBulletsBtn) copyBulletsBtn.addEventListener("click", () => copyText(matched.map(m => "• " + m.detail).join("\n"), copyBulletsBtn));
+  bindSayCopy(container);
+  const openSkillsBtn = document.getElementById("apply-open-skills");
+  if (openSkillsBtn) openSkillsBtn.addEventListener("click", () => switchTab("skills"));
 }
 
 /* The pasted spec, its label, and which saved application (if any) is being
@@ -2490,13 +2815,13 @@ function renderApply() {
   el.innerHTML = `
     <div class="eyebrow">${ICONS.send} Job applications</div>
     <h1 class="page-title">Apply</h1>
-    <p class="page-lede">Paste a real job ad below and it's checked against your actual background — TreebySound, Cheeky Clucker, Foot Asylum, Tesco, the BIMM degree, the label/promotions and marketing work, and anything added on the <strong>You</strong> tab — to show what to lead with and what's worth covering off first.</p>
+    <p class="page-lede">Paste a real job ad below and it's checked against your actual background — Bespoke Events, Cheeky Clucker, Foot Asylum, Tesco, the BIMM degree, the label/promotions and marketing work, and anything added on the <strong>You</strong> tab — to show what to lead with and what's worth covering off first.</p>
 
     <div class="callout sky" style="margin-bottom:22px;">
       ${ICONS.linkedin}
       <div>
         <h3>Before sending anything</h3>
-        <p>A few things that help every application, not just this tool: a <strong>LinkedIn profile</strong> that matches the CV (worth having before applying anywhere, especially abroad where employers check it); a proper <strong>professional photo</strong> for LinkedIn/CV specifically — separate from any personal photo in this app; and two <strong>references lined up and warned in advance</strong> — Dave at TreebySound plus a manager from Cheeky Clucker or Foot Asylum are the obvious pair.</p>
+        <p>A few things that help every application, not just this tool: a <strong>LinkedIn profile</strong> that matches the CV (worth having before applying anywhere, especially abroad where employers check it); a proper <strong>professional photo</strong> for LinkedIn/CV specifically — separate from any personal photo in this app; and two <strong>references lined up and warned in advance</strong> — your manager at Bespoke Events plus a manager from Cheeky Clucker or Foot Asylum are the obvious pair.</p>
       </div>
     </div>
 
@@ -2693,6 +3018,245 @@ function renderApply() {
       toast(input.value ? "Follow-up set" : "Follow-up cleared");
     }));
   }
+}
+
+/* ===================================== SKILLS ===================================== */
+/* The Apply tab is for a specific ad. This tab is for the question underneath
+   every ad — "I've done that, but how do I write it?" — so it's browsable
+   without pasting anything, and answerable in one go by typing the phrase the
+   ad used into the lookup box. Two ways in, because the question arrives both
+   ways round: "they want X, what have I got?" (by skill) and "I did that job,
+   what does it prove?" (by job). */
+let skillsMode = "skill";
+let skillsQuery = "";
+
+/* Crude on purpose. An ad says "promoting events" where the skill says
+   "promotions", and a real stemmer is a lot of code to buy one shared prefix —
+   so the loose pass lops the obvious English endings off and looks for what's
+   left at the *start of a word* in the text. The word boundary is the part
+   that matters: a plain substring test had "live music" matching every skill
+   that mentioned a de-live-ry. Only ever used as the fallback, never to decide
+   a direct match. */
+function stem(t) {
+  const cut = t.replace(/(ings|ing|ers|er|ed|es|s|e)$/, "");
+  return cut.length >= 4 ? cut : t;
+}
+function looseHit(hay, term) {
+  const st = stem(term).replace(/[^a-z0-9]/g, "");
+  return st.length >= 4 && new RegExp(`\\b${st}`).test(hay);
+}
+function skillHaystack(s) {
+  return [s.title, s.what, s.cv, s.letter, s.interview, ...s.keywords, ...s.proof.map(p => `${proofLabel(p)} ${p.line}`)].join(" ").toLowerCase();
+}
+/* Two passes, and the second only runs if the first found nothing.
+
+   A direct hit — the ad's own phrase appearing in a skill's keywords, or the
+   whole typed phrase appearing in the skill — is a real answer, and once
+   there's one of those, the loose matches are noise. Scoring everything on one
+   scale instead returned ten of twelve skills for "able to work on your own
+   initiative", which is the same as returning nothing: the point of the box is
+   to narrow, not to shuffle. The loose pass is the fallback for wording the
+   keywords don't cover, so something still comes back. */
+function matchSkills(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) return { list: SKILL_STORIES.slice(), filtered: false, loose: false };
+  const direct = SKILL_STORIES
+    .map(s => {
+      let score = keywordHits(q, s.keywords).length * 4;
+      if (q.length > 3 && skillHaystack(s).includes(q)) score += 6;
+      return { s, score };
+    })
+    .filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score);
+  if (direct.length) return { list: direct.map(x => x.s), filtered: true, loose: false };
+
+  const terms = q.split(/[^a-z0-9']+/).filter(t => t.length > 3 && !LOG_STOPWORDS.has(t));
+  if (!terms.length) return { list: [], filtered: true, loose: false };
+  const loose = SKILL_STORIES
+    .map(s => {
+      const hay = skillHaystack(s);
+      return { s, score: terms.filter(t => looseHit(hay, t)).length };
+    })
+    .filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score);
+  return { list: loose.map(x => x.s), filtered: true, loose: loose.length > 0 };
+}
+
+const SAY_KINDS = [
+  { key: "cv", label: "On a CV" },
+  { key: "letter", label: "In a cover letter" },
+  { key: "interview", label: "Out loud, in the room" },
+];
+function sayBlock(skillId, kind, label, text) {
+  return `
+    <div class="say-block">
+      <div class="say-top">
+        <span class="say-kind">${esc(label)}</span>
+        <button class="say-copy" data-copy-skill="${esc(skillId)}" data-copy-kind="${esc(kind)}">Copy</button>
+      </div>
+      <p class="say-text">${esc(text)}</p>
+    </div>`;
+}
+/* Every copy button on the page, wherever it was rendered, reads its text back
+   out of SKILL_STORIES rather than out of the DOM — so what lands on the
+   clipboard is the real string, not an HTML-escaped version of it. */
+function bindSayCopy(root) {
+  root.querySelectorAll("[data-copy-skill]").forEach(btn => btn.addEventListener("click", () => {
+    const skill = SKILL_STORIES.find(s => s.id === btn.dataset.copySkill);
+    if (!skill) return;
+    copyText(skill[btn.dataset.copyKind] || "", btn);
+  }));
+}
+
+function skillCard(s) {
+  return `
+    <div class="card" id="skill-card-${esc(s.id)}">
+      <div class="skill-head"><span class="skill-emoji">${s.icon}</span><h3>${esc(s.title)}</h3></div>
+      <p class="skill-what">${esc(s.what)}</p>
+      <p class="proof-label">Where it comes from</p>
+      <ul class="proof-list">
+        ${s.proof.map(p => `<li><span class="proof-where">${esc(proofLabel(p))}</span> — ${esc(p.line)}</li>`).join("")}
+      </ul>
+      <p class="proof-label">Say it like this</p>
+      ${SAY_KINDS.map(k => sayBlock(s.id, k.key, k.label, s[k.key])).join("")}
+      <details class="disclose" style="margin-top:14px;">
+        <summary>${ICONS.chevron} Prep the story behind it</summary>
+        <p style="margin-top:8px; font-size:0.85rem; color:var(--ink-soft);">${esc(s.star)}</p>
+      </details>
+    </div>`;
+}
+/* One role, formatted the way it would actually be pasted into a CV: the
+   heading line a CV uses, then that role's own bullets. */
+function jobCvBlock(job) {
+  return [`${job.title} — ${job.company} (${job.period})`, ...(job.cv || []).map(l => "• " + l)].join("\n");
+}
+function jobCard(job, skills, filtered) {
+  return `
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; gap:10px; align-items:baseline;">
+        <h3 style="font-size:0.94rem;">${esc(job.title)} <span style="color:var(--ink-faint); font-weight:500;">— ${esc(job.company)}</span></h3>
+        <span class="mono" style="font-size:0.72rem; color:var(--ink-faint); white-space:nowrap;">${esc(job.period)}</span>
+      </div>
+      <p style="font-size:0.85rem; color:var(--ink-soft); margin:6px 0 0;">${esc(job.detail)}</p>
+      ${(job.cv || []).length ? `
+        <p class="proof-label" style="margin-top:14px;">On a CV, this role reads</p>
+        <ul class="proof-list">
+          ${job.cv.map(l => `<li><span>• ${esc(l)}</span></li>`).join("")}
+        </ul>` : ""}
+      <p class="proof-label">What it proves${filtered ? ", of what you searched for" : ""} — tap for the wording</p>
+      <div class="skill-tags">
+        ${skills.map(s => `<button class="skill-tag" data-skill-jump="${esc(s.id)}">${s.icon} ${esc(s.title)}</button>`).join("")}
+      </div>
+      <div class="btn-row">
+        <button class="btn ghost small" data-copy-job="${esc(job.id)}">${ICONS.copy} Copy this role as a CV block</button>
+      </div>
+    </div>`;
+}
+
+function renderSkillsResults() {
+  const container = document.getElementById("skills-results");
+  const resultLine = document.getElementById("skills-lookup-result");
+  if (!container) return;
+  const { list, filtered, loose } = matchSkills(skillsQuery);
+
+  if (resultLine) {
+    resultLine.innerHTML = !filtered
+      ? `Showing all <strong>${SKILL_STORIES.length}</strong>. Type above to narrow it to what an ad actually asked for.`
+      : list.length
+        ? loose
+          ? `No exact match on that wording, so here are <strong>${list.length}</strong> that mention something close${skillsMode === "job" ? `, across your jobs below` : ""}.`
+          : `<strong>${list.length}</strong> of ${SKILL_STORIES.length} answer that${skillsMode === "job" ? `, across your jobs below` : ""} — best match first.`
+        : `Nothing here answers that directly.`;
+  }
+
+  if (!list.length) {
+    container.innerHTML = `
+      <div class="callout mustard">
+        ${ICONS.flag}
+        <div>
+          <h3>Nothing here answers that directly</h3>
+          <p>Try one word rather than the whole sentence first — the wording in ads varies more than the thing being asked for. If it really isn't covered, it's either a genuine gap (the <strong>Apply</strong> tab names free ways to close the common ones) or something you've done that isn't written down yet — add it as a talking point on the <strong>You</strong> tab and it'll be matched from then on.</p>
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (skillsMode === "job") {
+    const ids = new Set(list.map(s => s.id));
+    const jobs = EMPLOYMENT_HISTORY
+      .map(job => ({ job, skills: skillsForJob(job.id).filter(s => ids.has(s.id)) }))
+      .filter(x => x.skills.length);
+    container.innerHTML = jobs.length
+      ? `<div class="stack">${jobs.map(x => jobCard(x.job, x.skills, filtered)).join("")}</div>
+         <div class="btn-row"><button class="btn ghost small" id="skills-copy-all">${ICONS.copy} Copy every role as CV blocks</button></div>`
+      : `<p class="page-lede">That one isn't tied to a single job — switch to <strong>By skill</strong> to see it.</p>`;
+  } else {
+    container.innerHTML = `<div class="stack">${list.map(skillCard).join("")}</div>`;
+  }
+
+  bindSayCopy(container);
+  container.querySelectorAll("[data-copy-job]").forEach(btn => btn.addEventListener("click", () => {
+    const job = jobById(btn.dataset.copyJob);
+    if (job) copyText(jobCvBlock(job), btn);
+  }));
+  container.querySelectorAll("[data-skill-jump]").forEach(btn => btn.addEventListener("click", () => {
+    const id = btn.dataset.skillJump;
+    skillsMode = "skill";
+    renderSkills();
+    const card = document.getElementById(`skill-card-${id}`);
+    if (card) card.scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
+  const copyAll = document.getElementById("skills-copy-all");
+  if (copyAll) copyAll.addEventListener("click", () => copyText(EMPLOYMENT_HISTORY.map(jobCvBlock).join("\n\n"), copyAll));
+}
+
+function renderSkills() {
+  const el = document.getElementById("view-skills");
+  el.innerHTML = `
+    <div class="eyebrow">${ICONS.quote} Saying it, not just having it</div>
+    <h1 class="page-title">Skills &amp; Stories</h1>
+    <p class="page-lede">You've already done all of this. The hard part is saying it the way an application wants to hear it — so every skill here is traced back to the actual jobs that prove it, then written three ways, because an application asks for it three ways: a bullet on a CV, a sentence in a cover letter, and something you'd actually say out loud in the room. Tap <strong>Copy</strong> on whichever one you need.</p>
+
+    <div class="lookup">
+      <label for="skills-lookup">An ad has asked for something — what do you say?</label>
+      <span class="hint">Type the phrase straight out of the ad. For a whole job spec, the <strong>Apply</strong> tab does the full check.</span>
+      <input type="text" id="skills-lookup" placeholder="e.g. able to work on your own initiative" value="${esc(skillsQuery)}" autocomplete="off" />
+      <p class="lookup-result" id="skills-lookup-result" aria-live="polite"></p>
+    </div>
+
+    <div class="chip-row">
+      <button class="chip ${skillsMode === "skill" ? "active" : ""}" data-skills-mode="skill">🗣️ By skill</button>
+      <button class="chip ${skillsMode === "job" ? "active" : ""}" data-skills-mode="job">💼 By job</button>
+    </div>
+
+    <div id="skills-results"></div>
+
+    <section style="margin-top:26px;">
+      <div class="callout teal">
+        ${ICONS.info}
+        <div>
+          <h3>None of this is invented</h3>
+          <p>Every line traces back to a real job on your <strong>You</strong> tab, so you can say it in an interview without having to remember what you claimed. If something's missing — a job, a project, something you did once and haven't written down — add it as a talking point on the <strong>You</strong> tab, or log it on the <strong>Kit</strong> tab, and the <strong>Apply</strong> tab will match it from then on.</p>
+        </div>
+      </div>
+    </section>
+  `;
+
+  renderSkillsResults();
+
+  const input = document.getElementById("skills-lookup");
+  input.addEventListener("input", () => {
+    skillsQuery = input.value;
+    /* Only the results re-render — re-rendering the whole tab would take the
+       keyboard away mid-word, which on a phone is the end of the search. */
+    renderSkillsResults();
+  });
+  el.querySelectorAll("[data-skills-mode]").forEach(b => b.addEventListener("click", () => {
+    if (skillsMode === b.dataset.skillsMode) return;
+    skillsMode = b.dataset.skillsMode;
+    el.querySelectorAll("[data-skills-mode]").forEach(x => x.classList.toggle("active", x.dataset.skillsMode === skillsMode));
+    renderSkillsResults();
+  }));
 }
 
 /* ===================================== TOOLKIT ===================================== */
@@ -2934,6 +3498,7 @@ function renderProfile() {
             <p style="font-size:0.85rem; color:var(--ink-soft); margin:6px 0 0;">${esc(h.detail)}</p>
           </div>`).join("")}
       </div>
+      <div class="btn-row"><button class="btn ghost small" data-goto="skills">${ICONS.quote} See what each of these proves, and how to word it</button></div>
     </section>
 
     <section>
@@ -2983,6 +3548,7 @@ function renderProfile() {
     </section>
   `;
 
+  el.querySelectorAll("[data-goto]").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.goto)));
   document.getElementById("p-save").addEventListener("click", () => {
     profile = {
       ...profile,
@@ -3098,7 +3664,7 @@ function renderAll() {
   document.getElementById("strip-sub").textContent = `Hey ${profile.name} · career & travel plan`;
   const apName = document.getElementById("apName");
   if (apName && document.activeElement !== apName) apName.value = profile.name;
-  renderHome(); renderCareer(); renderRoadmap(); renderJobs(); renderApply(); renderToolkit(); renderProfile();
+  renderHome(); renderCareer(); renderRoadmap(); renderJobs(); renderApply(); renderSkills(); renderToolkit(); renderProfile();
 }
 renderNav();
 renderAll();

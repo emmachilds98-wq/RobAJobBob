@@ -3,10 +3,10 @@
 A personal career & travel planning app built for one specific person — Rob (Robert Kirkpatrick),
 not a generic product. It's an installable, phone-first PWA — built to live on his iPhone home
 screen, with a full responsive web view too — that sits alongside his day-to-day life at
-TreebySound and helps him think through three things at once:
+Bespoke Events and helps him think through five things at once:
 
 1. **Long-term career** — he's not sure yet, and that's fine. The Career Compass turns his real
-   background (TreebySound, running the bar solo at Cheeky Clucker, a Music Management degree
+   background (Bespoke Events, running the bar solo at Cheeky Clucker, a Music Management degree
    from BIMM, and real label/artist-management/promotions roles at Open Room Records, Sleeping
    Dog Promotions, Bang Bang Merch and Madway Brewery) into 13 concrete, realistic directions,
    each with the actual steps to get there — spanning the obvious music/events/hospitality paths
@@ -30,7 +30,19 @@ TreebySound and helps him think through three things at once:
    real status (applied / interview / offer / rejected) plus free-text notes and a "next step by"
    date that surfaces on the home screen once it's due — so it works as an actual job-search
    tracker, not just a pitch-generator history.
-4. **What happens after** — the Kit tab's Experience Log lets him record a dated entry every time
+4. **Knowing how to say it** — the Skills tab. Having done something and being able to write it
+   down in the words an application wants are two different skills, and the second one is the
+   one that actually loses people jobs. Thirteen transferable skills are drawn out of his real
+   history — working unsupervised, leading a shift, logistics, running an event on the day,
+   suppliers and costs, coordination, client-facing work, music-industry credibility, marketing,
+   on-the-spot problem solving, unsociable hours, self-teaching, whole-business fluency — each traced back to the
+   named jobs that prove it and each written **three ways**, because an application asks for it
+   three ways: a CV bullet, a sentence for a cover letter, and something he'd actually say out
+   loud in the room. Every line is one tap to copy. A lookup box takes a phrase straight out of
+   an ad ("able to work on your own initiative") and returns only the skills that genuinely
+   answer it, and a **By job** view flips the question round — pick a past job, see what it
+   proves and how that role reads as CV bullets, copyable role by role or as a whole CV.
+5. **What happens after** — the Kit tab's Experience Log lets him record a dated entry every time
    he works something, anywhere, optionally tagged to a Career Compass path. Each entry immediately
    becomes matchable evidence in the Apply tab, and the whole log copies out as CV bullets in one
    tap. Five years from now that's real, specific evidence for whatever comes next — travelling
@@ -39,7 +51,8 @@ TreebySound and helps him think through three things at once:
    of years abroad, and that the same tax-residency test applies in reverse on the way back.
 
 None of these compete — travel-era casual jobs feed evidence back into the long-term career
-paths, and the Apply tab draws on all of it. A prominent home-screen callout also flags the
+paths, the Skills tab turns all of it into words he can paste into an application, and the Apply
+tab draws on the lot. A prominent home-screen callout also flags the
 thing that matters most given where he's starting from: UK applicants are eligible right through
 age 35 on Australia 417, NZ Working Holiday and Canada IEC alike, so the real cut-off on all
 three is the 36th birthday, not the 35th as it's easy to assume — he's 32 with no firm start
@@ -97,18 +110,29 @@ it to Phone view or Web view regardless of window size.
 ## Structure
 
 Everything lives in one file on purpose, matching the pattern used across this account's other
-personal apps (TreebySound, ThornProcurement) — one HTML file is easy to keep, easy to host on
+personal apps (ThornProcurement among them) — one HTML file is easy to keep, easy to host on
 GitHub Pages, and easy to hand-edit without a build step.
 
 - `index.html` — the entire app: markup, styles, content data, and all the logic (tabs, the
   colour engine, the travel-date maths, the job-spec matching engine, localStorage persistence).
   Search for the `DATA` comment block near the top of the `<script>` section to find:
-  - `EMPLOYMENT_HISTORY` — his real, dated work history (source of truth for the Apply tab)
+  - `EMPLOYMENT_HISTORY` — his real, dated work history (source of truth for the Apply tab).
+    Each role also carries a `cv` array: that role written the way a CV writes it, present tense
+    for the current job and past tense for the rest. Those bullets live on the role rather than
+    being assembled from `SKILL_STORIES`, because a skill's wording deliberately spans several
+    jobs ("three separate employers handed me the shift") and pasting that under one employer
+    would put other people's jobs in it.
   - `EVIDENCE_BANK` — keyword → real-experience mappings the Apply tab matches job specs against,
     each also carrying a `star` field (an interview-prep prompt for that piece of evidence).
     Anything he adds himself via the You tab's "Your own talking points" lives in
     `localStorage` under the same shape and is merged in at match time — `EVIDENCE_BANK` alone
     isn't the full picture once he's used that.
+  - `SKILL_STORIES` — the Skills tab: one entry per transferable skill, each carrying the jobs
+    that prove it (by `EMPLOYMENT_HISTORY` id, so the two can't drift apart), the same claim
+    written three ways (`cv` / `letter` / `interview`), a `star` prompt, and the `keywords` a
+    job ad would use when asking for it. Deliberately *not* fed into the Apply tab's fit
+    scoring — it's the same underlying experience as `EVIDENCE_BANK`, re-phrased, so counting it
+    twice would inflate every match. It only ever adds a "how to actually say it" section.
   - `GAP_SUGGESTIONS` — common job-spec asks (certs etc.) not covered by the evidence bank, each
     with a real next step and whether it's free
   - `FACTS_LAST_VERIFIED` — the date every fee, scheme length and tax rule below it was last
@@ -147,7 +171,7 @@ keywords like "av" match as whole words only, so they don't false-positive insid
   additions can lift a score but never lower one — scoring against the merged bank meant every
   piece of real evidence he added made every job look like a *worse* fit, which is backwards.
 - **What matches** — which parts of his real history line up, sorted by how strongly each one
-  matched, each traceable back to a named employer (TreebySound, Cheeky Clucker, Foot Asylum,
+  matched, each traceable back to a named employer (Bespoke Events, Cheeky Clucker, Foot Asylum,
   Tesco, Open Room Records, Sleeping Dog Promotions, Bang Bang Merch, Madway Brewery) or, for
   the two self-extending sources, labelled *Added by you* / *From your Experience Log* so a hit
   off something recorded last month is as traceable as one off the built-in bank.
@@ -177,6 +201,38 @@ and two references lined up in advance. A "Where to actually look" card names re
 LinkedIn Jobs, Indeed UK, Reed.co.uk, Totaljobs, CV-Library and Hays/Reed Specialist
 Recruitment/Michael Page/Adecco/Randstad for UK corporate roles now, plus Seek.com.au, Seek.co.nz,
 Trade Me Jobs, Indeed.ca and Job Bank Canada for once he's travelling.
+
+## The Skills tab
+
+The Apply tab answers *does this ad fit me?* The Skills tab answers the question that lands
+immediately afterwards and is genuinely the harder one: *I've done that — but how do I say it?*
+
+It's browsable without pasting anything, and it works from either end:
+
+- **By skill** — thirteen cards, each one a transferable skill with **Where it comes from** (the
+  actual named jobs and what he did in them) and **Say it like this**: the same claim as a CV
+  bullet, as a cover-letter sentence, and as something he'd say out loud in an interview, each
+  with its own Copy button. A collapsible *Prep the story behind it* gives the STAR prompt.
+- **By job** — the same material the other way round: each role from `EMPLOYMENT_HISTORY` with
+  its own ready CV bullets, a **Copy this role as a CV block** button (heading line plus
+  bullets, formatted the way it's actually pasted), and tappable chips for everything that role
+  proves, which jump straight to that skill's wording. One button at the bottom copies every
+  role as a full CV.
+- **The lookup box** — type the phrase straight out of an ad and it returns only the skills that
+  answer it. Matching runs in two passes and the second only fires if the first finds nothing: a
+  direct hit (the ad's own phrasing in a skill's keywords, or the whole typed phrase appearing in
+  the skill) is a real answer, and once there's one of those the loose word matches are noise.
+  Scoring everything on one scale instead returned ten of twelve skills for "able to work on your
+  own initiative" — the same as returning nothing. The loose pass is the fallback for wording the
+  keywords don't cover: it strips the obvious English endings off each word and looks for what's
+  left at the *start of a word* in the skill's text, so "promoting" finds "promotions" without
+  "live music" finding every mention of a de-**live**-ry.
+
+The Apply tab picks the same material up automatically: analyse a job ad and a **How to actually
+say it** section appears alongside the matches, showing the cover-letter and CV wording for
+whatever the ad asked for, with the ad's own phrases quoted back so it's obvious *why* each one
+surfaced. It's excluded from the fit score on purpose (see `SKILL_STORIES` above) — it changes
+what he writes, not how good a fit the app claims he is.
 
 ## The look
 
@@ -219,7 +275,8 @@ Tap the gear icon on any screen for:
 Open the **You** tab to set his name, contact details, role, education, background, nationality,
 visa status, driving licence and certificates — everything saves to `localStorage`, so it's
 private to whoever opens it on that device. It also shows his real work history timeline, which
-is what the Apply tab's matching is built on. His birth date is already known and baked in
+is what the Apply tab's matching is built on, with a link straight through to the **Skills**
+tab for what each of those roles proves and how to word it. His birth date is already known and baked in
 (`DEFAULT_PROFILE.birthDate`), so there's no birth-date field to fill in — the Age shown is
 computed live from it instead of a manually-typed value that would silently go stale. The
 **Travel Route** tab lets the visa month-lengths, country order and travel start date be edited
