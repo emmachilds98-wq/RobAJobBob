@@ -79,6 +79,28 @@ works the whole route backwards from it:
 Plus concrete advice on making the most of each scheme before then, and the reasoning behind the
 default Australia → New Zealand → Canada order and what would change it.
 
+The tab also carries a **landing pack** — a per-country, ordered list of the fortnight *after*
+each plane lands, which is where working holidays actually go wrong, rather than at the visa
+stage. Each country has the same three-part shape and a different answer to it: a tax number he
+can't legally be paid properly without (TFN, IRD number, SIN), a bank account that in New
+Zealand's case has to exist *before* the tax number can be issued, and health cover that isn't
+what a UK passport holder would assume — Medicare via the UK–Australia reciprocal agreement, a
+much narrower arrangement in New Zealand, and in Canada no reciprocal agreement at all plus a
+provincial waiting period. Each step says whether it can be started from the UK, what it costs,
+and what it costs to skip. Each country also opens on its proof-of-funds
+requirement — previously named once in passing and never explained — including
+the part that isn't the number: it's assessed as money genuinely available to
+him, an onward or return ticket can be asked for on top, and Canada checks it
+at the border rather than at application, in the same conversation as the
+insurance. Two entries carry real money rather than admin: Australian
+superannuation is reclaimable on departure and is a four-figure sum after a year of full-time
+hospitality, provided he keeps one fund instead of letting each employer open a new one; and
+Canada's IEC insurance rule is the only item anywhere in the app that can shorten a visa already
+granted, because the border officer issues the permit for no longer than the insurance covers.
+That one, the winter-sports exclusion most travel policies carry, and the bank accounts worth
+opening from the UK are also pushed into the Kit tab's checklist, since they're pre-departure
+jobs rather than arrival ones.
+
 The plan also treats "funding the trip" and "staying funded and engaged for five years" as two
 different problems. The Route tab names real music/events hotspots per country (Melbourne,
 Wellington, Toronto, alongside the more obvious Sydney/Bondi, Queenstown/Wanaka, Whistler) tied
@@ -127,6 +149,13 @@ GitHub Pages, and easy to hand-edit without a build step.
   - `RECONNECT_TARGETS` / `NETWORK_PLAYBOOK` / `CONTACT_TAGS` — the People tab's content: which
     past employers are `live` / `recent` / `dormant` and why, and the from-scratch playbook.
     `CONTACT_QUIET_DAYS` (120) is when a logged contact starts showing as gone quiet.
+  - `LANDING_PACK` — the per-country first-fortnight admin (tax number, bank account, health
+    cover, plus the country-specific traps). Each step carries an `order` that is a real
+    dependency chain rather than a preference — NZ's bank account genuinely gates the IRD
+    number, Canada's work permit gates the SIN — and a `when` of `before` / `either` / `after`
+    saying whether it can be started from the UK. The number rendered against each step is its
+    position in the sorted list, not its `order`, so a step can be slotted in on a fractional
+    order without renumbering the ones after it.
   - `FACTS_LAST_VERIFIED` — the date every fee, scheme length and tax rule below it was last
     checked against an official source. The Route tab prints it, and once it's older than
     `FACTS_STALE_AFTER_MONTHS` the tab shows a "these were checked N months ago" warning of its
