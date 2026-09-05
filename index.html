@@ -904,6 +904,66 @@ const CASUAL_JOBS = [
   { icon: "🍇", title: "Farm & Harvest Work", links: [{ name: "Workforce Australia (Harvest Trail)", url: "https://www.workforceaustralia.gov.au" }, { name: "Backpacker Job Board AU", url: "https://www.backpackerjobboard.com.au" }],  blurb: "Fruit picking, packing or general farm work — physical, seasonal.", fit: "Not the most social option, but reliable, and useful for nationalities that still need specified work for an AU 2nd year.", howTo: "If this ever becomes relevant, go through the official channel first, not a random hostel noticeboard — it's free, government-run, and the jobs on it are pre-verified as visa-eligible.", whereTo: "Workforce Australia's Harvest Trail (workforceaustralia.gov.au — search \"Harvest Trail\") is the official government job-matching site for exactly this. Backpacker Job Board's harvest trail page is a solid second source.", countries: ["australia"], visaAngle: "UK passport holders don't need this for a 2nd/3rd Australian year any more — it's optional for you, not required.", certNote: "", drivingHelps: true },
 ];
 
+/* ============================== THE LANDING PACK ==============================
+   Everything above this point is about getting to a country. This is about the
+   fortnight after the plane lands, which is where working holidays actually go
+   wrong — not at the visa stage. The pattern is the same in all three: there is
+   a tax number you cannot legally be paid properly without, a bank account that
+   often has to come first, and a health-cover arrangement that is not what you
+   assume it is. None of it is difficult; all of it is invisible until it bites.
+
+   `order` is a real sequence, not a nice-to-have — in New Zealand the bank
+   account genuinely gates the IRD number, and in Canada the work permit gates
+   the SIN. `when` says whether a step can be done from the UK, which matters
+   because the ones that can are the ones worth doing on a wet evening at home
+   rather than in week one with no income.
+
+   Costs and rates carry the same FACTS_LAST_VERIFIED caveat as everything else
+   in this app — they are here to signal "free" versus "budget for this", not to
+   be quoted at a border. */
+const LANDING_PACK = {
+  australia: {
+    flag: "🇦🇺", short: "Australia",
+    lede: "Two of these are free and take minutes. Skipping the first one costs you roughly a third of every pay packet until it's fixed.",
+    steps: [
+      { order: 1, when: "after", title: "Tax File Number (TFN)", cost: "Free", why: "Without a TFN your employer must withhold tax at the top marginal rate. You get it back eventually via a tax return, but \"eventually\" is not a cash-flow plan when you've just landed. Apply the week you arrive.", how: "Apply online through the ATO once you're in Australia — you need your passport and an Australian address to post it to. It takes a couple of weeks to arrive, so a hostel address is fine as long as you'll still be there.", link: { name: "ato.gov.au — apply for a TFN", url: "https://www.ato.gov.au/individuals-and-families/tax-file-number/apply-for-a-tfn" } },
+      { order: 2, when: "after", title: "Check your employer is registered for the working-holiday tax rate", cost: "Free", why: "Working holiday makers have their own tax rate, but it only applies if the employer has registered with the ATO to use it. An unregistered employer has to withhold at the higher foreign-resident rate instead — same job, noticeably less money. It's a fair question to ask at the point of being offered work, and most established hospitality employers will already be registered.", how: "Ask directly, or check the employer's ABN on the ABN Lookup register. If they're not registered, it's worth raising — registering is free and takes them minutes.", link: { name: "ABN Lookup", url: "https://abr.business.gov.au" } },
+      { order: 3, when: "either", title: "Australian bank account", cost: "Free", why: "You need one to be paid, and to have somewhere for superannuation and any tax refund to land. Not urgent in the same way as the TFN, but everything else is smoother once it exists.", how: "The big four (CommBank, ANZ, NAB, Westpac) all let you open an account online from overseas before you fly, then verify your passport in a branch when you arrive. Doing the online half from the UK saves a chunk of week one.", link: null },
+      { order: 4, when: "after", title: "Medicare via the UK reciprocal agreement", cost: "Free", why: "The UK and Australia have a Reciprocal Health Care Agreement, so as a UK passport holder you can enrol in Medicare and get medically necessary treatment covered. This is genuinely worth doing — but it is not comprehensive, doesn't cover things like repatriation, ambulance in most states, or anything elective, so it sits alongside travel insurance rather than replacing it.", how: "Enrol at a Medicare service centre with your passport and visa evidence. You can do it any time after arrival, but doing it while nothing is wrong is considerably easier than doing it while something is.", link: { name: "Services Australia — RHCA", url: "https://www.servicesaustralia.gov.au/reciprocal-health-care-agreements" } },
+      { order: 5, when: "after", title: "Superannuation — and claiming it back on the way out", cost: "Free to claim", why: "Employers pay superannuation on top of your wages into a fund, which for a working holiday maker is essentially deferred pay you can reclaim once you've left Australia permanently and the visa has expired — a Departing Australia Superannuation Payment. It is taxed heavily for working holiday makers, so you won't see all of it, but on a year or more of full-time hospitality work it is a real four-figure sum rather than loose change. The catch is purely administrative: keep one fund rather than letting each employer open a new one, because chasing five small forgotten accounts from another continent is exactly how this money gets left behind.", how: "Pick one fund on your first job and give the same membership details to every employer after that. Claim through the ATO's DASP online application after you leave.", link: { name: "ATO — Departing Australia superannuation payment", url: "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/withdrawing-and-using-your-super/temporary-residents-and-super/super-information-for-temporary-residents-departing-australia" } },
+      { order: 6, when: "after", title: "White Card, if you go anywhere near build or bump-in work", cost: "Low — a short online course", why: "Not needed for bar or general event work, but construction-site induction cards come up more than you'd expect around festival build, staging and bump-in crews. Worth having in the back pocket if the events thread is the one you follow in Australia.", how: "A short accredited online course, priced and administered per state — do it for the state you're actually working in.", link: null },
+    ],
+  },
+  newzealand: {
+    flag: "🇳🇿", short: "New Zealand",
+    lede: "The order matters more here than anywhere else on the route: the bank account has to come first, because the tax number depends on it.",
+    steps: [
+      { order: 1, when: "either", title: "New Zealand bank account — do this one first", cost: "Free", why: "This is the step people get wrong. As a new arrival you generally need a fully functioning NZ bank account before Inland Revenue will issue an IRD number, so the account isn't just somewhere to be paid — it's the thing standing between you and being taxed correctly. Start it before you fly if you can.", how: "ANZ, ASB, BNZ and Westpac all run migrant/new-arrival account processes you can begin online from the UK, then complete with your passport in a branch. Expect the branch visit to be unavoidable.", link: null },
+      { order: 2, when: "after", title: "IRD number", cost: "Free", why: "Without one you're taxed at the no-notification rate, which is deliberately punitive and far above what you'd actually owe. It's free and the application is short — this is pure admin, but it's admin that costs real money every payday it's left undone.", how: "Apply online with Inland Revenue once the bank account is open, with your passport and visa details.", link: { name: "ird.govt.nz — get an IRD number", url: "https://www.ird.govt.nz/managing-my-tax/ird-numbers/apply-for-an-ird-number" } },
+      { order: 3, when: "after", title: "Know what the UK health agreement does and doesn't cover", cost: "Free", why: "The UK and New Zealand have a reciprocal healthcare arrangement covering treatment that can't safely wait until you're home. It is narrower than Australia's Medicare route — there's no card to carry and no enrolment to do, you just present as a UK national needing immediate care. Treat it as a backstop, not as cover: for anything involving the outdoors, the ski season, or getting you home, the travel insurance is the thing doing the actual work.", how: "Nothing to apply for. Do check that your travel insurance explicitly covers winter sports and any adventure activities before the Queenstown/Wanaka leg — standard policies often exclude exactly the things that leg is built around.", link: { name: "NHS — healthcare in New Zealand", url: "https://www.nhs.uk/nhs-services/healthcare-abroad/apply-for-a-free-uk-global-health-insurance-card-ghic/" } },
+      { order: 4, when: "after", title: "No KiwiSaver — so nothing to reclaim on the way out", cost: "—", why: "Worth knowing purely so you don't go looking for it: unlike Australian superannuation, you're generally not auto-enrolled into KiwiSaver on a temporary work visa, so there's no equivalent pot building up here and nothing to claim back when you leave. The Australian leg is the one with money waiting at the end of it.", how: "Nothing to do. If an employer does enrol you, ask — it's more likely an error than a windfall.", link: null },
+      { order: 5, when: "after", title: "LCQ, once you've got six months in", cost: "Moderate — a one-day course", why: "Already on the cards from the bar background: New Zealand doesn't need a personal certificate to pour drinks, but stepping up to duty manager needs the Licence Controller Qualification, and the manager's certificate behind it needs six months of NZ hospitality experience. Which means the clock on it starts the day you take your first shift — worth knowing on day one rather than month seven.", how: "Do the LCQ course while you're accruing the six months, so the certificate application goes in the moment you're eligible rather than months after.", link: null },
+    ],
+  },
+  canada: {
+    flag: "🇨🇦", short: "Canada",
+    lede: "The one on this list that can actually cost you months of visa: your insurance has to cover the whole permit, and the officer at the border checks.",
+    steps: [
+      { order: 1, when: "before", title: "Insurance covering the full length of the permit — before you fly", cost: "Varies — budget properly", why: "This is the single most expensive mistake available on this route. IEC requires health insurance for the entire duration of your stay, and the border officer can issue your work permit for only as long as your insurance covers. Turn up with a 12-month policy for a 24-month participation and you can be handed a 12-month permit — and it generally can't be extended afterwards just because you later bought more cover. Buy the full duration up front.", how: "Buy a policy covering the whole intended stay before you fly, and carry printed proof of the dates to the border, not just an app you'll need signal to open.", link: { name: "IRCC — IEC health insurance", url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/eligibility.html" } },
+      { order: 2, when: "before", title: "Carry the Port of Entry Letter of Introduction", cost: "Free", why: "The IEC work permit isn't issued in advance — the letter is what you exchange for the actual permit at the border on arrival. No letter, no permit, and the flight has already happened.", how: "Print it. Also print the insurance proof and proof of funds, and keep them together — this is the one document bundle worth having on paper.", link: null },
+      { order: 3, when: "after", title: "Social Insurance Number (SIN)", cost: "Free", why: "You can't legally be paid without one. It follows the work permit rather than the other way round, so it's a first-week job, not a before-you-fly job.", how: "Apply online through Service Canada, or in person at a Service Canada Centre, with the work permit you were issued at the border.", link: { name: "Service Canada — apply for a SIN", url: "https://www.canada.ca/en/employment-social-development/services/sin.html" } },
+      { order: 4, when: "after", title: "Provincial health cover — and the gap before it starts", cost: "Free to enrol", why: "There's no UK–Canada reciprocal agreement, so unlike Australia and New Zealand there is no fallback here at all — the private policy from step one is genuinely the only thing covering you. On top of that, health cover is provincial and several provinces run a waiting period of around three months before coverage begins, so even after enrolling you're on the insurance for the first stretch. Enrol as soon as you land in whichever province you settle in, so the clock starts early.", how: "Enrol with the health authority of the province you're living in (MSP in British Columbia, for Whistler or Vancouver). Do it on arrival, not when you first need a doctor.", link: null },
+      { order: 5, when: "either", title: "Canadian bank account", cost: "Free", why: "Needed to be paid, and several of the big banks run newcomer packages with the fees waived for the first year — worth taking two minutes to compare rather than walking into whichever branch is nearest the hostel.", how: "RBC, TD, Scotiabank and BMO all have newcomer/temporary-resident account options. Some can be started online before arrival; all will want the passport and permit in branch.", link: null },
+      { order: 6, when: "after", title: "Serving It Right, before the first bar shift in BC", cost: "Low — an online course", why: "Already flagged in Casual Jobs: British Columbia requires it for anyone serving alcohol, Whistler included. Cheap, online, and valid five years — do it before the season, because every other applicant for those jobs will already have it.", how: "Complete online before you start applying for Whistler/Vancouver bar work, so you're applying as someone who can start immediately.", link: { name: "Serving It Right", url: "https://servingitright.com" } },
+    ],
+  },
+};
+const LANDING_WHEN = {
+  before: { label: "Do before you fly", flag: "✈️" },
+  either: { label: "Start from the UK", flag: "🏠" },
+  after: { label: "First weeks after landing", flag: "🛬" },
+};
+
 /* ===================================== PEOPLE =====================================
    The working assumption here is deliberately pessimistic and probably right:
    nothing from Open Room Records, Sleeping Dog Promotions, Bang Bang Merch,
@@ -1039,6 +1099,9 @@ const TOOLKIT_CHECKLIST_TEMPLATE = [
   { id: "visa-nz", label: "Apply for the New Zealand working holiday visa" },
   { id: "visa-can", label: "Enter the Canada IEC pool & confirm invitation" },
   { id: "insurance", label: "Sort travel/health insurance for the full trip" },
+  { id: "insurance-canada", label: "Canada: buy health insurance covering the FULL length of the IEC permit before flying — the border officer can shorten the permit to match it (see the Route tab's landing pack)" },
+  { id: "insurance-winter", label: "Check the policy explicitly covers winter sports before the ski-season legs — standard travel cover usually doesn't" },
+  { id: "bank-online", label: "Start the Australian / NZ / Canadian bank account applications online from the UK — in NZ the account has to exist before you can get an IRD number" },
   { id: "tax-p85", label: "Submit a P85 to HMRC when you actually leave, so UK tax residency (and any PAYE refund) is sorted properly" },
   { id: "cert-rsa", label: "Get RSA / bar certifications sorted before arrival" },
   { id: "cert-firstaid", label: "Get a first-aid certificate (helps for guiding/excursion roles)" },
@@ -1814,6 +1877,9 @@ function phaseStatus(from, to) {
   if (now < to) return "current";
   return "past";
 }
+/* Which country's landing pack is showing. Three ordered checklists at once is
+   a wall; one at a time is a thing you can actually work through on arrival. */
+let landingCountry = "australia";
 function renderRoadmap() {
   const el = document.getElementById("view-roadmap");
   const visas = loadVisas();
@@ -2041,6 +2107,47 @@ function renderRoadmap() {
     </section>
 
     <section>
+      <div class="section-head"><h2>The landing pack — the first fortnight in each country</h2></div>
+      <p class="page-lede" style="margin-bottom:14px;">Working holidays rarely go wrong at the visa stage — they go wrong in the two weeks after landing, on the admin nobody mentions. Each country has a tax number you can't legally be paid properly without, a bank account that sometimes has to come first, and health cover that isn't what you'd assume. It's all straightforward once it's written down; the only real cost is finding out late.</p>
+      <div class="chip-row">
+        ${Object.keys(LANDING_PACK).map(k => `<button class="chip ${landingCountry === k ? "active" : ""}" data-landing-country="${k}">${LANDING_PACK[k].flag} ${esc(LANDING_PACK[k].short)}</button>`).join("")}
+      </div>
+      ${(() => {
+        const pack = LANDING_PACK[landingCountry] || LANDING_PACK.australia;
+        const steps = pack.steps.slice().sort((a, b) => a.order - b.order);
+        return `
+        <p class="page-lede" style="margin-bottom:14px;">${esc(pack.lede)}</p>
+        <div class="stack">
+          ${steps.map(s => {
+            const when = LANDING_WHEN[s.when] || LANDING_WHEN.after;
+            return `
+            <div class="card">
+              <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                <span class="mono" style="font-size:0.78rem; color:var(--ink-faint);">${s.order}</span>
+                <h3 style="font-size:0.98rem; margin:0; flex:1; min-width:60%;">${esc(s.title)}</h3>
+                <span class="flag-chip">${when.flag} ${esc(when.label)}</span>
+                ${s.cost ? `<span class="flag-chip">${esc(s.cost)}</span>` : ""}
+              </div>
+              <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">${esc(s.why)}</p>
+              <details class="disclose">
+                <summary>${ICONS.chevron} How to actually do it</summary>
+                <p style="margin-top:8px; font-size:0.82rem; color:var(--ink-faint);">${esc(s.how)}</p>
+                ${s.link ? `<div class="chip-row" style="margin-top:8px;">${linkChip(s.link)}</div>` : ""}
+              </details>
+            </div>`;
+          }).join("")}
+        </div>`;
+      })()}
+      <div class="callout mustard" style="margin-top:14px;">
+        ${ICONS.info}
+        <div>
+          <h3>The one that's worth reading twice</h3>
+          <p>Canada's insurance rule is the only item on any of these lists that can shorten a visa you've already been granted. The permit is issued at the border for no longer than your health insurance covers, so a policy bought to cover the first year of a two-year participation can quietly cost you the second year — and buying more cover later generally doesn't undo it. Everything else here costs money or time; that one costs months.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
       <div class="section-head"><h2>The other side: what happens after the trip</h2></div>
       <p class="page-lede" style="margin-bottom:14px;">Worth planning for now, not figuring out in month 58. Whichever way the "Consolidate & decide" leg above actually goes — another year travelling, a role picked up locally, or heading home — none of this app stops being useful the day the trip ends.</p>
       <div class="stack">
@@ -2059,6 +2166,8 @@ function renderRoadmap() {
       </div>
     </section>
   `;
+
+  el.querySelectorAll("[data-landing-country]").forEach(b => b.addEventListener("click", () => { landingCountry = b.dataset.landingCountry; renderRoadmap(); }));
 
   document.getElementById("rm-apply").addEventListener("click", () => {
     profile = { ...profile, travelStartDate: document.getElementById("rm-start").value || "" };
