@@ -78,9 +78,18 @@
     max-width: 460px; margin: 0 auto; min-height: 100vh; min-height: 100dvh;
     background: var(--paper); position: relative;
   }
+  .frame-scroll { display: block; }
   @media (min-width: 560px) {
     body { background: var(--paper-sunk); display: flex; justify-content: center; padding: 28px 0; }
-    .app-frame { min-height: min(920px, 92vh); border-radius: 34px; box-shadow: var(--shadow-md), 0 0 0 10px var(--hero-bg); overflow: hidden; }
+    /* Bounded height, and the frame itself no longer scrolls — .frame-scroll
+       below carries the actual scroll instead — so the frame reads as a
+       phone screen rather than growing to the length of the content, and
+       anything pinned to its edge (nav, settings sheet) via position:absolute
+       stays glued to the frame's visible bottom instead of moving with the
+       scrolled content, or landing wherever "bottom: 0" of the whole page
+       happens to fall. */
+    .app-frame { height: min(920px, 92vh); min-height: 0; border-radius: 34px; box-shadow: var(--shadow-md), 0 0 0 10px var(--hero-bg); overflow: hidden; }
+    .frame-scroll { height: 100%; overflow-y: auto; overflow-x: hidden; }
   }
 
   /* ---------------- top strip ---------------- */
@@ -298,7 +307,6 @@
 
   /* ---------------- bottom nav ---------------- */
   .bottomnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--paper-raised); border-top: 1px solid var(--line); box-shadow: 0 -6px 20px -12px rgba(24,35,56,0.3); padding-bottom: env(safe-area-inset-bottom, 0); }
-  .app-frame .bottomnav { position: absolute; }
   .bottomnav-inner { display: flex; }
   .navbtn { flex: 1; background: none; border: none; padding: 9px 4px 7px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--ink-faint); font-size: 0.64rem; font-weight: 600; }
   .navbtn .icon { width: 21px; height: 21px; }
@@ -306,7 +314,6 @@
 
   .toast { position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%) translateY(14px); background: var(--hero-bg); color: var(--hero-fg); padding: 10px 20px; border-radius: 999px; font-size: 0.84rem; font-weight: 600; box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; z-index: 60; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .app-frame .toast { position: absolute; }
 
   .footnote { text-align: center; color: var(--ink-faint); font-size: 0.74rem; padding: 30px 10px 10px; }
 
@@ -321,9 +328,14 @@
   .webshell { display: block; }
   @media (min-width: 821px) {
     [data-layout="web"] body { display: block; padding: 0; background: var(--paper); }
-    [data-layout="web"] .app-frame { max-width: none; min-height: 100vh; border-radius: 0; box-shadow: none; }
+    [data-layout="web"] .app-frame { max-width: none; height: auto; min-height: 100vh; border-radius: 0; box-shadow: none; overflow: visible; }
+    [data-layout="web"] .frame-scroll { height: auto; overflow: visible; }
     [data-layout="web"] .topstrip-inner { max-width: 1200px; margin: 0 auto; padding: 16px 32px; }
     [data-layout="web"] .bottomnav { display: none; }
+    /* The web layout un-bounds the frame back into the normal page, so
+       these need to go back to being viewport-fixed rather than pinned
+       to the (no longer bounded) frame — see the (min-width: 560px) block. */
+    [data-layout="web"] .toast, [data-layout="web"] .sheet-overlay, [data-layout="web"] .appearance-panel { position: fixed; }
     [data-layout="web"] .webshell { display: flex; align-items: flex-start; }
     [data-layout="web"] .sidebar {
       display: flex; flex-direction: column; gap: 3px; width: 232px; flex-shrink: 0;
@@ -344,11 +356,14 @@
     [data-layout="web"] .field-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
-  /* ---------------- settings sheet (the cog) ---------------- */
-  .sheet-overlay { display: none; position: absolute; inset: 0; background: rgba(10,14,22,0.4); z-index: 70; }
+  /* ---------------- settings sheet (the cog) ----------------
+     Fixed to the viewport by default so it always rises over whatever is
+     on screen, not wherever "bottom: 0" of the page happens to fall — see
+     the (min-width: 560px) block above for the framed-desktop override. */
+  .sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(10,14,22,0.4); z-index: 70; }
   .sheet-overlay.open { display: block; }
   .appearance-panel {
-    position: absolute; left: 0; right: 0; bottom: 0; z-index: 71; background: var(--paper-raised);
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 71; background: var(--paper-raised);
     border-top: 1px solid var(--line); border-radius: 20px 20px 0 0;
     padding: 18px 20px calc(18px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 30px rgba(0,0,0,0.22);
     transform: translateY(110%); transition: transform .22s ease; max-height: 84vh; overflow-y: auto;
@@ -389,12 +404,20 @@
   .ap-rollback-btn { width: 100%; margin-top: 10px; border: 1px solid var(--mustard); border-radius: 8px; background: var(--mustard-tint); color: var(--mustard-ink); font-family: var(--font-display); font-size: 0.82rem; padding: 9px 8px; cursor: pointer; font-weight: 600; }
   .ap-rollback-btn[aria-pressed="true"] { background: var(--mustard); color: #fff; }
   .ap-reset { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-faint); background: none; border: 1px solid var(--line); border-radius: 20px; padding: 7px 13px; cursor: pointer; margin-top: 4px; }
+
+  /* Once the frame is a bounded, internally-scrolling box (the 560px block
+     above), pin these to *it* instead of the viewport so they stay inside
+     the frame's visible edges rather than spanning the whole browser window.
+     Placed last so it wins over the unconditional fixed-position rules above. */
+  @media (min-width: 560px) {
+    .bottomnav, .toast, .sheet-overlay, .appearance-panel { position: absolute; }
+  }
 </style>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="app-frame">
-
+<div class="frame-scroll">
   <div class="topstrip">
     <div class="topstrip-inner">
       <div class="brand">
@@ -406,11 +429,31 @@
       </div>
       <button class="topbtn refresh" id="updateBtn" type="button" hidden aria-label="An update is ready — tap to refresh">↻</button>
       <div class="avatar" id="avatar-chip">R</div>
+      <button class="topbtn" id="manualUpdateBtn" type="button" aria-label="Check for the latest update">
+        <svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M3 12a9 9 0 0 1 15.3-6.36L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.3 6.36L3 16"/><path d="M3 21v-5h5"/></svg>
+      </button>
       <button class="topbtn" id="cogBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings">
         <svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
     </div>
   </div>
+
+  <div class="webshell">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-inner" id="sidebarnav-inner"></div>
+    </nav>
+    <main id="main">
+      <section id="view-home" class="view active"></section>
+      <section id="view-career" class="view"></section>
+      <section id="view-roadmap" class="view"></section>
+      <section id="view-jobs" class="view"></section>
+      <section id="view-apply" class="view"></section>
+      <section id="view-toolkit" class="view"></section>
+      <section id="view-profile" class="view"></section>
+      <p class="footnote">Graciously made by Emma for Rob — made for Rob, so he can finally do what he said he would. Not official immigration or career advice. Verify visa details on the official sites before booking anything.</p>
+    </main>
+  </div>
+</div>
 
   <div class="sheet-overlay" id="sheetOverlay"></div>
   <div class="appearance-panel" id="appearancePanel" role="dialog" aria-label="Settings" aria-hidden="true">
@@ -475,22 +518,6 @@
     </div>
 
     <button class="ap-reset" id="appearanceReset" type="button">Reset to default look</button>
-  </div>
-
-  <div class="webshell">
-    <nav class="sidebar" id="sidebar">
-      <div class="sidebar-inner" id="sidebarnav-inner"></div>
-    </nav>
-    <main id="main">
-      <section id="view-home" class="view active"></section>
-      <section id="view-career" class="view"></section>
-      <section id="view-roadmap" class="view"></section>
-      <section id="view-jobs" class="view"></section>
-      <section id="view-apply" class="view"></section>
-      <section id="view-toolkit" class="view"></section>
-      <section id="view-profile" class="view"></section>
-      <p class="footnote">Graciously made by Emma for Rob — made for Rob, so he can finally do what he said he would. Not official immigration or career advice. Verify visa details on the official sites before booking anything.</p>
-    </main>
   </div>
 
   <nav class="bottomnav">
@@ -2647,23 +2674,43 @@ history.replaceState({ tab: TABS.some(t => t.key === bootTab) ? bootTab : "home"
 <script>
 /* ===================================== SERVICE WORKER ===================================== */
 (function () {
-  if (!("serviceWorker" in navigator)) return;
-  const updateBtn = document.getElementById("updateBtn");
-  let hadController = !!navigator.serviceWorker.controller;
+  const manualBtn = document.getElementById("manualUpdateBtn");
   let reloading = false;
   function reloadNow() {
     if (reloading) return;
     reloading = true;
     location.reload();
   }
+
+  if (!("serviceWorker" in navigator)) {
+    /* No SW support at all — the manual button still works, it just reloads
+       straight away since there's no cache/registration to check first. */
+    if (manualBtn) manualBtn.addEventListener("click", reloadNow);
+    return;
+  }
+
+  const updateBtn = document.getElementById("updateBtn");
+  let hadController = !!navigator.serviceWorker.controller;
+  let registration = null;
+
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (!hadController) { hadController = true; return; }
     if (document.hidden) reloadNow(); else updateBtn.hidden = false;
   });
   document.addEventListener("visibilitychange", () => { if (document.hidden && !updateBtn.hidden) reloadNow(); });
   updateBtn.addEventListener("click", reloadNow);
+
+  if (manualBtn) {
+    manualBtn.addEventListener("click", async () => {
+      toast("Checking for the latest version…");
+      try { if (registration) await registration.update(); } catch (e) { /* offline — reload below still gets whatever's reachable */ }
+      reloadNow();
+    });
+  }
+
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").then(reg => {
+      registration = reg;
       document.addEventListener("visibilitychange", () => { if (!document.hidden) reg.update().catch(() => {}); });
     }).catch(() => {});
   });
