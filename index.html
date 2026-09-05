@@ -13,8 +13,8 @@
 <meta name="apple-mobile-web-app-title" content="RobAJobBob">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="application-name" content="RobAJobBob">
-<link rel="icon" href="robajobbob-icon.png">
-<link rel="apple-touch-icon" href="robajobbob-icon.png">
+<link rel="icon" href="robajobbob-icon-v2.png">
+<link rel="apple-touch-icon" href="robajobbob-icon-v2.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -145,9 +145,8 @@
   .hero-eyebrow { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--hero-accent); position: relative; }
   .hero h1 { font-size: clamp(1.4rem, 6vw, 1.75rem); margin: 6px 0 10px; position: relative; color: var(--hero-fg); }
   .hero p { margin: 0; color: var(--hero-fg-soft); font-size: 0.93rem; max-width: 46ch; position: relative; }
-  /* A ghosted echo of the app icon's stamp mark plus a flight path, bleeding
-     off the corner as atmosphere, not competing with the text on top of it. */
-  .hero-art { position: absolute; right: -52px; bottom: -58px; width: 180px; height: 180px; z-index: -1; pointer-events: none; }
+  /* The hero's artwork (sky, sun, ridges) is defined in the art-direction
+     layer at the bottom of this sheet. */
   .hero-stats { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; position: relative; }
   .hero-stat { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.16); color: var(--hero-fg); border-radius: 999px; padding: 6px 13px; font-size: 0.78rem; font-weight: 600; }
 
@@ -361,7 +360,6 @@
     [data-layout="web"] .nav-grid { grid-template-columns: repeat(4, 1fr); }
     [data-layout="web"] .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
     [data-layout="web"] .field-grid { grid-template-columns: repeat(2, 1fr); }
-    [data-layout="web"] .hero-art { width: 240px; height: 240px; right: -66px; bottom: -76px; }
   }
 
   /* ---------------- settings sheet (the cog) ----------------
@@ -420,6 +418,365 @@
   @media (min-width: 560px) {
     .bottomnav, .toast, .sheet-overlay, .appearance-panel { position: absolute; }
   }
+
+  /* ==================================================================
+     ART DIRECTION LAYER
+     Everything above is structure; everything below is the look. It is
+     deliberately kept as one block at the end of the sheet so it can be
+     read (or reverted) on its own, and it works entirely off the tokens
+     the colour engine sets — so all fifteen themes, low-light and the
+     brightness slider keep working exactly as before, just prettier.
+     High contrast switches the decoration off again at the bottom.
+     ================================================================== */
+
+  :root {
+    /* softer, deeper radii and a two-part shadow (a tight contact shadow
+       plus a wide ambient one) — flat single shadows are what made the
+       old cards read as cardboard */
+    --radius-l: 26px; --radius-m: 18px; --radius-s: 12px;
+    --shadow-sm: 0 1px 1.5px rgba(16,26,49,0.05), 0 6px 16px -10px rgba(16,26,49,0.40);
+    --shadow-md: 0 2px 4px rgba(16,26,49,0.06), 0 22px 40px -24px rgba(16,26,49,0.55);
+    --shadow-lift: 0 4px 8px -4px rgba(16,26,49,0.10), 0 18px 34px -18px rgba(16,26,49,0.45);
+
+    /* the hero is still a fixed dark surface, but a night-sky one now:
+       two stops rather than one flat navy */
+    --hero-bg: #101A31; --hero-bg-2: #2A1B3D; --hero-bg-3: #0A1020;
+    --hero-fg: #FDF3E3; --hero-fg-soft: rgba(253,243,227,0.82); --hero-accent: #F2BC63;
+
+    /* paper grain — a single tiled noise tile, not an image request */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    /* a hand-drawn underline for page titles */
+    --squiggle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12'%3E%3Cpath d='M3 8c14-7 26 3 39-1s22-8 35-3 26 1 40-2' fill='none' stroke='%23000' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- the page itself: a warm wash and a little tooth ---------- */
+  .app-frame::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 640px;
+    pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(72% 46% at 2% 0%, var(--coral-tint) 0%, transparent 66%),
+      radial-gradient(60% 42% at 100% 4%, var(--sky-tint) 0%, transparent 68%),
+      radial-gradient(84% 46% at 46% 100%, var(--teal-tint) 0%, transparent 70%);
+    opacity: 0.55;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 46%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 46%, transparent 100%);
+  }
+  .app-frame::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image: var(--grain); background-size: 160px 160px;
+    opacity: 0.14; mix-blend-mode: overlay;
+  }
+  .frame-scroll { position: relative; z-index: 1; }
+
+  /* ---------- top strip: frosted, hairline, a mark with a bit of tilt ---------- */
+  .topstrip { background: transparent; border-bottom: 0; -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4); }
+  .topstrip::before { content: ""; position: absolute; inset: 0; background: var(--paper); opacity: 0.78; z-index: -1; }
+  .topstrip::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--line) 22%, var(--line) 78%, transparent); }
+  .brand-mark {
+    width: 38px; height: 38px; border-radius: 13px; background: var(--hero-bg);
+    box-shadow: 0 0 0 1px var(--line), var(--shadow-sm); transform: rotate(-3deg);
+    transition: transform .25s cubic-bezier(.2,.9,.3,1.4);
+  }
+  .brand-mark:hover { transform: rotate(3deg) scale(1.06); }
+  .brand-name { font-variation-settings: "opsz" 110; font-weight: 700; letter-spacing: -0.015em; }
+  .brand-sub { display: flex; align-items: center; gap: 5px; }
+  .brand-sub::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--coral); flex: none; }
+  .topbtn { transition: transform .15s ease, border-color .15s ease, color .15s ease; }
+  .topbtn:active { transform: scale(0.92); }
+  .avatar { background: linear-gradient(150deg, var(--mustard-tint), var(--coral-tint)); box-shadow: 0 0 0 1px var(--line), var(--shadow-sm); border: 2px solid var(--paper-raised); }
+
+  /* ---------- headings ---------- */
+  .page-title { font-size: clamp(1.8rem, 7.5vw, 2.15rem); line-height: 1.06; font-variation-settings: "opsz" 132; font-weight: 700; letter-spacing: -0.022em; margin: 12px 0 10px; }
+  .page-title::after {
+    content: ""; display: block; width: 92px; height: 10px; margin-top: 10px;
+    background-color: var(--coral);
+    -webkit-mask: var(--squiggle) no-repeat center / contain; mask: var(--squiggle) no-repeat center / contain;
+    opacity: 0.9;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 7px; margin: 0 0 2px;
+    background: var(--paper-raised); border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 13px 6px 9px; box-shadow: var(--shadow-sm); color: var(--ink-soft);
+  }
+  .eyebrow .icon { width: 15px; height: 15px; color: var(--coral-ink); }
+  .section-head h2 { position: relative; padding-left: 15px; font-variation-settings: "opsz" 96; }
+  .section-head h2::before {
+    content: ""; position: absolute; left: 0; top: 0.16em; bottom: 0.16em; width: 5px;
+    border-radius: 4px; background: linear-gradient(180deg, var(--coral), var(--mustard));
+  }
+
+  /* ---------- hero: an actual illustration, not a navy box ---------- */
+  .hero {
+    background: linear-gradient(158deg, var(--hero-bg-2) 0%, var(--hero-bg) 48%, var(--hero-bg-3) 100%);
+    border-radius: var(--radius-l); padding: 26px 22px 92px;
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.09);
+  }
+  .hero::after {
+    right: -60px; top: -80px; width: 220px; height: 220px;
+    background: radial-gradient(circle, #F2793C 0%, rgba(242,121,60,0.22) 44%, transparent 72%);
+    opacity: 0.34;
+  }
+  .hero h1 { font-variation-settings: "opsz" 140; font-weight: 700; letter-spacing: -0.02em; font-size: clamp(1.5rem, 6.4vw, 1.9rem); line-height: 1.12; }
+  /* a marker-pen highlight behind the phrase that matters */
+  .hero h1 mark {
+    background: linear-gradient(180deg, transparent 62%, rgba(242,188,99,0.40) 62%, rgba(242,188,99,0.40) 90%, transparent 90%);
+    color: inherit; padding: 0 2px; border-radius: 3px;
+  }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; }
+  .hero-eyebrow { gap: 9px; }
+  .hero-eyebrow::before { content: ""; width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--hero-accent); box-shadow: 0 0 0 2px rgba(242,188,99,0.2); }
+  .hero-stat {
+    background: rgba(255,255,255,0.11); border: 1px solid rgba(255,255,255,0.18);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16); padding: 7px 14px;
+  }
+  /* the full-bleed scene: hills along the bottom, a flight path over the top */
+  /* Three separate pieces rather than one picture, because the hero's width
+     and height both move with the copy inside it: the sky keeps its aspect
+     and hugs the top-right, the ridges stretch (hills don't mind), and the
+     sun is a plain round element so it can never end up an ellipse. */
+  .hero-sky { position: absolute; top: 0; left: 0; width: 100%; height: 150px; z-index: -1; pointer-events: none; }
+  .hero-land { position: absolute; bottom: 0; left: 0; width: 100%; height: 116px; z-index: -1; pointer-events: none; }
+  .hero-sun {
+    position: absolute; right: 16%; bottom: 22px; width: 78px; height: 78px; border-radius: 50%;
+    background: linear-gradient(180deg, #F7C558, #EF5B3C); opacity: 0.88; z-index: -1; pointer-events: none;
+    box-shadow: 0 0 60px 12px rgba(240,144,74,0.30);
+  }
+  [data-layout="web"] .hero-land { height: 148px; }
+  [data-layout="web"] .hero-sun { bottom: 34px; right: 13%; width: 96px; height: 96px; }
+  .hero-plane { animation: hero-cruise 14s ease-in-out infinite alternate; transform-origin: center; }
+  @keyframes hero-cruise { from { transform: translate(0,0); } to { transform: translate(16px,-9px); } }
+  .hero-twinkle { animation: hero-twinkle 4.5s ease-in-out infinite; }
+  .hero-twinkle:nth-of-type(2) { animation-delay: 1.4s; }
+  .hero-twinkle:nth-of-type(3) { animation-delay: 2.7s; }
+  @keyframes hero-twinkle { 0%,100% { opacity: 0.28; } 50% { opacity: 0.95; } }
+  [data-layout="web"] .hero { padding-bottom: 108px; }
+
+  /* ---------- cards ---------- */
+  .card, .visa-card, .tag-card, .ticket, details.info, .bridge-row, .check-row, .order-row {
+    background: linear-gradient(180deg, var(--paper-raised) 0%, var(--paper-raised) 58%, var(--paper) 100%);
+  }
+  .card, .tag-card, .ticket { border-radius: var(--radius-m); box-shadow: var(--shadow-sm); }
+  .card { transition: box-shadow .2s ease, transform .2s ease; }
+  @media (hover: hover) { .card:hover, .tag-card:hover { box-shadow: var(--shadow-lift); } }
+
+  /* ---------- callouts: a coloured rail and a badged icon ---------- */
+  .callout { position: relative; overflow: hidden; border-radius: var(--radius-m); padding: 16px 18px 16px 20px; align-items: flex-start; box-shadow: var(--shadow-sm); }
+  .callout::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--callout-c, var(--coral)); }
+  .callout > .icon {
+    width: 34px; height: 34px; padding: 7px; border-radius: 11px; margin-top: 0; flex: none;
+    background: var(--paper-raised); border: 1px solid var(--callout-c, var(--coral));
+    box-shadow: var(--shadow-sm);
+  }
+  .callout.mustard { --callout-c: var(--mustard); }
+  .callout.teal    { --callout-c: var(--teal); }
+  .callout.sky     { --callout-c: var(--sky); }
+  .callout.coral   { --callout-c: var(--coral); }
+  .callout h3 { font-variation-settings: "opsz" 80; font-size: 1rem; }
+
+  /* ---------- home nav cards: each one its own colour ---------- */
+  .nav-card {
+    position: relative; overflow: hidden; padding: 15px 15px 17px; border-radius: var(--radius-m);
+    background: linear-gradient(180deg, var(--paper-raised), var(--paper));
+    transition: transform .2s cubic-bezier(.2,.9,.3,1.3), box-shadow .2s ease;
+  }
+  .nav-card::before {
+    content: ""; position: absolute; right: -30px; top: -30px; width: 86px; height: 86px;
+    border-radius: 50%; background: var(--tile-tint, var(--coral-tint)); opacity: 0.75;
+  }
+  .nav-card > * { position: relative; }
+  .nav-card .tile {
+    width: 38px; height: 38px; border-radius: 13px; display: flex; align-items: center; justify-content: center;
+    background: var(--tile-tint, var(--coral-tint)); color: var(--tile-ink, var(--coral-ink));
+    border: 1px solid var(--tile-c, var(--coral)); box-shadow: var(--shadow-sm);
+    transform: rotate(-4deg); transition: transform .25s cubic-bezier(.2,.9,.3,1.5);
+  }
+  .nav-card .tile .icon { width: 21px; height: 21px; }
+  .nav-card:hover .tile { transform: rotate(4deg) scale(1.08); }
+  @media (hover: hover) { .nav-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); } }
+  .nav-card:active { transform: scale(0.975); }
+  .nav-card.acc-coral   { --tile-c: var(--coral);   --tile-ink: var(--coral-ink);   --tile-tint: var(--coral-tint); }
+  .nav-card.acc-teal    { --tile-c: var(--teal);    --tile-ink: var(--teal-ink);    --tile-tint: var(--teal-tint); }
+  .nav-card.acc-mustard { --tile-c: var(--mustard); --tile-ink: var(--mustard-ink); --tile-tint: var(--mustard-tint); }
+  .nav-card.acc-sky     { --tile-c: var(--sky);     --tile-ink: var(--sky-ink);     --tile-tint: var(--sky-tint); }
+  .nav-card strong { font-variation-settings: "opsz" 72; }
+
+  /* ---------- career path cards ---------- */
+  .path-badge {
+    background: linear-gradient(150deg, var(--mustard-tint), var(--coral-tint));
+    border: 1px solid var(--line); box-shadow: var(--shadow-sm);
+    width: 42px; height: 42px; border-radius: 14px; font-size: 1.3rem; transform: rotate(-4deg);
+    transition: transform .25s cubic-bezier(.2,.9,.3,1.5);
+  }
+  .card:hover .path-badge { transform: rotate(4deg) scale(1.06); }
+  .path-title { font-variation-settings: "opsz" 80; }
+  details.disclose summary { padding: 4px 0; }
+  details.disclose summary:hover { color: var(--coral); }
+
+  /* ---------- tickets: make them look posted ---------- */
+  .ticket { padding: 18px 20px 20px; }
+  .ticket-title { font-variation-settings: "opsz" 84; }
+  .ticket-stamp { position: absolute; right: 12px; bottom: 10px; width: 74px; height: 74px; opacity: 0.16; transform: rotate(-13deg); pointer-events: none; color: var(--ink); }
+  .ticket-status { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06); }
+  .route-dot { box-shadow: var(--shadow-sm); }
+  .ticket-wrap.current .route-dot { animation: dot-pulse 2.6s ease-in-out infinite; }
+  @keyframes dot-pulse { 0%,100% { box-shadow: 0 0 0 4px var(--coral-tint); } 50% { box-shadow: 0 0 0 9px rgba(0,0,0,0); } }
+
+  /* ---------- jobs ---------- */
+  .tag-icon { background: linear-gradient(150deg, var(--teal-tint), var(--sky-tint)); border: 1px solid var(--line); width: 38px; height: 38px; border-radius: 13px; font-size: 1.2rem; transform: rotate(-4deg); }
+  .tag-title { font-variation-settings: "opsz" 78; }
+  .flag-chip { border: 1px solid var(--line); }
+
+  /* ---------- the "how this travels" note ----------
+     This was only ever styled inside a route ticket, so the same component
+     on a career card rendered as bare text with an oversized icon next to
+     it. Styled globally here; the ticket keeps its own tighter variant. */
+  .link-note {
+    display: flex; gap: 10px; align-items: flex-start; font-size: 0.84rem;
+    background: linear-gradient(180deg, var(--teal-tint), var(--paper-raised));
+    color: var(--teal-ink); border: 1px solid var(--teal); border-left-width: 4px;
+    border-radius: var(--radius-s); padding: 11px 13px;
+  }
+  .link-note .icon { width: 16px; height: 16px; margin-top: 2px; flex: none; }
+
+  /* ---------- "skills already in hand" rows ---------- */
+  .bridge-row { position: relative; padding: 13px 15px 13px 18px; border-radius: var(--radius-s); gap: 6px; }
+  .bridge-row::before {
+    content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 4px;
+    border-radius: 0 3px 3px 0; background: linear-gradient(180deg, var(--teal), var(--sky));
+  }
+  .bridge-row .to { align-items: flex-start; }
+  .bridge-row .to .icon { width: 16px; height: 16px; margin-top: 2px; }
+
+  /* the horizontal filter row gets a soft edge, so it reads as scrollable */
+  .chip-row {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 22px), transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 22px), transparent 100%);
+    padding: 2px 2px 6px;
+  }
+
+  /* ---------- controls ---------- */
+  .btn {
+    /* a light-to-dark glaze over the accent itself, rather than a ramp down
+       to the ink shade — that read as muddy maroon on the warmer themes */
+    background-color: var(--coral);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(0,0,0,0.12));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), var(--shadow-sm);
+    transition: transform .12s ease, filter .15s ease; letter-spacing: 0.005em;
+  }
+  .btn:hover { filter: brightness(1.06); }
+  .btn:active { transform: translateY(1px) scale(0.98); }
+  .btn.ghost { background: linear-gradient(180deg, var(--paper-raised), var(--paper)); box-shadow: var(--shadow-sm); }
+  .btn-mini { transition: transform .12s ease, border-color .15s ease; }
+  .btn-mini:hover:not(:disabled) { border-color: var(--coral); color: var(--coral-ink); }
+  .btn-mini:active:not(:disabled) { transform: scale(0.92); }
+  .chip { box-shadow: var(--shadow-sm); transition: transform .15s ease, background .15s ease, color .15s ease; }
+  .chip:active { transform: scale(0.95); }
+  .chip.active { background: linear-gradient(180deg, var(--ink-soft), var(--ink)); border-color: var(--ink); box-shadow: var(--shadow-sm); }
+  .field input:focus, .field select:focus, .field textarea:focus { box-shadow: 0 0 0 3px var(--coral-tint); }
+
+  /* ---------- progress ---------- */
+  .progress { height: 10px; background: var(--paper-sunk); box-shadow: inset 0 1px 3px rgba(16,26,49,0.14); }
+  .progress > span {
+    background: linear-gradient(90deg, var(--mustard), var(--coral));
+    transition: width .55s cubic-bezier(.2,.9,.2,1); position: relative; overflow: hidden;
+  }
+  .progress > span::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.45) 50%, transparent 80%);
+    animation: sheen 2.8s ease-in-out infinite;
+  }
+  @keyframes sheen { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(140%); } }
+  .progress-row .pct { font-size: 0.95rem; background: var(--coral-tint); color: var(--coral-ink); border-radius: 999px; padding: 3px 10px; }
+
+  /* ---------- checklist: a punch-card rather than fourteen grey boxes ---------- */
+  .check-row { transition: border-color .18s ease, transform .12s ease, background .2s ease; border-radius: var(--radius-s); align-items: center; gap: 13px; }
+  .check-row:active { transform: scale(0.995); }
+  .check-row input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none; position: relative; flex: none; cursor: pointer;
+    width: 24px; height: 24px; margin: 0; border: 2px solid var(--line); border-radius: 8px;
+    background: var(--paper); transition: background .18s ease, border-color .18s ease, transform .18s cubic-bezier(.2,.9,.3,1.6);
+  }
+  .check-row input[type="checkbox"]:hover { border-color: var(--teal); }
+  .check-row input[type="checkbox"]:checked { background: var(--teal); border-color: var(--teal); transform: scale(1.06); }
+  .check-row input[type="checkbox"]:checked::after {
+    content: ""; position: absolute; left: 7px; top: 3px; width: 6px; height: 11px;
+    border: solid #fff; border-width: 0 2.6px 2.6px 0; transform: rotate(42deg);
+  }
+  .check-row.done { border-color: var(--teal); background: linear-gradient(180deg, var(--teal-tint), var(--paper-raised)); }
+  .check-row.done label { text-decoration-color: var(--teal); }
+  .kit-count { font-size: 0.8rem; color: var(--ink-faint); margin: -8px 0 14px; }
+  .kit-count strong { color: var(--teal-ink); }
+
+  /* ---------- bottom nav ---------- */
+  .bottomnav { background: var(--paper-raised); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-top: 1px solid var(--line); }
+  .navbtn { position: relative; z-index: 0; transition: color .2s ease; padding-top: 11px; }
+  .navbtn .icon { transition: transform .3s cubic-bezier(.2,.9,.3,1.6); }
+  .navbtn::before {
+    content: ""; position: absolute; z-index: -1; top: 5px; left: 50%; width: 42px; height: 32px;
+    border-radius: 12px; background: var(--coral-tint); transform: translateX(-50%) scale(0.6);
+    opacity: 0; transition: opacity .2s ease, transform .25s cubic-bezier(.2,.9,.3,1.5);
+  }
+  .navbtn.active::before { opacity: 1; transform: translateX(-50%) scale(1); }
+  .navbtn.active .icon { transform: translateY(-1px) scale(1.1); }
+  [data-layout="web"] .sidenavbtn { transition: background .15s ease, transform .15s ease; }
+  [data-layout="web"] .sidenavbtn:active { transform: scale(0.98); }
+
+  /* ---------- toast, sheet, footnote ---------- */
+  .toast { background: linear-gradient(160deg, var(--hero-bg-2), var(--hero-bg)); border: 1px solid rgba(255,255,255,0.14); box-shadow: var(--shadow-md); }
+  .appearance-panel { border-radius: 26px 26px 0 0; box-shadow: 0 -14px 40px rgba(10,16,32,0.3); }
+  .appearance-panel h4 { font-variation-settings: "opsz" 100; }
+  .palette-swatch { transition: transform .18s cubic-bezier(.2,.9,.3,1.5); box-shadow: var(--shadow-sm); }
+  .palette-swatch:hover { transform: scale(1.08) rotate(-3deg); }
+  .footnote { position: relative; margin-top: 34px; padding-top: 26px; line-height: 1.6; }
+  .footnote::before {
+    content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 1px; background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+  .footnote .made-by { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--coral-ink); }
+
+  /* ---------- entrance ----------
+     A staggered rise as each tab opens. The delays are what make it read as
+     a sequence rather than a jump, but a delayed animation with a backwards
+     fill starts life at opacity 0 — so anywhere animations don't actually
+     run (reduced motion, a paused timeline), it is switched off outright
+     rather than left holding the content invisible. */
+  .view.active > * { animation: rise 0.42s cubic-bezier(.2,.8,.2,1) backwards; }
+  @media (prefers-reduced-motion: reduce) { .view.active > *, .view.active { animation: none !important; } }
+  .view.active > *:nth-child(2) { animation-delay: .045s; }
+  .view.active > *:nth-child(3) { animation-delay: .09s; }
+  .view.active > *:nth-child(4) { animation-delay: .135s; }
+  .view.active > *:nth-child(5) { animation-delay: .18s; }
+  .view.active > *:nth-child(n+6) { animation-delay: .22s; }
+
+  /* ---------- confetti (Prep Kit hitting 100%, an offer landing) ---------- */
+  .confetti-piece {
+    position: fixed; top: -20px; width: 9px; height: 14px; z-index: 90; pointer-events: none;
+    border-radius: 2px; animation: confetti-fall linear forwards;
+  }
+  @keyframes confetti-fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(105vh) rotate(720deg); opacity: 0.15; }
+  }
+
+  /* ---------- high contrast turns the decoration off again ---------- */
+  :root[data-hc="1"] .app-frame::before,
+  :root[data-hc="1"] .app-frame::after,
+  :root[data-hc="1"] .nav-card::before,
+  :root[data-hc="1"] .progress > span::after,
+  :root[data-hc="1"] .ticket-stamp { display: none; }
+  :root[data-hc="1"] .card, :root[data-hc="1"] .nav-card, :root[data-hc="1"] .ticket,
+  :root[data-hc="1"] .tag-card, :root[data-hc="1"] .visa-card, :root[data-hc="1"] details.info,
+  :root[data-hc="1"] .bridge-row, :root[data-hc="1"] .check-row, :root[data-hc="1"] .order-row,
+  :root[data-hc="1"] .btn.ghost { background: var(--paper-raised); }
+  :root[data-hc="1"] .btn { background-image: none; background-color: var(--coral); }
+  :root[data-hc="1"] .chip.active { background: var(--ink); }
+  :root[data-hc="1"] .path-badge, :root[data-hc="1"] .tag-icon, :root[data-hc="1"] .avatar { background: var(--paper-sunk); transform: none; }
+  :root[data-hc="1"] .nav-card .tile { transform: none; }
+  :root[data-hc="1"] .topstrip { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  :root[data-hc="1"] .topstrip::before { opacity: 1; }
+  :root[data-hc="1"] .hero { background: var(--hero-bg-3); }
+  :root[data-hc="1"] .progress > span { background: var(--coral); }
 </style>
 </head>
 <body>
@@ -429,7 +786,7 @@
   <div class="topstrip">
     <div class="topstrip-inner">
       <div class="brand">
-        <div class="brand-mark"><img src="robajobbob-icon.png" alt=""></div>
+        <div class="brand-mark"><img src="robajobbob-icon-v2.png" alt="" width="38" height="38"></div>
         <div style="min-width:0;">
           <div class="brand-name">RobAJobBob</div>
           <div class="brand-sub" id="strip-sub">Career &amp; travel plan</div>
@@ -458,7 +815,7 @@
       <section id="view-apply" class="view"></section>
       <section id="view-toolkit" class="view"></section>
       <section id="view-profile" class="view"></section>
-      <p class="footnote">Graciously made by Emma for Rob — made for Rob, so he can finally do what he said he would. Not official immigration or career advice. Verify visa details on the official sites before booking anything.</p>
+      <p class="footnote"><span class="made-by">✈️ Graciously made by Emma for Rob</span> — so he can finally do what he said he would. Not official immigration or career advice. Verify visa details on the official sites before booking anything.</p>
     </main>
   </div>
 </div>
@@ -1008,6 +1365,36 @@ function latestViableStart(built, cutoff) {
 
 let profile = loadProfile();
 let toastTimer = null;
+/* A small, deliberately rare celebration: the prep checklist hitting 100%,
+   and an application turning into an offer. Two moments in the whole app —
+   any more than that and it stops meaning anything. Falls silent entirely
+   for anyone who has asked for reduced motion. */
+function celebrate() {
+  try {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  } catch {}
+  const cs = getComputedStyle(document.documentElement);
+  const colours = ["--coral", "--mustard", "--teal", "--sky"].map(v => cs.getPropertyValue(v).trim() || "#EF5B3C");
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < 46; i++) {
+    const bit = document.createElement("i");
+    bit.className = "confetti-piece";
+    bit.style.left = Math.random() * 100 + "vw";
+    bit.style.background = colours[i % colours.length];
+    bit.style.animationDuration = (1.5 + Math.random() * 1.4).toFixed(2) + "s";
+    bit.style.animationDelay = (Math.random() * 0.45).toFixed(2) + "s";
+    bit.style.width = (6 + Math.random() * 6).toFixed(0) + "px";
+    bit.style.opacity = 0.9;
+    if (i % 3 === 0) bit.style.borderRadius = "50%";
+    bit.addEventListener("animationend", () => bit.remove());
+    frag.appendChild(bit);
+  }
+  document.body.appendChild(frag);
+  /* Belt and braces: if an animationend never fires (a backgrounded tab),
+     nothing should be left pinned over the page. */
+  setTimeout(() => document.querySelectorAll(".confetti-piece").forEach(b => b.remove()), 5000);
+}
+
 function toast(msg) {
   const el = document.getElementById("toast");
   el.textContent = msg; el.classList.add("show");
@@ -1069,6 +1456,11 @@ function applyTheme() {
   const p = paletteByKey(savedPalette);
   const tokens = savedHighContrast ? HIGH_CONTRAST[savedLowlight ? "dark" : "light"] : computeTokens(p.hue, !!p.muted, savedLowlight);
   Object.entries(tokens).forEach(([k, v]) => root.style.setProperty(k, v));
+  /* The art-direction layer hangs its gradients, grain and tilted tiles off
+     this flag: high contrast means flat, maximum-legibility surfaces, so the
+     decoration switches itself off rather than fighting the token set. */
+  root.setAttribute("data-hc", savedHighContrast ? "1" : "0");
+  root.setAttribute("data-lowlight", savedLowlight ? "1" : "0");
   updateThemeColor();
 }
 function applyBright(v) {
@@ -1399,14 +1791,31 @@ function renderHome() {
   const dueApps = apps.filter(a => a.nextAction && a.nextAction <= todayKey && !["rejected", "withdrawn", "offer"].includes(a.status || "not-sent"));
   el.innerHTML = `
     <section class="hero">
-      <svg class="hero-art" viewBox="0 0 240 240" aria-hidden="true" focusable="false">
-        <path d="M10 224 C 46 206, 60 156, 100 114" fill="none" stroke="#E0A94D" stroke-width="2.5" stroke-dasharray="1 8" stroke-linecap="round" opacity="0.55"/>
-        <path d="M100 114 l 21 -5 l -9 20 l -6 -4 l -9 9 l -1 -14 z" fill="#E0A94D" opacity="0.8"/>
-        <circle cx="156" cy="168" r="80" fill="none" stroke="#E0A94D" stroke-width="3" stroke-dasharray="10 10" opacity="0.4"/>
-        <circle cx="156" cy="168" r="65" fill="#E2543F" opacity="0.5"/>
-      </svg>
-      <div class="hero-eyebrow">Personal plan · updated for what you told us</div>
-      <h1>Right, ${esc(profile.name)} — let's line up the next five years</h1>
+      <svg class="hero-sky" viewBox="0 0 460 150" preserveAspectRatio="xMaxYMin meet" aria-hidden="true" focusable="false">
+        <path d="M104 116 C 176 66, 268 40, 372 44" fill="none" stroke="#F2BC63" stroke-width="2.5" stroke-dasharray="1 9" stroke-linecap="round" opacity="0.5"/>
+        <g class="hero-plane" opacity="0.95">
+          <g transform="translate(400 40) rotate(-10)">
+            <path d="M-15 -9 L17 0 L-15 9 L-9 0 Z" fill="#F2BC63"/>
+            <path d="M-15 9 L-9 0 L5 4 Z" fill="#EF5B3C"/>
+          </g>
+        </g>
+        <circle class="hero-twinkle" cx="292" cy="18" r="2.4" fill="#FDF3E3" opacity="0.6"/>
+        <circle class="hero-twinkle" cx="376" cy="94" r="1.9" fill="#F2BC63" opacity="0.5"/>
+        <circle class="hero-twinkle" cx="196" cy="34" r="2.2" fill="#FDF3E3" opacity="0.4"/>
+        <circle cx="436" cy="112" r="1.5" fill="#FDF3E3" opacity="0.3"/>
+        <circle cx="248" cy="86" r="1.4" fill="#FDF3E3" opacity="0.26"/>
+      </svg>      <div class="hero-sun" aria-hidden="true"></div>
+      <svg class="hero-land" viewBox="0 0 460 116" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="heroHillFar" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#42305F"/><stop offset="1" stop-color="#241C3C"/>
+          </linearGradient>
+        </defs>
+        <path d="M0 60 L44 30 L84 54 L136 22 L188 56 L232 34 L288 68 L348 38 L460 72 L460 120 L0 120 Z" fill="url(#heroHillFar)" opacity="0.92"/>
+        <path d="M0 80 C 58 58, 116 86, 180 78 C 248 68, 292 94, 356 84 C 408 76, 440 90, 460 82 L460 120 L0 120 Z" fill="#171E38"/>
+        <path d="M0 100 C 70 86, 140 106, 224 98 C 316 89, 392 108, 460 98 L460 120 L0 120 Z" fill="#0B1120"/>
+      </svg>     <div class="hero-eyebrow">Your plan · ${new Date().getFullYear()}</div>
+      <h1>Right, ${esc(profile.name)} — let's line up <mark>the next five years</mark></h1>
       <p>Two things, side by side: the long-term career you haven't fully decided on yet, and the working-holiday run through ${esc(countryOrderPhrase())} you're excited about. They're built to feed each other, not compete.</p>
       <div class="hero-stats">
         <span class="hero-stat">✅ Kit ${kitPct}% ready</span>
@@ -1441,11 +1850,11 @@ function renderHome() {
     <section>
       <div class="section-head"><h2>Get into it</h2></div>
       <div class="nav-grid">
-        <button class="nav-card" data-goto="career">${ICONS.compass}<strong>Career Compass</strong><span>${CAREER_PATHS.length} real paths from here</span></button>
-        <button class="nav-card" data-goto="roadmap">${ICONS.route}<strong>Travel Route</strong><span>5 years, visa-checked</span></button>
-        <button class="nav-card" data-goto="jobs">${ICONS.ticket}<strong>Casual Jobs</strong><span>What funds the trip</span></button>
-        <button class="nav-card" data-goto="apply">${ICONS.send}<strong>Apply</strong><span>${apps.length ? `${apps.length} application${apps.length === 1 ? "" : "s"} tracked` : "Match a job spec"}</span></button>
-        <button class="nav-card" data-goto="toolkit">${ICONS.check}<strong>Prep Kit</strong><span>Checklist, log &amp; notes</span></button>
+        <button class="nav-card acc-coral" data-goto="career"><span class="tile">${ICONS.compass}</span><strong>Career Compass</strong><span>${CAREER_PATHS.length} real paths from here</span></button>
+        <button class="nav-card acc-teal" data-goto="roadmap"><span class="tile">${ICONS.route}</span><strong>Travel Route</strong><span>5 years, visa-checked</span></button>
+        <button class="nav-card acc-mustard" data-goto="jobs"><span class="tile">${ICONS.ticket}</span><strong>Casual Jobs</strong><span>What funds the trip</span></button>
+        <button class="nav-card acc-sky" data-goto="apply"><span class="tile">${ICONS.send}</span><strong>Apply</strong><span>${apps.length ? `${apps.length} application${apps.length === 1 ? "" : "s"} tracked` : "Match a job spec"}</span></button>
+        <button class="nav-card acc-teal" data-goto="toolkit"><span class="tile">${ICONS.check}</span><strong>Prep Kit</strong><span>Checklist, log &amp; notes</span></button>
       </div>
     </section>
 
@@ -1779,6 +2188,13 @@ function renderRoadmap() {
               <div class="link-note">${ICONS.compass}<span>${esc(phase.careerLink)}</span></div>
               ${ageHtml}
               ${progressHtml}
+              <svg class="ticket-stamp" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+                <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="7 6"/>
+                <circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M26 58 C 38 40, 62 40, 74 58" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="50" cy="40" r="7" fill="currentColor"/>
+                <path d="M30 68h40" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              </svg>
             </div>
           </div>`;
         }).join("")}
@@ -2252,6 +2668,7 @@ function renderApply() {
       const chip = sel.parentElement.querySelector(".status-chip");
       chip.className = `status-chip ${sel.value}`;
       chip.textContent = (APPLICATION_STATUSES.find(x => x.key === sel.value) || APPLICATION_STATUSES[0]).label;
+      if (sel.value === "offer") { celebrate(); toast("An offer. Get in 🎉"); }
       renderHome();
     }));
     let noteTimer = null;
@@ -2312,6 +2729,7 @@ function renderToolkit() {
     </div>
 
     <div class="progress-row"><div class="progress"><span style="width:${pct}%"></span></div><span class="pct">${pct}%</span></div>
+    <p class="kit-count"><strong id="kit-count-n">${done}</strong> of ${TOOLKIT_CHECKLIST_TEMPLATE.length} sorted${done === TOOLKIT_CHECKLIST_TEMPLATE.length ? " — the lot 🎉" : done ? "" : " — start anywhere"}</p>
     <div class="stack">
       ${TOOLKIT_CHECKLIST_TEMPLATE.map(item => `
         <div class="check-row ${checklist[item.id] ? "done" : ""}">
@@ -2376,12 +2794,17 @@ function renderToolkit() {
      tab depends on a checkbox. */
   const progressBar = el.querySelector(".progress-row .progress span");
   const progressPct = el.querySelector(".progress-row .pct");
+  let lastPct = pct;
   function syncChecklistProgress() {
     const state = loadCheck();
     const n = TOOLKIT_CHECKLIST_TEMPLATE.filter(i => state[i.id]).length;
     const p = Math.round((n / TOOLKIT_CHECKLIST_TEMPLATE.length) * 100);
     if (progressBar) progressBar.style.width = `${p}%`;
     if (progressPct) progressPct.textContent = `${p}%`;
+    const countEl = document.getElementById("kit-count-n");
+    if (countEl) countEl.textContent = n;
+    if (p === 100 && lastPct < 100) { celebrate(); toast("That's the whole kit done 🎉"); }
+    lastPct = p;
   }
   TOOLKIT_CHECKLIST_TEMPLATE.forEach(item => {
     const box = document.getElementById(`chk-${item.id}`);

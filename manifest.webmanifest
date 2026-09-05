@@ -3,7 +3,21 @@
   "short_name": "RobAJobBob",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#FAF6EE",
-  "theme_color": "#12182B",
-  "icons": [{"src":"robajobbob-icon.png","sizes":"1024x1024","type":"image/png","purpose":"any maskable"}]
+  "background_color": "#FBF6F5",
+  "theme_color": "#101A31",
+  "icons": [
+    {
+      "src": "robajobbob-icon-v2.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "robajobbob-icon-v2.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "description": "A personal career-and-5-year-working-holiday planner, built for one specific person."
 }
