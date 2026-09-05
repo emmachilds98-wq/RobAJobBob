@@ -3,10 +3,10 @@
 A personal career & travel planning app built for one specific person — Rob (Robert Kirkpatrick),
 not a generic product. It's an installable, phone-first PWA — built to live on his iPhone home
 screen, with a full responsive web view too — that sits alongside his day-to-day life at
-Bespoke Events and helps him think through five things at once:
+Bespoke Events London and helps him think through five things at once:
 
 1. **Long-term career** — he's not sure yet, and that's fine. The Career Compass turns his real
-   background (Bespoke Events, running the bar solo at Cheeky Clucker, a Music Management degree
+   background (Bespoke Events London, running the bar solo at Cheeky Clucker, a Music Management degree
    from BIMM, and real label/artist-management/promotions roles at Open Room Records, Sleeping
    Dog Promotions, Bang Bang Merch and Madway Brewery) into 13 concrete, realistic directions,
    each with the actual steps to get there — spanning the obvious music/events/hospitality paths
@@ -116,6 +116,17 @@ GitHub Pages, and easy to hand-edit without a build step.
 - `index.html` — the entire app: markup, styles, content data, and all the logic (tabs, the
   colour engine, the travel-date maths, the job-spec matching engine, localStorage persistence).
   Search for the `DATA` comment block near the top of the `<script>` section to find:
+  - `CURRENT_EMPLOYER` — who he actually works for, looked up from public sources rather than
+    assumed: Bespoke Events London, a London event design and production company whose technical
+    hire arm (Bespoke Hire) runs audio, lighting and rigging out of the Kent production warehouse
+    on the Medway City Estate, about fifteen minutes from Chatham. The split inside it is
+    deliberate — `about`/`what`/`hire` is what the *company* does and is checkable; `yours` is
+    what *Rob* does and comes from him. The venue list (V&A, Natural History Museum, Kensington
+    Palace, Tower of London and others the company officially supplies) is rendered explicitly as
+    a **prompt, not a line to paste**: the app will not turn "my employer supplies the Tower of
+    London" into "I worked the Tower of London", because inventing a CV is the one thing this
+    tool must never do. Carries its own `checked` date and source links, same convention as
+    `FACTS_LAST_VERIFIED`.
   - `EMPLOYMENT_HISTORY` — his real, dated work history (source of truth for the Apply tab).
     Each role also carries a `cv` array: that role written the way a CV writes it, present tense
     for the current job and past tense for the rest. Those bullets live on the role rather than
@@ -171,7 +182,7 @@ keywords like "av" match as whole words only, so they don't false-positive insid
   additions can lift a score but never lower one — scoring against the merged bank meant every
   piece of real evidence he added made every job look like a *worse* fit, which is backwards.
 - **What matches** — which parts of his real history line up, sorted by how strongly each one
-  matched, each traceable back to a named employer (Bespoke Events, Cheeky Clucker, Foot Asylum,
+  matched, each traceable back to a named employer (Bespoke Events London, Cheeky Clucker, Foot Asylum,
   Tesco, Open Room Records, Sleeping Dog Promotions, Bang Bang Merch, Madway Brewery) or, for
   the two self-extending sources, labelled *Added by you* / *From your Experience Log* so a hit
   off something recorded last month is as traceable as one off the built-in bank.
@@ -276,7 +287,11 @@ Open the **You** tab to set his name, contact details, role, education, backgrou
 visa status, driving licence and certificates — everything saves to `localStorage`, so it's
 private to whoever opens it on that device. It also shows his real work history timeline, which
 is what the Apply tab's matching is built on, with a link straight through to the **Skills**
-tab for what each of those roles proves and how to word it. His birth date is already known and baked in
+tab for what each of those roles proves and how to word it. Above it, a **Who you actually work
+for** card carries the researched picture of his current employer — what the company is, what he
+does there, and the venue-name caveat — because "an events company" and "an event design and
+production company that supplies the V&A and the Tower of London" are the same job described two
+ways, and only one of them gets read twice. His birth date is already known and baked in
 (`DEFAULT_PROFILE.birthDate`), so there's no birth-date field to fill in — the Age shown is
 computed live from it instead of a manually-typed value that would silently go stale. The
 **Travel Route** tab lets the visa month-lengths, country order and travel start date be edited
