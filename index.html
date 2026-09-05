@@ -136,11 +136,18 @@
   .section-head h2 { font-size: 1.15rem; }
 
   /* ---------------- hero ---------------- */
-  .hero { background: var(--hero-bg); color: var(--hero-fg); border-radius: var(--radius-l); padding: 24px 22px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+  /* z-index:0 gives the hero its own stacking context so .hero-art (below,
+     z-index:-1) paints behind the text but in front of the hero's own
+     background — without it, a negative z-index escapes to the nearest
+     positioned ancestor instead and the art vanishes under the navy fill. */
+  .hero { background: var(--hero-bg); color: var(--hero-fg); border-radius: var(--radius-l); padding: 24px 22px; box-shadow: var(--shadow-md); position: relative; z-index: 0; overflow: hidden; }
   .hero::after { content: ""; position: absolute; right: -40px; top: -40px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, #E2543F 0%, transparent 70%); opacity: 0.55; }
   .hero-eyebrow { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--hero-accent); position: relative; }
   .hero h1 { font-size: clamp(1.4rem, 6vw, 1.75rem); margin: 6px 0 10px; position: relative; color: var(--hero-fg); }
   .hero p { margin: 0; color: var(--hero-fg-soft); font-size: 0.93rem; max-width: 46ch; position: relative; }
+  /* A small illustrated vignette — a tagged suitcase on a flight path — tucked
+     into the corner as atmosphere, not competing with the text on top of it. */
+  .hero-art { position: absolute; right: -28px; bottom: -26px; width: 150px; height: 132px; z-index: -1; pointer-events: none; }
   .hero-stats { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; position: relative; }
   .hero-stat { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.16); color: var(--hero-fg); border-radius: 999px; padding: 6px 13px; font-size: 0.78rem; font-weight: 600; }
 
@@ -354,6 +361,7 @@
     [data-layout="web"] .nav-grid { grid-template-columns: repeat(4, 1fr); }
     [data-layout="web"] .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
     [data-layout="web"] .field-grid { grid-template-columns: repeat(2, 1fr); }
+    [data-layout="web"] .hero-art { width: 200px; height: 176px; right: -34px; bottom: -32px; }
   }
 
   /* ---------------- settings sheet (the cog) ----------------
@@ -1391,6 +1399,16 @@ function renderHome() {
   const dueApps = apps.filter(a => a.nextAction && a.nextAction <= todayKey && !["rejected", "withdrawn", "offer"].includes(a.status || "not-sent"));
   el.innerHTML = `
     <section class="hero">
+      <svg class="hero-art" viewBox="0 0 240 200" aria-hidden="true" focusable="false">
+        <path d="M40 176 C 78 158, 100 110, 158 66" fill="none" stroke="#E0A94D" stroke-width="2.5" stroke-dasharray="1 8" stroke-linecap="round" opacity="0.5"/>
+        <path d="M158 66 l 22 -4 l -10 20 l -6 -4 l -8 10 l -2 -14 z" fill="#E0A94D" opacity="0.85"/>
+        <rect x="46" y="108" width="118" height="82" rx="14" fill="#E2543F" opacity="0.85"/>
+        <path d="M78 108 v-14 a10 10 0 0 1 10 -10 h28 a10 10 0 0 1 10 10 v14" fill="none" stroke="#E0A94D" stroke-width="7" opacity="0.85"/>
+        <line x1="46" y1="150" x2="164" y2="150" stroke="#12182B" stroke-width="2" opacity="0.22"/>
+        <rect x="178" y="96" width="15" height="26" rx="7" fill="#E0A94D" opacity="0.95"/>
+        <rect x="160" y="118" width="56" height="62" rx="11" fill="#FAF6EE" opacity="0.95"/>
+        <circle cx="188" cy="107" r="6" fill="#12182B"/>
+      </svg>
       <div class="hero-eyebrow">Personal plan · updated for what you told us</div>
       <h1>Right, ${esc(profile.name)} — let's line up the next five years</h1>
       <p>Two things, side by side: the long-term career you haven't fully decided on yet, and the working-holiday run through ${esc(countryOrderPhrase())} you're excited about. They're built to feed each other, not compete.</p>
