@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RobAJobBob — Career &amp; Travel Planner</title>
 <meta name="description" content="A personal career-and-5-year-working-holiday planner, built for one specific person.">
-<meta name="theme-color" id="themeColorMeta" content="#182338">
+<meta name="theme-color" id="themeColorMeta" content="#12182B">
 <meta name="color-scheme" content="light">
 <meta name="format-detection" content="telephone=no">
 <meta name="mobile-web-app-capable" content="yes">
@@ -23,16 +23,16 @@
   /* ---------- base tokens (overwritten at runtime by the colour engine below;
      these are just the first-paint fallback, set to the default "Sunrise" look) --------- */
   :root {
-    --paper: hsl(6 34% 97%); --paper-raised: hsl(6 44% 99%); --paper-sunk: hsl(6 29% 93%);
-    --line: hsl(6 27% 85%);
-    --ink: hsl(6 29% 16%); --ink-soft: hsl(6 17% 38%); --ink-faint: hsl(6 11% 55%);
-    --coral: hsl(6 78% 54%); --coral-ink: hsl(6 70% 34%); --coral-tint: hsl(6 65% 93%);
-    --teal: hsl(156 50% 32%); --teal-ink: hsl(156 50% 24%); --teal-tint: hsl(156 42% 90%);
-    --mustard: hsl(51 70% 45%); --mustard-ink: hsl(51 60% 30%); --mustard-tint: hsl(51 58% 90%);
-    --sky: hsl(306 52% 45%); --sky-ink: hsl(306 52% 30%); --sky-tint: hsl(306 48% 91%);
+    --paper: hsl(6 26% 97%); --paper-raised: hsl(6 36% 99%); --paper-sunk: hsl(6 22% 92%);
+    --line: hsl(6 20% 81%);
+    --ink: hsl(6 34% 12%); --ink-soft: hsl(6 19% 34%); --ink-faint: hsl(6 12% 52%);
+    --coral: hsl(8 74% 50%); --coral-ink: hsl(8 72% 30%); --coral-tint: hsl(8 62% 93%);
+    --teal: hsl(156 56% 27%); --teal-ink: hsl(156 56% 20%); --teal-tint: hsl(156 40% 89%);
+    --mustard: hsl(40 78% 42%); --mustard-ink: hsl(40 68% 27%); --mustard-tint: hsl(40 58% 89%);
+    --sky: hsl(306 46% 40%); --sky-ink: hsl(306 46% 27%); --sky-tint: hsl(306 42% 91%);
 
-    --shadow-sm: 0 2px 10px -4px rgba(24,35,56,0.18);
-    --shadow-md: 0 12px 28px -12px rgba(24,35,56,0.28);
+    --shadow-sm: 0 2px 10px -4px rgba(18,24,43,0.20);
+    --shadow-md: 0 12px 28px -12px rgba(18,24,43,0.32);
     --radius-l: 20px; --radius-m: 14px; --radius-s: 9px;
     --font-display: 'Fraunces', ui-serif, Georgia, serif;
     --font-body: 'Work Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -42,8 +42,8 @@
     /* The hero band and the settings cog are a deliberately-fixed dark surface —
        they do not change with the chosen colour theme, the same way a passport
        cover stays the same colour no matter what's inside it. */
-    --hero-bg: #182338; --hero-fg: #FAF6EE;
-    --hero-fg-soft: rgba(250, 246, 238, 0.82); --hero-accent: #F2B75C;
+    --hero-bg: #12182B; --hero-fg: #FAF6EE;
+    --hero-fg-soft: rgba(250, 246, 238, 0.82); --hero-accent: #E0A94D;
   }
   html{background:var(--paper)}
   html.raj-dimmed{filter:brightness(var(--bright))}
@@ -137,7 +137,7 @@
 
   /* ---------------- hero ---------------- */
   .hero { background: var(--hero-bg); color: var(--hero-fg); border-radius: var(--radius-l); padding: 24px 22px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
-  .hero::after { content: ""; position: absolute; right: -40px; top: -40px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, #FF5A4E 0%, transparent 70%); opacity: 0.55; }
+  .hero::after { content: ""; position: absolute; right: -40px; top: -40px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, #E2543F 0%, transparent 70%); opacity: 0.55; }
   .hero-eyebrow { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--hero-accent); position: relative; }
   .hero h1 { font-size: clamp(1.4rem, 6vw, 1.75rem); margin: 6px 0 10px; position: relative; color: var(--hero-fg); }
   .hero p { margin: 0; color: var(--hero-fg-soft); font-size: 0.93rem; max-width: 46ch; position: relative; }
@@ -1021,13 +1021,13 @@ function computeTokens(hue, muted, dark) {
   const s = (base) => base * m;
   if (!dark) {
     return {
-      "--paper": hsl(hue, s(34), 97), "--paper-raised": hsl(hue, s(44), 99), "--paper-sunk": hsl(hue, s(29), 93),
-      "--line": hsl(hue, s(27), 85),
-      "--ink": hsl(hue, s(29), 16), "--ink-soft": hsl(hue, s(17), 38), "--ink-faint": hsl(hue, s(11), 55),
-      "--coral": hsl(hue, s(78), 54), "--coral-ink": hsl(hue, s(70), 34), "--coral-tint": hsl(hue, s(65), 93),
-      "--teal": hsl(hue + 150, s(50), 32), "--teal-ink": hsl(hue + 150, s(50), 24), "--teal-tint": hsl(hue + 150, s(42), 90),
-      "--mustard": hsl(hue + 45, s(70), 45), "--mustard-ink": hsl(hue + 45, s(60), 30), "--mustard-tint": hsl(hue + 45, s(58), 90),
-      "--sky": hsl(hue - 60, s(52), 45), "--sky-ink": hsl(hue - 60, s(52), 30), "--sky-tint": hsl(hue - 60, s(48), 91),
+      "--paper": hsl(hue, s(26), 97), "--paper-raised": hsl(hue, s(36), 99), "--paper-sunk": hsl(hue, s(22), 92),
+      "--line": hsl(hue, s(20), 81),
+      "--ink": hsl(hue, s(34), 12), "--ink-soft": hsl(hue, s(19), 34), "--ink-faint": hsl(hue, s(12), 52),
+      "--coral": hsl(hue + 2, s(74), 50), "--coral-ink": hsl(hue + 2, s(72), 30), "--coral-tint": hsl(hue + 2, s(62), 93),
+      "--teal": hsl(hue + 150, s(56), 27), "--teal-ink": hsl(hue + 150, s(56), 20), "--teal-tint": hsl(hue + 150, s(40), 89),
+      "--mustard": hsl(hue + 45, s(78), 42), "--mustard-ink": hsl(hue + 45, s(68), 27), "--mustard-tint": hsl(hue + 45, s(58), 89),
+      "--sky": hsl(hue - 60, s(46), 40), "--sky-ink": hsl(hue - 60, s(46), 27), "--sky-tint": hsl(hue - 60, s(42), 91),
     };
   }
   return {
