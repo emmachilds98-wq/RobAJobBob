@@ -53,7 +53,6 @@
     background: var(--paper); color: var(--ink);
     font-family: var(--font-body); line-height: 1.5;
     -webkit-font-smoothing: antialiased;
-    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
   }
   img, svg { max-width: 100%; display: block; }
   button, input, textarea, select { font-family: inherit; color: inherit; }
@@ -74,18 +73,34 @@
      Rob mostly opens this on an iPhone, so it always presents as a phone-width
      app — edge to edge on an actual phone, and a phone-shaped column with a
      visible frame everywhere wider, rather than stretching to fill a desktop. */
+  /* The frame is exactly one screen tall and scrolls internally, rather than
+     growing to the height of the page. That distinction is the whole ball
+     game: everything pinned to the "bottom of the app" — the tab bar, the
+     settings sheet, its backdrop, the toast — is positioned against this box.
+     While it grew with the content, "bottom" meant the bottom of an
+     11,000-pixel document, so on a long tab the tab bar and the settings
+     sheet both sat thousands of pixels below the fold and you'd scroll
+     halfway into the sheet on your way past it. Keeping the frame the size
+     of the screen makes all of them correct by construction, and it makes
+     the desktop phone-mockup behave like a phone instead of a very tall
+     rounded rectangle. */
   .app-frame {
-    max-width: 460px; margin: 0 auto; min-height: 100vh; min-height: 100dvh;
+    max-width: 460px; margin: 0 auto;
+    height: 100vh; height: 100dvh;
     background: var(--paper); position: relative;
+    display: flex; flex-direction: column; overflow: hidden;
   }
+  /* The one scrolling region. min-height:0 is load-bearing — without it a
+     flex item refuses to shrink below its content and the frame grows again. */
+  .webshell { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
   @media (min-width: 560px) {
     body { background: var(--paper-sunk); display: flex; justify-content: center; padding: 28px 0; }
-    .app-frame { min-height: min(920px, 92vh); border-radius: 34px; box-shadow: var(--shadow-md), 0 0 0 10px var(--hero-bg); overflow: hidden; }
+    .app-frame { height: min(920px, calc(100dvh - 56px)); border-radius: 34px; box-shadow: var(--shadow-md), 0 0 0 10px var(--hero-bg); }
   }
 
   /* ---------------- top strip ---------------- */
   .topstrip {
-    position: sticky; top: 0; z-index: 30;
+    flex: 0 0 auto; position: relative; z-index: 30;
     background: var(--paper); border-bottom: 1px solid var(--line);
     padding-top: env(safe-area-inset-top, 0px);
   }
@@ -219,8 +234,29 @@
   .card.editing { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-tint); }
   .due-flag { color: var(--coral-ink); font-weight: 650; }
 
+  /* Draft text meant to be copied out — visually distinct from prose so it's
+     obvious it's a thing to take, not a thing to read. */
+  .mono-quote { font-size: 0.86rem; color: var(--ink-soft); background: var(--paper-sunk); border-left: 3px solid var(--teal); border-radius: 0 var(--radius-s) var(--radius-s) 0; padding: 11px 13px; margin: 0 0 11px; }
+
+  .settings-link { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; cursor: pointer; background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-m); padding: 14px 16px; color: inherit; box-shadow: var(--shadow-sm); }
+  .settings-link:hover { border-color: var(--coral); }
+  .settings-link-icon { display: flex; color: var(--coral-ink); flex: none; }
+  .settings-link span span { display: block; }
+  .settings-link strong { display: block; font-family: var(--font-display); font-size: 0.98rem; margin-bottom: 2px; }
+  .settings-link span span { color: var(--ink-faint); font-size: 0.82rem; }
+  .settings-link > span:nth-child(2) { flex: 1; min-width: 0; }
+  .settings-link-chev { color: var(--ink-faint); display: flex; flex: none; }
+
   .stale-note { display: flex; gap: 8px; align-items: flex-start; font-size: 0.83rem; background: var(--mustard-tint); color: var(--mustard-ink); border: 1px solid var(--mustard); border-radius: var(--radius-s); padding: 10px 12px; margin: 10px 0 0; }
   .stale-note .icon { width: 15px; height: 15px; margin-top: 2px; flex: none; }
+
+  /* How reachable a past employer realistically is — live / recent / dormant.
+     Dormant is deliberately not styled as a warning: it's the normal state of
+     a contact nobody has messaged in four years, not a failure. */
+  .warmth { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .warmth.live { background: var(--teal-tint); color: var(--teal-ink); }
+  .warmth.recent { background: var(--sky-tint); color: var(--sky-ink); }
+  .warmth.dormant { background: var(--paper-sunk); color: var(--ink-faint); }
 
   .src-chip { display: inline-block; vertical-align: middle; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.02em; padding: 2px 8px; border-radius: 999px; background: var(--teal-tint); color: var(--teal-ink); border: 1px solid var(--teal); margin-left: 4px; }
 
@@ -271,6 +307,11 @@
   .tag-card p.blurb { font-size: 0.86rem; color: var(--ink-soft); margin: 0 0 10px; }
   .country-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
   .flag-chip { font-size: 0.76rem; font-weight: 600; background: var(--paper-sunk); border-radius: 999px; padding: 3px 10px; }
+  .apply-at { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+  .apply-at-label { display: block; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 7px; }
+
+  a.flag-chip.link { background: var(--teal-tint); color: var(--teal-ink); border: 1px solid var(--teal); text-decoration: none; display: inline-block; }
+  a.flag-chip.link:hover, a.flag-chip.link:focus-visible { background: var(--teal); color: var(--paper-raised); }
   .drive-chip { font-size: 0.73rem; font-weight: 600; background: var(--sky-tint); color: var(--sky-ink); border-radius: 999px; padding: 3px 10px; display: inline-flex; align-items: center; gap: 4px; }
   .drive-chip .icon { width: 12px; height: 12px; }
 
@@ -297,16 +338,14 @@
   .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
 
   /* ---------------- bottom nav ---------------- */
-  .bottomnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--paper-raised); border-top: 1px solid var(--line); box-shadow: 0 -6px 20px -12px rgba(24,35,56,0.3); padding-bottom: env(safe-area-inset-bottom, 0); }
-  .app-frame .bottomnav { position: absolute; }
+  .bottomnav { flex: 0 0 auto; z-index: 40; background: var(--paper-raised); border-top: 1px solid var(--line); box-shadow: 0 -6px 20px -12px rgba(24,35,56,0.3); padding-bottom: env(safe-area-inset-bottom, 0); }
   .bottomnav-inner { display: flex; }
   .navbtn { flex: 1; background: none; border: none; padding: 9px 4px 7px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--ink-faint); font-size: 0.64rem; font-weight: 600; }
   .navbtn .icon { width: 21px; height: 21px; }
   .navbtn.active { color: var(--coral-ink); }
 
-  .toast { position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%) translateY(14px); background: var(--hero-bg); color: var(--hero-fg); padding: 10px 20px; border-radius: 999px; font-size: 0.84rem; font-weight: 600; box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; z-index: 60; }
+  .toast { position: absolute; bottom: 92px; left: 50%; transform: translateX(-50%) translateY(14px); background: var(--hero-bg); color: var(--hero-fg); padding: 10px 20px; border-radius: 999px; font-size: 0.84rem; font-weight: 600; box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; z-index: 60; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .app-frame .toast { position: absolute; }
 
   .footnote { text-align: center; color: var(--ink-faint); font-size: 0.74rem; padding: 30px 10px 10px; }
 
@@ -321,13 +360,17 @@
   .webshell { display: block; }
   @media (min-width: 821px) {
     [data-layout="web"] body { display: block; padding: 0; background: var(--paper); }
-    [data-layout="web"] .app-frame { max-width: none; min-height: 100vh; border-radius: 0; box-shadow: none; }
+    [data-layout="web"] .app-frame { max-width: none; height: 100vh; height: 100dvh; border-radius: 0; box-shadow: none; }
     [data-layout="web"] .topstrip-inner { max-width: 1200px; margin: 0 auto; padding: 16px 32px; }
     [data-layout="web"] .bottomnav { display: none; }
     [data-layout="web"] .webshell { display: flex; align-items: flex-start; }
+    /* The sidebar sticks to the top of the scrolling region rather than to a
+       hard-coded 65px offset from the window — the top strip now sits outside
+       the scroller, so there's nothing to offset past. */
     [data-layout="web"] .sidebar {
       display: flex; flex-direction: column; gap: 3px; width: 232px; flex-shrink: 0;
-      position: sticky; top: 65px; height: calc(100vh - 65px); padding: 22px 14px; border-right: 1px solid var(--line);
+      position: sticky; top: 0; align-self: flex-start; max-height: 100%; overflow-y: auto;
+      padding: 22px 14px; border-right: 1px solid var(--line);
     }
     [data-layout="web"] .sidenavbtn {
       display: flex; align-items: center; gap: 12px; text-align: left; background: none; border: none;
@@ -337,7 +380,6 @@
     [data-layout="web"] .sidenavbtn.active { background: var(--coral-tint); color: var(--coral-ink); }
     [data-layout="web"] .sidenavbtn .icon { width: 19px; height: 19px; flex-shrink: 0; }
     [data-layout="web"] main { flex: 1; min-width: 0; max-width: 880px; margin: 0 auto; padding: 36px 40px 70px; }
-    [data-layout="web"] body { padding-bottom: 0; }
     [data-layout="web"] .toast { bottom: 32px; }
     [data-layout="web"] .nav-grid { grid-template-columns: repeat(4, 1fr); }
     [data-layout="web"] .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
@@ -347,20 +389,30 @@
   /* ---------------- settings sheet (the cog) ---------------- */
   .sheet-overlay { display: none; position: absolute; inset: 0; background: rgba(10,14,22,0.4); z-index: 70; }
   .sheet-overlay.open { display: block; }
+  /* Percentages here resolve against .app-frame, which is now exactly one
+     screen tall — so the sheet can never be taller than the screen it's on.
+     The header is pinned and only .ap-body scrolls, so "Done" is reachable
+     from anywhere in the sheet instead of scrolling away with the content. */
   .appearance-panel {
     position: absolute; left: 0; right: 0; bottom: 0; z-index: 71; background: var(--paper-raised);
     border-top: 1px solid var(--line); border-radius: 20px 20px 0 0;
-    padding: 18px 20px calc(18px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 30px rgba(0,0,0,0.22);
-    transform: translateY(110%); transition: transform .22s ease; max-height: 84vh; overflow-y: auto;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.22);
+    transform: translateY(110%); transition: transform .22s ease;
+    max-height: 92%; display: flex; flex-direction: column;
   }
   .appearance-panel.open { transform: translateY(0); }
-  .appearance-panel h4 { margin: 0 26px 2px 0; font-size: 1.15rem; }
+  @media (prefers-reduced-motion: reduce) { .appearance-panel { transition: none; } }
+  .ap-head { flex: 0 0 auto; padding: 8px 20px 12px; border-bottom: 1px solid var(--line); background: var(--paper-raised); border-radius: 20px 20px 0 0; }
+  .ap-grab { width: 38px; height: 4px; border-radius: 999px; background: var(--line); margin: 0 auto 10px; }
+  .ap-head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ap-done { border: 1px solid var(--coral); background: var(--coral); color: #fff; border-radius: 999px; padding: 8px 18px; font-family: var(--font-display); font-weight: 650; font-size: 0.9rem; cursor: pointer; flex: none; }
+  .ap-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 20px calc(20px + env(safe-area-inset-bottom, 0px)); }
+  .appearance-panel h4 { margin: 0; font-size: 1.15rem; }
   .ap-intro { color: var(--ink-faint); font-size: 0.82rem; margin: 0 0 4px; }
   .ap-row { margin: 18px 0; }
   .ap-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 9px; display: block; }
   .ap-row input[type="text"] { width: 100%; border: 1.5px solid var(--line); border-radius: var(--radius-s); padding: 10px 12px; background: var(--paper); color: var(--ink); }
   .ap-row input[type="text"]:focus { outline: none; border-color: var(--coral); }
-  .ap-close { position: absolute; top: 12px; right: 14px; background: none; border: 0; font-size: 20px; color: var(--ink-faint); cursor: pointer; padding: 6px; line-height: 1; }
   .palette-row { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-top: 4px; }
   .palette-swatch { width: 100%; aspect-ratio: 1; border-radius: 12px; border: 2px solid var(--line); cursor: pointer; padding: 0; position: relative; }
   .palette-swatch.on { border-color: var(--ink); box-shadow: 0 0 0 2px var(--paper-raised), 0 0 0 4px var(--ink); }
@@ -413,9 +465,15 @@
   </div>
 
   <div class="sheet-overlay" id="sheetOverlay"></div>
-  <div class="appearance-panel" id="appearancePanel" role="dialog" aria-label="Settings" aria-hidden="true">
-    <button class="ap-close" id="appearanceClose" type="button" aria-label="Close">✕</button>
-    <h4>Make it yours</h4>
+  <div class="appearance-panel" id="appearancePanel" role="dialog" aria-modal="true" aria-labelledby="apTitle" aria-hidden="true">
+    <div class="ap-head">
+      <div class="ap-grab" aria-hidden="true"></div>
+      <div class="ap-head-row">
+        <h4 id="apTitle">Settings &amp; appearance</h4>
+        <button class="ap-done" id="appearanceClose" type="button">Done</button>
+      </div>
+    </div>
+    <div class="ap-body">
     <p class="ap-intro">Changes the colours, brightness and a few other things on this device only — nothing is sent anywhere.</p>
 
     <div class="ap-row">
@@ -475,6 +533,7 @@
     </div>
 
     <button class="ap-reset" id="appearanceReset" type="button">Reset to default look</button>
+    </div>
   </div>
 
   <div class="webshell">
@@ -487,9 +546,10 @@
       <section id="view-roadmap" class="view"></section>
       <section id="view-jobs" class="view"></section>
       <section id="view-apply" class="view"></section>
+      <section id="view-people" class="view"></section>
       <section id="view-toolkit" class="view"></section>
       <section id="view-profile" class="view"></section>
-      <p class="footnote">Graciously made by Emma for Rob — made for Rob, so he can finally do what he said he would. Not official immigration or career advice. Verify visa details on the official sites before booking anything.</p>
+      <p class="footnote">Graciously made by Emma for Rob, so he can finally do what he said he would. Not official immigration or career advice.</p>
     </main>
   </div>
 
@@ -521,6 +581,7 @@ const ICONS = {
   send: '<svg class="icon" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7.5 3L14 21l7-18Z"/><path d="M10.5 13.5 21 3"/></svg>',
   sparkle: '<svg class="icon" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/></svg>',
   copy: '<svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+  people: '<svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 19.5c1.2-3.4 4-4.8 6.5-4.8s5.3 1.4 6.5 4.8"/><path d="M16 5.4a3.2 3.2 0 0 1 0 6.1M18 14.9c2 .5 3.3 1.9 4 4.1"/></svg>',
   linkedin: '<svg class="icon" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M7.5 10v6.5M7.5 7.2v.1M11.5 16.5V10M11.5 12.7c0-1.5 1-2.7 2.5-2.7s2.5 1.2 2.5 2.7v3.8" fill="none"/></svg>',
 };
 
@@ -532,7 +593,7 @@ const DEFAULT_PROFILE = {
   phone: "",
   location: "Chatham, Kent, UK",
   currentRole: "Logistics coordinator & on-site support for bespoke events — not audio, tech or management specifically, but the all-rounder who handles shipment deliveries in and outside of normal hours and turns up for hands-on support wherever the event needs it",
-  currentCompany: "TreebySound (working alongside Dave Treeby)",
+  currentCompany: "Bespoke Events (working alongside Dave)",
   education: "BA in Business (Music Management), BIMM Brighton, 2019–2022",
   background: "Led the bar on its own floor at Cheeky Clucker — regularly the supervisor and often ran it entirely solo, including closing up, for a year or more, inside a busy high-street restaurant. Supervisor at Foot Asylum (retail) before that, and Shift Leader at Tesco all the way through the BIMM degree. Alongside the degree: marketing assistant at Bang Bang Merch, Head of Marketing & Assistant Label Manager at Open Room Records, Artist Manager & Promoter at Sleeping Dog Promotions, and business/marketing/promotions assistant at Madway Brewery. A genuine, long-standing music fan outside of work too — gig-going and following bands since his early teens, more recently drawn further into electronic and festival culture (Boomtown among them), and staying close to the current scene day to day through the artists he follows.",
   nationalityNote: "UK citizen",
@@ -572,7 +633,7 @@ function factsAge() {
    profile.background (a human-readable summary) so it can be rendered as
    an actual timeline and reasoned about programmatically. */
 const EMPLOYMENT_HISTORY = [
-  { title: "All-Rounder — Operations & Events Support", company: "TreebySound", period: "Current", detail: "Deliveries, event setup & pack-down, and general operations support across a live-audio/events business, working directly under the owner-operator." },
+  { title: "All-Rounder — Operations & Events Support", company: "Bespoke Events", period: "Current", detail: "Deliveries, event setup & pack-down, and general operations support across a live events business, working directly under the owner-operator." },
   { title: "Bartender & Server", company: "Cheeky Clucker", period: "Jul 2022 – present on your last CV", detail: "Led the bar on its own floor — regularly supervisor, often fully solo including closing, inside a busy high-street restaurant." },
   { title: "Supervisor", company: "Foot Asylum", period: "Mar 2022 – Jul 2022", detail: "Retail supervisor role — customer service, team leadership, day-to-day store operations." },
   { title: "Shift Leader", company: "Tesco", period: "Sep 2019 – Mar 2022", detail: "Held throughout the BIMM degree — shift leadership, team coordination, customer service at scale." },
@@ -630,10 +691,10 @@ const EVIDENCE_BANK = [
   {
     id: "events-production",
     keywords: ["event", "events", "production", "logistics", "run sheet", "runsheet", "bump-in", "bump in", "bump-out", "bump out", "crew", "stage", "av", "sound", "audio", "operations", "deliveries", "delivery", "equipment", "gear", "setup", "set-up", "pack down", "packdown"],
-    headline: "Hands-on events & operations support at TreebySound",
-    detail: "All-rounder support role across a live-audio/events company — deliveries, event setup and pack-down, and general operations, working directly under the owner-operator.",
-    pitch: "I currently support end-to-end event operations at TreebySound, a live-audio/events company — deliveries, on-site setup/pack-down and general production support.",
-    star: "Pick one event at TreebySound that didn't go smoothly — a tight get-in, a last-minute change, a delivery problem. Situation/Task: what the day actually demanded. Action: what you did to keep it on track. Result: how it landed, and what Dave or the client actually said or did afterward.",
+    headline: "Hands-on events & operations support at Bespoke Events",
+    detail: "All-rounder support role across a live events company — deliveries, event setup and pack-down, and general operations, working directly under the owner-operator.",
+    pitch: "I currently support end-to-end event operations at Bespoke Events, a live events company — deliveries, on-site setup/pack-down and general production support.",
+    star: "Pick one event at Bespoke Events that didn't go smoothly — a tight get-in, a last-minute change, a delivery problem. Situation/Task: what the day actually demanded. Action: what you did to keep it on track. Result: how it landed, and what Dave or the client actually said or did afterward.",
   },
   {
     id: "driving",
@@ -655,7 +716,7 @@ const EVIDENCE_BANK = [
     headline: "Broad, adaptable work history",
     detail: "A genuinely varied work history spanning hospitality, retail and the music industry — used to picking up a new environment fast.",
     pitch: "I've got a genuinely varied work background across hospitality, retail and the music industry, and I'm quick to adapt to a new environment.",
-    star: "Pick a moment you had to switch mode fast — moving between TreebySound, Cheeky Clucker and label work in the same week, say. Situation/Task: what was actually competing for your attention. Action: how you actually handled the switch. Result: what got delivered, and what you'd say this proves about how you work.",
+    star: "Pick a moment you had to switch mode fast — moving between Bespoke Events, Cheeky Clucker and label work in the same week, say. Situation/Task: what was actually competing for your attention. Action: how you actually handled the switch. Result: what got delivered, and what you'd say this proves about how you work.",
   },
 ];
 
@@ -674,12 +735,59 @@ const APPLICATION_STATUSES = [
 /* Real, current job-search platforms — named directly rather than "search
    online", split by where he'd actually be looking: UK corporate roles now,
    and AU/NZ/Canada equivalents once travelling. */
+/* Named platforms with the address to actually reach them, so a plan made on
+   the sofa turns into an open tab rather than a thing to look up later.
+
+   Only long-standing top-level domains are linked. Deep links into a
+   category or a search rot within months and a dead link is worse than a
+   name you can search — so anything niche below stays as a plain name on
+   purpose, not by oversight. These were written from knowledge rather than
+   opened and checked (the app has no network access when it's being built),
+   so they carry the same FACTS_LAST_VERIFIED caveat as every other fact in
+   here: right when written, worth a glance before relying on. */
 const JOB_SEARCH_PLATFORMS = {
-  uk: { label: "UK — corporate & general", flag: "🇬🇧", items: ["LinkedIn Jobs", "Indeed UK", "Reed.co.uk", "Totaljobs", "CV-Library"] },
-  ukAgencies: { label: "UK — recruitment agencies (project/procurement/ops/marketing)", flag: "🤝", items: ["Hays", "Reed Specialist Recruitment", "Michael Page", "Adecco", "Randstad"] },
-  australia: { label: "Australia", flag: "🇦🇺", items: ["Seek.com.au", "Indeed.com.au", "LinkedIn"] },
-  newzealand: { label: "New Zealand", flag: "🇳🇿", items: ["Seek.co.nz", "Trade Me Jobs", "LinkedIn"] },
-  canada: { label: "Canada", flag: "🇨🇦", items: ["Indeed.ca", "Job Bank Canada", "LinkedIn"] },
+  uk: { label: "UK — corporate & general", flag: "🇬🇧", items: [
+    { name: "LinkedIn Jobs", url: "https://www.linkedin.com/jobs/" },
+    { name: "Indeed UK", url: "https://uk.indeed.com" },
+    { name: "Reed", url: "https://www.reed.co.uk" },
+    { name: "Totaljobs", url: "https://www.totaljobs.com" },
+    { name: "CV-Library", url: "https://www.cv-library.co.uk" },
+  ] },
+  ukAgencies: { label: "UK — recruitment agencies (project/procurement/ops/marketing)", flag: "🤝", items: [
+    { name: "Hays", url: "https://www.hays.co.uk" },
+    { name: "Michael Page", url: "https://www.michaelpage.co.uk" },
+    { name: "Adecco", url: "https://www.adecco.co.uk" },
+    { name: "Randstad", url: "https://www.randstad.co.uk" },
+    { name: "Reed Specialist Recruitment", url: "https://www.reed.co.uk" },
+  ] },
+  australia: { label: "Australia", flag: "🇦🇺", items: [
+    { name: "Seek", url: "https://www.seek.com.au" },
+    { name: "Indeed AU", url: "https://au.indeed.com" },
+    { name: "Backpacker Job Board", url: "https://www.backpackerjobboard.com.au" },
+    { name: "LinkedIn Jobs", url: "https://www.linkedin.com/jobs/" },
+  ] },
+  newzealand: { label: "New Zealand", flag: "🇳🇿", items: [
+    { name: "Seek NZ", url: "https://www.seek.co.nz" },
+    { name: "Trade Me Jobs", url: "https://www.trademe.co.nz/a/jobs" },
+    { name: "BackpackerBoard NZ", url: "https://www.backpackerboard.co.nz" },
+    { name: "LinkedIn Jobs", url: "https://www.linkedin.com/jobs/" },
+  ] },
+  canada: { label: "Canada", flag: "🇨🇦", items: [
+    { name: "Job Bank Canada", url: "https://www.jobbank.gc.ca" },
+    { name: "Indeed CA", url: "https://ca.indeed.com" },
+    { name: "LinkedIn Jobs", url: "https://www.linkedin.com/jobs/" },
+  ] },
+  music: { label: "Music, events & festivals — where these roles actually get posted", flag: "🎧", items: [
+    { name: "Music Managers Forum", url: "https://musicmanagersforum.co.uk" },
+    { name: "Association of Independent Music", url: "https://www.aim.org.uk" },
+    { name: "Sidekicker (AU/NZ gig shifts)", url: "https://www.sidekicker.com" },
+    { name: "Workforce Australia", url: "https://www.workforceaustralia.gov.au" },
+  ] },
+  social: { label: "The ones that aren't job boards — where casual events work is really advertised", flag: "📱", items: [
+    { name: "Facebook Groups — search “[city] backpacker jobs” / “[city] event crew”", url: "https://www.facebook.com/groups/" },
+    { name: "Instagram — follow venues, festivals and promoters directly; casual crew calls go out on stories", url: "https://www.instagram.com" },
+    { name: "Reddit — r/JobsAustralia, r/newzealand, r/PersonalFinanceCanada and each city's own subreddit", url: "https://www.reddit.com" },
+  ] },
 };
 
 /* A real, worked example — seeded into Saved applications only on a genuine
@@ -719,7 +827,7 @@ const GAP_SUGGESTIONS = [
   { keywords: ["dbs", "background check", "police check", "criminal record check"], label: "DBS / background check", advice: "Might have an old one, but treat it as unconfirmed and expired — a fresh DBS check is quick and cheap to arrange if a role asks for a current one.", free: false },
   { keywords: ["security licence", "crowd control"], label: "Security/crowd control licence", advice: "A state-specific security licence (needed for some AU event/crowd roles) is a paid, multi-day course — only worth it if a specific role requires it.", free: false },
   { keywords: ["digital marketing", "social media manager", "seo", "google ads"], label: "Marketing / social media certification", advice: "Not a blocker given the real marketing experience already, but Google's free Digital Garage \"Fundamentals of Digital Marketing\" or HubSpot Academy's free courses are quick, recognised credentials worth adding.", free: true },
-  { keywords: ["dante", "networked audio"], label: "Dante certification", advice: "Free, self-paced, and directly relevant to the TreebySound background — Audinate's own Dante Level 1 certification takes about an afternoon.", free: true },
+  { keywords: ["dante", "networked audio"], label: "Dante certification", advice: "Free, self-paced, and directly relevant to the Bespoke Events background — Audinate's own Dante Level 1 certification takes about an afternoon.", free: true },
   { keywords: ["degree", "bachelor", "university degree", "bachelor's"], label: "Degree requirement", advice: "Covered — BA in Business (Music Management), BIMM Brighton.", free: null, autoSatisfied: true },
   { keywords: ["driving licence", "driver's licence"], label: "Driving licence", advice: "Covered — full UK driving licence already held.", free: null, autoSatisfied: true },
 ];
@@ -729,22 +837,22 @@ const SKILLS_BRIDGE = [
   { from: "Assistant Label Manager (Open Room Records) & Artist Manager/Promoter (Sleeping Dog Promotions), on top of a BIMM Music Management degree", to: "Actual industry-side experience in artist management, label operations and promotion — not just theory" },
   { from: "Supervisor at Foot Asylum, Shift Leader at Tesco all through your degree", to: "A repeated pattern of being handed team-leadership responsibility, in more than one workplace" },
   { from: "Marketing/promotions work across four different companies (Bang Bang Merch, Madway Brewery, Open Room Records, Sleeping Dog Promotions)", to: "Genuine, varied marketing experience most entry-level hires don't have" },
-  { from: "Loading, driving & delivering gear for events at TreebySound", to: "Logistics planning, route/scheduling, supply chain thinking" },
-  { from: "Setting up & packing down event sites at TreebySound", to: "Production management, site management, H&S awareness" },
-  { from: "Being the go-to support person across the business at TreebySound", to: "Operations management, project coordination, generalist management track" },
+  { from: "Loading, driving & delivering gear for events at Bespoke Events", to: "Logistics planning, route/scheduling, supply chain thinking" },
+  { from: "Setting up & packing down event sites at Bespoke Events", to: "Production management, site management, H&S awareness" },
+  { from: "Being the go-to support person across the business at Bespoke Events", to: "Operations management, project coordination, generalist management track" },
   { from: "Seeing sound, procurement, events & delivery all from the inside", to: "Whole-business fluency most people take a decade to get" },
   { from: "Working directly under an owner-operator (Dave)", to: "Front-row seat on how a small business is actually run day to day" },
 ];
 
 const CAREER_PATHS = [
-  { icon: "🎪", category: "music", title: "Event Production & Operations Manager", tagline: "The direct next step up from where you already stand.", why: "You're already doing the on-the-ground work — this is the same world, just with more planning, budget and people responsibility layered on top. Between the BIMM degree, the label/promotions roles at Open Room Records and Sleeping Dog Promotions, and effectively running a bar solo at Cheeky Clucker, the operational and industry grounding is already there — this path is about formalising it, not starting it.", from: "Currently: hands-on support role at TreebySound, plus a BIMM degree and hands-on solo leadership from Cheeky Clucker.", steps: ["Start owning one small event end-to-end (budget, run sheet, crew) as a stretch project at TreebySound", "Learn the commercial side: quoting, supplier costs, client comms", "Pick up a recognised events/production short course or certificate", "Build a portfolio of events you've run or co-run", "Aim for Production Manager / Operations Manager title within 2–4 years"], timeframe: "2–4 years", portable: "Event production is one of the most transferable career tracks going — every city in Australia, NZ and Canada runs venues and festivals that need crew and coordinators, so this can genuinely be built up across all three countries, then walked straight back into a UK production role with a fatter portfolio than most people your age." },
-  { icon: "🎤", category: "music", title: "Live Events, Festivals & Touring Production", tagline: "Bigger stages, bigger crews, more travel built into the job itself.", why: "This is arguably the closest fit on paper: a completed Music Management degree from BIMM plus real promotions/label experience is formal and practical grounding in exactly this industry — not just adjacent skills. Add the sound/event exposure at TreebySound and it scales up naturally to festivals, tours and large-scale production, which also travels a lot.", from: "Currently: sound & event setup exposure through TreebySound, plus a BIMM Music Management degree and real promotions experience.", steps: ["Get on the crew list for a few festivals or larger shows as casual/freelance crew — in Australia, Sidekicker, Event-Crew Australia and ESA Group are real places to register", "Specialise in one lane first — stage management, technical production or logistics", "Network hard — this industry runs on who's reliable and who you know", "Keep a running portfolio of every show worked, wherever in the world it happens", "Long-term: touring production manager or festival site manager"], timeframe: "3–5 years", portable: "Festival and touring circuits exist in every country on the route — Melbourne, Auckland/Wellington and Toronto all have their own serious festival seasons — and crew experience from any of them reads as international credibility back in the UK, not a gap year." },
-  { icon: "🎙️", category: "music", title: "Artist Management, Label & Music Promotions", tagline: "Not a stretch — literally what you already did.", why: "This isn't hypothetical: you were Head of Marketing & Assistant Label Manager at Open Room Records and Artist Manager & Promoter at Sleeping Dog Promotions, on top of the BIMM degree itself. It's paused, not abandoned — and the travel years are a natural excuse to widen the network before picking it back up seriously.", from: "Currently: real prior experience in label management, artist management and promotions.", steps: ["Keep in touch with contacts from Open Room Records and Sleeping Dog Promotions — this industry runs on relationships that don't need to go cold just because you're travelling", "Use the travel years to build a wider network — every city in NZ/AU/Canada has its own local labels, promoters and venues worth knowing", "Consider freelance artist promotion or social media/marketing work that can be done remotely, even while travelling", "Long-term: return to label/artist management, or use the broadened network to launch something independent"], timeframe: "Can restart any time — the experience doesn't expire", portable: "This is the one that works everywhere at once, including while you're not physically doing it: stay a member of the Music Managers Forum (musicmanagersforum.co.uk) and the Association of Independent Music (aim.org.uk) throughout the trip — both run online events, directories and member communities you can dip into from any country — so the UK network is still there, warmer than when you left, the day you're ready to pick this back up." },
+  { icon: "🎪", category: "music", title: "Event Production & Operations Manager", tagline: "The direct next step up from where you already stand.", why: "You're already doing the on-the-ground work — this is the same world, just with more planning, budget and people responsibility layered on top. Between the BIMM degree, the label/promotions roles at Open Room Records and Sleeping Dog Promotions, and effectively running a bar solo at Cheeky Clucker, the operational and industry grounding is already there — this path is about formalising it, not starting it.", from: "Currently: hands-on support role at Bespoke Events, plus a BIMM degree and hands-on solo leadership from Cheeky Clucker.", steps: ["Start owning one small event end-to-end (budget, run sheet, crew) as a stretch project at Bespoke Events", "Learn the commercial side: quoting, supplier costs, client comms", "Pick up a recognised events/production short course or certificate", "Build a portfolio of events you've run or co-run", "Aim for Production Manager / Operations Manager title within 2–4 years"], timeframe: "2–4 years", portable: "Event production is one of the most transferable career tracks going — every city in Australia, NZ and Canada runs venues and festivals that need crew and coordinators, so this can genuinely be built up across all three countries, then walked straight back into a UK production role with a fatter portfolio than most people your age." },
+  { icon: "🎤", category: "music", title: "Live Events, Festivals & Touring Production", tagline: "Bigger stages, bigger crews, more travel built into the job itself.", why: "This is arguably the closest fit on paper: a completed Music Management degree from BIMM plus real promotions/label experience is formal and practical grounding in exactly this industry — not just adjacent skills. Add the sound/event exposure at Bespoke Events and it scales up naturally to festivals, tours and large-scale production, which also travels a lot.", from: "Currently: sound & event setup exposure through Bespoke Events, plus a BIMM Music Management degree and real promotions experience.", steps: ["Get on the crew list for a few festivals or larger shows as casual/freelance crew — in Australia, Sidekicker, Event-Crew Australia and ESA Group are real places to register", "Specialise in one lane first — stage management, technical production or logistics", "Network hard — this industry runs on who's reliable and who you know", "Keep a running portfolio of every show worked, wherever in the world it happens", "Long-term: touring production manager or festival site manager"], timeframe: "3–5 years", portable: "Festival and touring circuits exist in every country on the route — Melbourne, Auckland/Wellington and Toronto all have their own serious festival seasons — and crew experience from any of them reads as international credibility back in the UK, not a gap year." },
+  { icon: "🎙️", category: "music", title: "Artist Management, Label & Music Promotions", tagline: "Not a stretch — literally what you already did.", why: "This isn't hypothetical: you were Head of Marketing & Assistant Label Manager at Open Room Records and Artist Manager & Promoter at Sleeping Dog Promotions, on top of the BIMM degree itself. It's paused, not abandoned. The honest catch is that the relationships are paused too — nothing from either role has been a live contact since around 2022 — so this path starts with reopening those before it starts with anything else, and the travel years are then the chance to build a wider network than you had the first time.", from: "Currently: real prior experience in label management, artist management and promotions.", steps: ["Reopen the Open Room Records and Sleeping Dog Promotions relationships before doing anything else — they've been quiet since about 2022, but a former colleague getting back in touch is an ordinary thing to receive, not an imposition (the People tab has who to start with and roughly what to say)", "Use the travel years to build a wider network — every city in NZ/AU/Canada has its own local labels, promoters and venues worth knowing", "Consider freelance artist promotion or social media/marketing work that can be done remotely, even while travelling", "Long-term: return to label/artist management, or use the broadened network to launch something independent"], timeframe: "Can restart any time — the experience doesn't expire", portable: "This is the one that works everywhere at once, including while you're not physically doing it: join the Music Managers Forum (musicmanagersforum.co.uk) and the Association of Independent Music (aim.org.uk) and stay in throughout the trip — both run online events, directories and member communities you can dip into from any country. Starting from a standing start that matters more, not less: it's how you arrive back in the UK with a network you didn't have when you left, rather than hoping four-year-old contacts remember you." },
   { icon: "🚚", category: "corporate", title: "Logistics & Supply Chain Coordinator", tagline: "Turns delivery-driving into a proper career track.", why: "Already planning routes, loading gear and hitting deadlines — that's the core of logistics coordination, and it's a stable career that exists everywhere.", from: "Currently: deliveries & equipment handling.", steps: ["Get familiar with basic inventory/warehouse software (even free tools)", "Look at a logistics or supply chain fundamentals course", "Target a coordinator role at a hire company, event supplier or freight business", "Build toward warehouse/ops manager or dispatch supervisor"], timeframe: "1–3 years", portable: "Logistics is about as portable as a career gets — warehouses, hire companies and freight operators exist in every city you'll pass through, and the skills map straight back onto UK logistics roles with zero retraining needed." },
-  { icon: "🏛️", category: "travel", title: "Venue & Hospitality Management", tagline: "Run the building instead of the one-off event.", why: "You've already done a version of this, not just adjacent work — leading the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more, plus a supervisor stint at Foot Asylum before that. This path is a straightforward scale-up of something already proven twice over, with steadier, more local hours than touring once the travel years are done.", from: "Currently: events + general operations support at TreebySound, plus real solo bar leadership at Cheeky Clucker and retail supervision at Foot Asylum.", steps: ["Pick up shifts in a venue, bar or hospitality management setting", "Learn rostering, licensing basics and front-of-house operations", "Move into assistant venue manager, then venue/general manager"], timeframe: "2–5 years", portable: "Bars, restaurants and venues need duty managers everywhere — this is the steadiest possible income while travelling and it converts cleanly to a UK hospitality management role on return, no gap in the CV to explain." },
+  { icon: "🏛️", category: "travel", title: "Venue & Hospitality Management", tagline: "Run the building instead of the one-off event.", why: "You've already done a version of this, not just adjacent work — leading the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more, plus a supervisor stint at Foot Asylum before that. This path is a straightforward scale-up of something already proven twice over, with steadier, more local hours than touring once the travel years are done.", from: "Currently: events + general operations support at Bespoke Events, plus real solo bar leadership at Cheeky Clucker and retail supervision at Foot Asylum.", steps: ["Pick up shifts in a venue, bar or hospitality management setting", "Learn rostering, licensing basics and front-of-house operations", "Move into assistant venue manager, then venue/general manager"], timeframe: "2–5 years", portable: "Bars, restaurants and venues need duty managers everywhere — this is the steadiest possible income while travelling and it converts cleanly to a UK hospitality management role on return, no gap in the CV to explain." },
   { icon: "🧭", category: "travel", title: "Travel & Adventure Tourism Operations", tagline: "Turn the travel years into the actual career, not just a break from it.", why: "If the 5-year trip lights you up, this path takes everything learned doing excursions/tours and turns it into running tourism operations rather than just guiding them.", from: "Currently: interest in excursions, adventure & meeting people.", steps: ["Use travel years to work front-line in tours/excursions across NZ, AU & Canada — in Queenstown specifically, AJ Hackett Bungy and Skyline are real, well-regarded operators worth applying to directly", "Note what each operator does well and badly — this becomes instinct for running one", "Pick up a first-aid, guiding or tourism qualification relevant to the region", "Move into lead guide, then operations/booking coordinator for a tour company", "Long-term: operations manager or a small tour outfit of your own"], timeframe: "Runs alongside the travel plan", portable: "The honest trade-off on this one: it's brilliant while you're actually in NZ/AU/Canada, but UK adventure tourism is a much smaller market — so treat it as the strongest path to enjoy the trip itself, and lean on Event Production or Venue Management as the one that carries back to the UK afterwards." },
   { icon: "✈️", category: "travel", title: "Aviation — Cabin Crew → Ground Operations", tagline: "Start as flight attendant, land in airline operations — worth checking eligibility before counting on it.", why: "Flight attendant work is a genuine gateway into aviation, not just a travel job — airlines promote operationally-minded crew into ground ops, crew scheduling and base management. But this one needs a reality check first: Qantas explicitly requires Australian/NZ permanent residency (or UK right-to-work) for cabin crew, so a standard working-holiday visa likely doesn't qualify at the major carriers. Confirm directly with each airline before treating this as part of the plan.", from: "Currently: interest in flight attendant work as a travel job.", steps: ["Check current visa eligibility directly on careers.qantas.com, careers.jetstar.com and any Canadian carrier's careers page — don't assume a WHV is enough", "If AU/NZ/Canada doesn't work out on a working holiday visa, consider UK-based cabin crew (easyJet, Jet2, British Airways) as the entry point instead, before or after the travel years", "If it does check out somewhere, treat it as a career entry, not a stopgap — track performance & training", "After 2–3 years, look sideways into crew scheduling, base ops or training roles", "Long-term: ground operations manager or airline base management"], timeframe: "3–6 years", portable: "Aviation careers are genuinely global — cabin crew experience anywhere transfers to any airline's ground ops or a UK-based carrier afterwards, visa eligibility permitting." },
-  { icon: "🚀", category: "music", title: "Start Your Own Thing", tagline: "The long shot with the best ceiling — running an event/hire, label, or promotions business.", why: "Working across every part of TreebySound (delivery, sound, procurement, events, ops) is exactly the broad exposure someone needs before starting their own company — and it's backed by a Music Management degree that covers the business side of this industry specifically, plus direct proof you can actually run something yourself: leading a bar solo at Cheeky Clucker, and real label/artist-management roles at Open Room Records and Sleeping Dog Promotions.", from: "Currently: full-spectrum exposure to how a small events business runs, a Music Management degree, and hands-on experience running a bar and a record label solo.", steps: ["Keep absorbing the commercial side at TreebySound — ask Dave questions, don't just execute", "Save & build a client/supplier network over the travel years", "Test a small side venture (mobile bar, event styling, gear hire) at low stakes", "Long-term: launch once there's capital, contacts and confidence"], timeframe: "5–10 years", portable: "Whatever you test abroad — a mobile bar shift, styling one event, helping run a small local label — becomes proof of concept either way: worth continuing where you are, or worth bringing home and starting properly in the UK with contacts already made in three countries." },
+  { icon: "🚀", category: "music", title: "Start Your Own Thing", tagline: "The long shot with the best ceiling — running an event/hire, label, or promotions business.", why: "Working across every part of Bespoke Events (delivery, sound, procurement, events, ops) is exactly the broad exposure someone needs before starting their own company — and it's backed by a Music Management degree that covers the business side of this industry specifically, plus direct proof you can actually run something yourself: leading a bar solo at Cheeky Clucker, and real label/artist-management roles at Open Room Records and Sleeping Dog Promotions.", from: "Currently: full-spectrum exposure to how a small events business runs, a Music Management degree, and hands-on experience running a bar and a record label solo.", steps: ["Keep absorbing the commercial side at Bespoke Events — ask Dave questions, don't just execute", "Save & build a client/supplier network over the travel years", "Test a small side venture (mobile bar, event styling, gear hire) at low stakes", "Long-term: launch once there's capital, contacts and confidence"], timeframe: "5–10 years", portable: "Whatever you test abroad — a mobile bar shift, styling one event, helping run a small local label — becomes proof of concept either way: worth continuing where you are, or worth bringing home and starting properly in the UK with contacts already made in three countries." },
 
   /* Wider, generalist corporate options — deliberately not restricted to the
      music/events world. Each one is still grounded in something real from
@@ -754,9 +862,9 @@ const CAREER_PATHS = [
      corporate track (project management, procurement, operations) is a
      genuinely realistic option worth seeing next to the industry-specific
      ones, not because it's assumed to be the right fit. */
-  { icon: "📊", category: "corporate", title: "Project Coordinator → Project Manager", tagline: "Corporate project delivery — the same coordination work, salaried and structured.", why: "Owning an event end-to-end at TreebySound (budget, run sheet, crew, deadline) and coordinating releases at Open Room Records is, functionally, project coordination already — just without the job title or the corporate tools. This is one of the fastest routes into a stable, well-paid office career without years of retraining, and it's a genuinely huge job market in every country on the route.", from: "Currently: hands-on coordination of events, budgets, crews and deadlines at TreebySound, plus release/promo coordination at Open Room Records and Sleeping Dog Promotions.", steps: ["Get comfortable with a mainstream project tool (Trello, Asana or MS Project — free tiers exist for all three)", "Take the APM Project Fundamentals Qualification (PFQ) — a genuine entry-level UK qualification, no prior experience needed, roughly 34 hours of self-study and a single multiple-choice exam", "Target Project Coordinator / Project Support Officer roles — these rarely ask for a specific degree, just organisation and follow-through", "Once in, work toward PRINCE2 Foundation or an Agile/Scrum certificate, both widely asked for", "Aim for full Project Manager within 3–5 years"], timeframe: "2–4 years", portable: "Project coordination is asked for in every industry, in every country on this route, and PRINCE2/Agile/APM qualifications are recognised the same way in the UK, Australia, NZ and Canada — arguably the single most portable corporate option here." },
-  { icon: "🧾", category: "corporate", title: "Procurement & Supplier Coordinator", tagline: "Corporate purchasing — cost negotiation and supplier relationships, already half-learned on the job.", why: "Sourcing gear, negotiating supplier costs and managing deliveries at TreebySound is the practical side of procurement — companies pay well for people who can do this formally, and it's a career track most people fall into sideways rather than study for from day one.", from: "Currently: supplier and cost exposure through TreebySound's deliveries and event logistics.", steps: ["Look at CIPS (Chartered Institute of Procurement & Supply) Level 2 or 3 Certificate — the standard UK entry qualification, needs no prior experience, roughly £1,000–1,500 all-in for tuition, exams and membership", "Target Procurement Assistant / Junior Buyer roles — a specific degree is rarely required at this level", "Events/AV procurement specifically is a niche worth owning, given the background — few candidates can speak to it directly", "Build toward Procurement Coordinator or Buyer within 2–3 years"], timeframe: "2–3 years", portable: "Every company everywhere buys things — procurement roles and the CIPS qualification are recognised identically in the UK, Australia, NZ and Canada, and it converts straight back into a UK procurement role afterwards." },
-  { icon: "🗂️", category: "corporate", title: "Business Operations / Admin Coordinator", tagline: "The generalist desk-job version of what's already happening day to day.", why: "Being the go-to support person across the whole of TreebySound — a bit of everything, understanding how all the parts connect — is functionally business operations already. This path just moves that same generalist role from a small events business into any office, and it's one of the lowest-barrier-to-entry corporate jobs going.", from: "Currently: general operations support across the whole of TreebySound's business.", steps: ["Get comfortable with core office tools (Excel/Google Sheets, basic reporting/dashboards)", "Target Operations Assistant / Business Support Administrator roles — genuinely open to varied backgrounds, not degree-gated", "Use the TreebySound generalist experience directly — 'saw every part of a small business run' is a strong, honest pitch", "Build toward Operations Coordinator, then Executive Assistant or Operations Manager"], timeframe: "1–2 years", portable: "The safest, fastest-to-land corporate option on this list — every office everywhere needs this role, and it converts straight back into a UK office job with zero retraining." },
+  { icon: "📊", category: "corporate", title: "Project Coordinator → Project Manager", tagline: "Corporate project delivery — the same coordination work, salaried and structured.", why: "Owning an event end-to-end at Bespoke Events (budget, run sheet, crew, deadline) and coordinating releases at Open Room Records is, functionally, project coordination already — just without the job title or the corporate tools. This is one of the fastest routes into a stable, well-paid office career without years of retraining, and it's a genuinely huge job market in every country on the route.", from: "Currently: hands-on coordination of events, budgets, crews and deadlines at Bespoke Events, plus release/promo coordination at Open Room Records and Sleeping Dog Promotions.", steps: ["Get comfortable with a mainstream project tool (Trello, Asana or MS Project — free tiers exist for all three)", "Take the APM Project Fundamentals Qualification (PFQ) — a genuine entry-level UK qualification, no prior experience needed, roughly 34 hours of self-study and a single multiple-choice exam", "Target Project Coordinator / Project Support Officer roles — these rarely ask for a specific degree, just organisation and follow-through", "Once in, work toward PRINCE2 Foundation or an Agile/Scrum certificate, both widely asked for", "Aim for full Project Manager within 3–5 years"], timeframe: "2–4 years", portable: "Project coordination is asked for in every industry, in every country on this route, and PRINCE2/Agile/APM qualifications are recognised the same way in the UK, Australia, NZ and Canada — arguably the single most portable corporate option here." },
+  { icon: "🧾", category: "corporate", title: "Procurement & Supplier Coordinator", tagline: "Corporate purchasing — cost negotiation and supplier relationships, already half-learned on the job.", why: "Sourcing gear, negotiating supplier costs and managing deliveries at Bespoke Events is the practical side of procurement — companies pay well for people who can do this formally, and it's a career track most people fall into sideways rather than study for from day one.", from: "Currently: supplier and cost exposure through Bespoke Events' deliveries and event logistics.", steps: ["Look at CIPS (Chartered Institute of Procurement & Supply) Level 2 or 3 Certificate — the standard UK entry qualification, needs no prior experience, roughly £1,000–1,500 all-in for tuition, exams and membership", "Target Procurement Assistant / Junior Buyer roles — a specific degree is rarely required at this level", "Events/AV procurement specifically is a niche worth owning, given the background — few candidates can speak to it directly", "Build toward Procurement Coordinator or Buyer within 2–3 years"], timeframe: "2–3 years", portable: "Every company everywhere buys things — procurement roles and the CIPS qualification are recognised identically in the UK, Australia, NZ and Canada, and it converts straight back into a UK procurement role afterwards." },
+  { icon: "🗂️", category: "corporate", title: "Business Operations / Admin Coordinator", tagline: "The generalist desk-job version of what's already happening day to day.", why: "Being the go-to support person across the whole of Bespoke Events — a bit of everything, understanding how all the parts connect — is functionally business operations already. This path just moves that same generalist role from a small events business into any office, and it's one of the lowest-barrier-to-entry corporate jobs going.", from: "Currently: general operations support across the whole of Bespoke Events' business.", steps: ["Get comfortable with core office tools (Excel/Google Sheets, basic reporting/dashboards)", "Target Operations Assistant / Business Support Administrator roles — genuinely open to varied backgrounds, not degree-gated", "Use the Bespoke Events generalist experience directly — 'saw every part of a small business run' is a strong, honest pitch", "Build toward Operations Coordinator, then Executive Assistant or Operations Manager"], timeframe: "1–2 years", portable: "The safest, fastest-to-land corporate option on this list — every office everywhere needs this role, and it converts straight back into a UK office job with zero retraining." },
   { icon: "🤝", category: "corporate", title: "Recruitment Consultant", tagline: "Sales-driven and people-first — reads people fast, trains on the job, pays commission on top of base almost everywhere.", why: "Years of reading people fast behind a bar, building relationships through promotions and artist management, and hitting targets in retail add up to exactly what recruitment agencies actually hire for — personality and drive over qualifications. Agencies train from scratch, so this needs the least formal preparation of anything on this list.", from: "Currently: people-facing, relationship-building, target-driven background across hospitality, retail and music promotions.", steps: ["Apply directly to major agencies — Hays, Reed and Michael Page all run trainee/graduate recruitment consultant schemes with paid on-the-job training and no experience required", "Ask to specialise somewhere the background actually helps — hospitality/events or music-industry recruitment would be a genuinely rare, valuable niche", "Build a track record of placements/billings", "Move up to senior consultant, then team lead"], timeframe: "1–3 years", portable: "Recruitment agencies operate the same way in the UK, Australia, NZ and Canada — one of the easiest corporate sectors to walk straight into in any of the four countries, no retraining needed either way." },
   { icon: "📣", category: "corporate", title: "Marketing Coordinator (any industry)", tagline: "The same marketing instincts, applied beyond music — a wider net without leaving the skillset behind.", why: "Four real companies' worth of marketing and promotions experience (Bang Bang Merch, Madway Brewery, Open Room Records, Sleeping Dog Promotions), backed by a business degree, translates directly to any company's in-house marketing team — not just music ones. Worth keeping open as an option even if the music-industry path stays the first choice.", from: "Currently: real marketing/promotions experience across four companies, plus a BA in Business (Music Management).", steps: ["Pull together a short portfolio of actual campaigns run, screenshots and outcomes where known", "Target Marketing Assistant / Marketing Coordinator roles in any sector — retail, hospitality, tech, whatever's hiring", "Add a free Google Digital Garage or HubSpot Academy certificate to round out the CV", "Specialise once inside a company — social, events marketing or content are all natural next steps"], timeframe: "1–3 years", portable: "Marketing coordinator roles exist in every industry, in every country on the route, and a portfolio of real campaigns travels well regardless of what product it was originally for." },
 ];
@@ -786,14 +894,143 @@ const AUSTRALIA_EXT_PHASE = { country: "australia", title: "Australia — second
 const CONSOLIDATE_PHASE = { country: null, title: "Consolidate & decide", focus: "Use whatever time is left to either keep travelling on the strongest thread, or bring everything back into a real step up in the events/logistics/tourism career track.", careerLink: "The point to pick a lane from the widened Career Compass and start applying the whole Experience Log directly to it — see the section below on what that actually looks like.", monthsKey: "consolidate" };
 
 const CASUAL_JOBS = [
-  { icon: "🍹", title: "Bar & Hospitality Work", blurb: "The easiest way to fund travel almost anywhere — flexible hours, social, and tips.", fit: "Not a first-time job for you — you've led the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more. Don't undersell that: aim straight for supervisor/duty-manager-track roles, not first-rung barback work.", howTo: "In Australia and NZ, walking in with a printed CV to bars in tourist/backpacker areas (Bondi, Surry Hills, Queenstown, Wanaka) still works and is often faster than applying online.", whereTo: "Australia: SEEK, Backpacker Job Board (backpackerjobboard.com.au), and the Sidekicker app — a gig-shift marketplace that's quick to onboard and a good way to start earning within days of landing. New Zealand: SEEK NZ, Backpacker Job Board NZ, BackpackerBoard.co.nz. Canada: Backpacker Job Board Canada, Job Bank Canada, plus direct walk-ins in Whistler/Vancouver/Toronto.", countries: ["australia", "newzealand", "canada"], visaAngle: "Standard casual work — counts toward general working-holiday hours, not 'specified work'.", certNote: "Australia: RSA certificate — same-day online courses exist for around AUD 25–40 (e.g. onlinersa.com.au, galaxytraining.com.au); some states want a short in-person top-up too, so check the state you land in. New Zealand: no personal certificate needed to pour drinks — only the LCQ (Licence Controller Qualification) if you later step up to running a shift as duty manager, which needs 6 months of NZ hospitality experience first — realistic given your bar background. Canada (BC/Whistler): Serving It Right certificate, ~CAD 40, valid 5 years, required for all servers and managers.", drivingHelps: false },
-  { icon: "🧗", title: "Excursions & Tour Guiding", blurb: "Leading day trips, adventure activities or sightseeing tours — social, active, outdoors.", fit: "Directly feeds the Adventure Tourism Operations career path.", howTo: "Local tour operators, hostels and adventure companies hire seasonally. A first-aid certificate helps a lot, and a driving licence unlocks more roles (minibus/shuttle driving, remote-site guiding).", whereTo: "New Zealand (Queenstown especially): AJ Hackett Bungy NZ (bungy.co.nz/careers — pays above minimum wage for entry roles), Skyline Queenstown, and adventuretourismjobs.co.nz which lists roles across most NZ operators in one place. Also worth checking SEEK NZ's adventure jobs category directly. Australia/Canada: fewer dedicated boards — go direct to operator websites and Backpacker Job Board's events/promotions category.", countries: ["newzealand", "australia", "canada"], visaAngle: "Regional excursion work in Australia can sometimes count toward specified work — verify per role/region.", certNote: "", drivingHelps: true },
-  { icon: "✈️", title: "Flight Attendant / Cabin Crew", blurb: "Travel built into the job, plus a genuine airline career on-ramp.", fit: "Matches the interest in flight attendant work — but check this one before counting on it, more than any other job on this list.", howTo: "Confirmed directly with Qantas: mainline cabin crew requires Australian/NZ permanent residency or (for UK applicants) the right to live and work in the UK — a standard working-holiday visa does not appear to qualify on its own. Budget/regional carriers (Jetstar, and Canadian carriers) may have different rules, but this needs confirming directly with each airline's recruitment page before it's treated as part of the plan.", whereTo: "Check current eligibility directly: careers.qantas.com, careers.jetstar.com, and each airline's own careers site — don't rely on general advice here, the rules are airline-specific and change. Worth also considering UK-based cabin crew roles (easyJet, Jet2, British Airways etc.) as a route into the industry before or after the travel years, since right-to-work isn't a barrier there.", countries: ["australia", "newzealand", "canada"], visaAngle: "Likely needs PR or a different visa status at the major carriers — treat this as \"worth investigating\", not a reliable part of the funding plan, until confirmed.", certNote: "", drivingHelps: false },
-  { icon: "🎪", title: "Event & Festival Crew", blurb: "Bump-in/bump-out, stagehand, box office, bar or runner work at concerts and festivals.", fit: "Directly on-theme — builds on the live gigs you already booked and ran at university during your Music Management degree, plus the events work at TreebySound, just abroad.", howTo: "Sign up with casual crewing agencies before you need the work, not after — most run an onboarding/registration step that's worth doing in your first week.", whereTo: "Australia: Sidekicker (fast app-based onboarding, good early-days income), Event-Crew Australia (eventcrew.au), Event Staff Australia, and ESA Group (theesagroup.com.au — runs casual recruiting over Zoom, worth registering with directly). New Zealand/Canada: fewer dedicated agencies — follow venues and festival promoters directly on socials for casual call-outs, and check Backpacker Job Board's local events category.", countries: ["australia", "newzealand", "canada"], visaAngle: "Great CV-builder for Live Events & Festival Production — keep a running list of every show worked.", certNote: "", drivingHelps: false },
-  { icon: "🎿", title: "Ski Resort & Adventure Tourism", blurb: "A full winter season working lift ops, hospitality or guiding at a ski town.", fit: "High energy, very social, and stacks hospitality + outdoor experience in one go.", howTo: "Resort hiring runs on fixed seasonal windows — missing one means waiting a full year, so timing the application matters more here than almost anywhere else on this list.", whereTo: "New Zealand (Queenstown/Wanaka): Cardrona & Treble Cone (cardrona-treblecone.com/employment) and NZSki/other resorts recruit general mountain roles roughly late March–April, instructor roles from February — apply directly on each resort's site, or browse SnowSeasonCentral / BackpackerBoard NZ's ski-season listings. Canada (Whistler/Banff/Jasper/Lake Louise): Whistler Blackcomb's own careers site, plus in-person hiring events (recent ones ran mid-June for the Nov/Dec start) bookable through the Backpacker Job Board Canada Job Hub — video interviews are common if you can't attend in person. Australia (Perisher etc.): apply directly via the resort's careers page.", countries: ["newzealand", "canada", "australia"], visaAngle: "Seasonal accommodation is often bundled with the job — budget-friendly for a working holiday.", certNote: "", drivingHelps: true },
-  { icon: "🏕️", title: "Hostel & Work Exchange", blurb: "Reception, cleaning or bar work at a hostel in exchange for free accommodation.", fit: "Cheap way to stretch savings between paid seasonal jobs, fast way to meet other travellers.", howTo: "Work-exchange platforms, or just ask directly at hostels in smaller towns — this one's genuinely often first-come, first-served if you turn up in person and ask.", whereTo: "Backpacker-focused hostel chains with lots of NZ/AU locations (Nomads, Base, YHA) are a reliable place to start since they hire this way constantly. Work-exchange platforms like Workaway also list options across all three countries.", countries: ["australia", "newzealand", "canada"], visaAngle: "Useful as a bridge between seasons rather than a main income source.", certNote: "", drivingHelps: false },
-  { icon: "🚢", title: "Cruise Ship Crew", blurb: "Hospitality, entertainment or events roles on cruise lines that circuit the Pacific.", fit: "Another genuine hospitality/events career thread, with contracts that fund travel between them.", howTo: "Apply directly to cruise lines or crew agencies; contracts are usually 4–8 months on.", whereTo: "Apply directly on cruise line career pages rather than third-party agencies where possible — fewer fees, clearer process.", countries: ["australia", "newzealand", "canada"], visaAngle: "Sits outside the standard working-holiday timeline — an alternative branch, not a filler.", certNote: "", drivingHelps: false },
-  { icon: "🍇", title: "Farm & Harvest Work", blurb: "Fruit picking, packing or general farm work — physical, seasonal.", fit: "Not the most social option, but reliable, and useful for nationalities that still need specified work for an AU 2nd year.", howTo: "If this ever becomes relevant, go through the official channel first, not a random hostel noticeboard — it's free, government-run, and the jobs on it are pre-verified as visa-eligible.", whereTo: "Workforce Australia's Harvest Trail (workforceaustralia.gov.au — search \"Harvest Trail\") is the official government job-matching site for exactly this. Backpacker Job Board's harvest trail page is a solid second source.", countries: ["australia"], visaAngle: "UK passport holders don't need this for a 2nd/3rd Australian year any more — it's optional for you, not required.", certNote: "", drivingHelps: true },
+  { icon: "🍹", title: "Bar & Hospitality Work", links: [{ name: "Seek (AU)", url: "https://www.seek.com.au" }, { name: "Seek NZ", url: "https://www.seek.co.nz" }, { name: "Backpacker Job Board AU", url: "https://www.backpackerjobboard.com.au" }, { name: "BackpackerBoard NZ", url: "https://www.backpackerboard.co.nz" }, { name: "Sidekicker", url: "https://www.sidekicker.com" }, { name: "Job Bank Canada", url: "https://www.jobbank.gc.ca" }],  blurb: "The easiest way to fund travel almost anywhere — flexible hours, social, and tips.", fit: "Not a first-time job for you — you've led the bar on its own floor at Cheeky Clucker, regularly as supervisor and often fully solo including closing, for a year or more. Don't undersell that: aim straight for supervisor/duty-manager-track roles, not first-rung barback work.", howTo: "In Australia and NZ, walking in with a printed CV to bars in tourist/backpacker areas (Bondi, Surry Hills, Queenstown, Wanaka) still works and is often faster than applying online.", whereTo: "Australia: SEEK, Backpacker Job Board (backpackerjobboard.com.au), and the Sidekicker app — a gig-shift marketplace that's quick to onboard and a good way to start earning within days of landing. New Zealand: SEEK NZ, Backpacker Job Board NZ, BackpackerBoard.co.nz. Canada: Backpacker Job Board Canada, Job Bank Canada, plus direct walk-ins in Whistler/Vancouver/Toronto.", countries: ["australia", "newzealand", "canada"], visaAngle: "Standard casual work — counts toward general working-holiday hours, not 'specified work'.", certNote: "Australia: RSA certificate — same-day online courses exist for around AUD 25–40 (e.g. onlinersa.com.au, galaxytraining.com.au); some states want a short in-person top-up too, so check the state you land in. New Zealand: no personal certificate needed to pour drinks — only the LCQ (Licence Controller Qualification) if you later step up to running a shift as duty manager, which needs 6 months of NZ hospitality experience first — realistic given your bar background. Canada (BC/Whistler): Serving It Right certificate, ~CAD 40, valid 5 years, required for all servers and managers.", drivingHelps: false },
+  { icon: "🧗", title: "Excursions & Tour Guiding", links: [{ name: "AJ Hackett Bungy NZ", url: "https://www.bungy.co.nz" }, { name: "Skyline Queenstown", url: "https://www.skyline.co.nz" }, { name: "Seek NZ", url: "https://www.seek.co.nz" }],  blurb: "Leading day trips, adventure activities or sightseeing tours — social, active, outdoors.", fit: "Directly feeds the Adventure Tourism Operations career path.", howTo: "Local tour operators, hostels and adventure companies hire seasonally. A first-aid certificate helps a lot, and a driving licence unlocks more roles (minibus/shuttle driving, remote-site guiding).", whereTo: "New Zealand (Queenstown especially): AJ Hackett Bungy NZ (bungy.co.nz/careers — pays above minimum wage for entry roles), Skyline Queenstown, and adventuretourismjobs.co.nz which lists roles across most NZ operators in one place. Also worth checking SEEK NZ's adventure jobs category directly. Australia/Canada: fewer dedicated boards — go direct to operator websites and Backpacker Job Board's events/promotions category.", countries: ["newzealand", "australia", "canada"], visaAngle: "Regional excursion work in Australia can sometimes count toward specified work — verify per role/region.", certNote: "", drivingHelps: true },
+  { icon: "✈️", title: "Flight Attendant / Cabin Crew", links: [{ name: "Qantas careers", url: "https://www.qantas.com/au/en/about-us/careers.html" }, { name: "Jetstar careers", url: "https://www.jetstar.com/au/en/careers" }, { name: "easyJet careers", url: "https://careers.easyjet.com" }, { name: "British Airways careers", url: "https://careers.ba.com" }],  blurb: "Travel built into the job, plus a genuine airline career on-ramp.", fit: "Matches the interest in flight attendant work — but check this one before counting on it, more than any other job on this list.", howTo: "Confirmed directly with Qantas: mainline cabin crew requires Australian/NZ permanent residency or (for UK applicants) the right to live and work in the UK — a standard working-holiday visa does not appear to qualify on its own. Budget/regional carriers (Jetstar, and Canadian carriers) may have different rules, but this needs confirming directly with each airline's recruitment page before it's treated as part of the plan.", whereTo: "Check current eligibility directly: careers.qantas.com, careers.jetstar.com, and each airline's own careers site — don't rely on general advice here, the rules are airline-specific and change. Worth also considering UK-based cabin crew roles (easyJet, Jet2, British Airways etc.) as a route into the industry before or after the travel years, since right-to-work isn't a barrier there.", countries: ["australia", "newzealand", "canada"], visaAngle: "Likely needs PR or a different visa status at the major carriers — treat this as \"worth investigating\", not a reliable part of the funding plan, until confirmed.", certNote: "", drivingHelps: false },
+  { icon: "🎪", title: "Event & Festival Crew", links: [{ name: "Sidekicker", url: "https://www.sidekicker.com" }, { name: "Backpacker Job Board AU", url: "https://www.backpackerjobboard.com.au" }, { name: "Instagram — follow venues & promoters", url: "https://www.instagram.com" }, { name: "Facebook Groups — “[city] event crew”", url: "https://www.facebook.com/groups/" }],  blurb: "Bump-in/bump-out, stagehand, box office, bar or runner work at concerts and festivals.", fit: "Directly on-theme — builds on the live gigs you already booked and ran at university during your Music Management degree, plus the events work at Bespoke Events, just abroad.", howTo: "Sign up with casual crewing agencies before you need the work, not after — most run an onboarding/registration step that's worth doing in your first week.", whereTo: "Australia: Sidekicker (fast app-based onboarding, good early-days income), Event-Crew Australia (eventcrew.au), Event Staff Australia, and ESA Group (theesagroup.com.au — runs casual recruiting over Zoom, worth registering with directly). New Zealand/Canada: fewer dedicated agencies — follow venues and festival promoters directly on socials for casual call-outs, and check Backpacker Job Board's local events category.", countries: ["australia", "newzealand", "canada"], visaAngle: "Great CV-builder for Live Events & Festival Production — keep a running list of every show worked.", certNote: "", drivingHelps: false },
+  { icon: "🎿", title: "Ski Resort & Adventure Tourism", links: [{ name: "Cardrona & Treble Cone", url: "https://www.cardrona.com" }, { name: "Whistler Blackcomb careers", url: "https://www.whistlerblackcomb.com" }, { name: "Perisher", url: "https://www.perisher.com.au" }, { name: "BackpackerBoard NZ", url: "https://www.backpackerboard.co.nz" }],  blurb: "A full winter season working lift ops, hospitality or guiding at a ski town.", fit: "High energy, very social, and stacks hospitality + outdoor experience in one go.", howTo: "Resort hiring runs on fixed seasonal windows — missing one means waiting a full year, so timing the application matters more here than almost anywhere else on this list.", whereTo: "New Zealand (Queenstown/Wanaka): Cardrona & Treble Cone (cardrona-treblecone.com/employment) and NZSki/other resorts recruit general mountain roles roughly late March–April, instructor roles from February — apply directly on each resort's site, or browse SnowSeasonCentral / BackpackerBoard NZ's ski-season listings. Canada (Whistler/Banff/Jasper/Lake Louise): Whistler Blackcomb's own careers site, plus in-person hiring events (recent ones ran mid-June for the Nov/Dec start) bookable through the Backpacker Job Board Canada Job Hub — video interviews are common if you can't attend in person. Australia (Perisher etc.): apply directly via the resort's careers page.", countries: ["newzealand", "canada", "australia"], visaAngle: "Seasonal accommodation is often bundled with the job — budget-friendly for a working holiday.", certNote: "", drivingHelps: true },
+  { icon: "🏕️", title: "Hostel & Work Exchange", links: [{ name: "Workaway", url: "https://www.workaway.info" }, { name: "YHA Australia", url: "https://www.yha.com.au" }, { name: "Facebook Groups — “[city] backpacker jobs”", url: "https://www.facebook.com/groups/" }],  blurb: "Reception, cleaning or bar work at a hostel in exchange for free accommodation.", fit: "Cheap way to stretch savings between paid seasonal jobs, fast way to meet other travellers.", howTo: "Work-exchange platforms, or just ask directly at hostels in smaller towns — this one's genuinely often first-come, first-served if you turn up in person and ask.", whereTo: "Backpacker-focused hostel chains with lots of NZ/AU locations (Nomads, Base, YHA) are a reliable place to start since they hire this way constantly. Work-exchange platforms like Workaway also list options across all three countries.", countries: ["australia", "newzealand", "canada"], visaAngle: "Useful as a bridge between seasons rather than a main income source.", certNote: "", drivingHelps: false },
+  { icon: "🚢", title: "Cruise Ship Crew", links: [{ name: "Search each cruise line's own careers page directly — the agency sites charge fees" }],  blurb: "Hospitality, entertainment or events roles on cruise lines that circuit the Pacific.", fit: "Another genuine hospitality/events career thread, with contracts that fund travel between them.", howTo: "Apply directly to cruise lines or crew agencies; contracts are usually 4–8 months on.", whereTo: "Apply directly on cruise line career pages rather than third-party agencies where possible — fewer fees, clearer process.", countries: ["australia", "newzealand", "canada"], visaAngle: "Sits outside the standard working-holiday timeline — an alternative branch, not a filler.", certNote: "", drivingHelps: false },
+  { icon: "🍇", title: "Farm & Harvest Work", links: [{ name: "Workforce Australia (Harvest Trail)", url: "https://www.workforceaustralia.gov.au" }, { name: "Backpacker Job Board AU", url: "https://www.backpackerjobboard.com.au" }],  blurb: "Fruit picking, packing or general farm work — physical, seasonal.", fit: "Not the most social option, but reliable, and useful for nationalities that still need specified work for an AU 2nd year.", howTo: "If this ever becomes relevant, go through the official channel first, not a random hostel noticeboard — it's free, government-run, and the jobs on it are pre-verified as visa-eligible.", whereTo: "Workforce Australia's Harvest Trail (workforceaustralia.gov.au — search \"Harvest Trail\") is the official government job-matching site for exactly this. Backpacker Job Board's harvest trail page is a solid second source.", countries: ["australia"], visaAngle: "UK passport holders don't need this for a 2nd/3rd Australian year any more — it's optional for you, not required.", certNote: "", drivingHelps: true },
+];
+
+/* ===================================== PEOPLE =====================================
+   The working assumption here is deliberately pessimistic and probably right:
+   nothing from Open Room Records, Sleeping Dog Promotions, Bang Bang Merch,
+   Madway Brewery, Foot Asylum or Tesco is a live relationship any more. Those
+   ended around 2022. What's actually live is Bespoke Events, because he works
+   there, and possibly Cheeky Clucker.
+
+   But "no network" and "a network nobody has touched in four years" are very
+   different starting points, and the app was previously wrong in both
+   directions — it assumed the contacts were warm, and the honest correction
+   is not to assume they're gone. Every name in EMPLOYMENT_HISTORY is a real
+   person who worked with him and would recognise him. That's dormant, not
+   dead, and reopening one is far cheaper than making a new one. */
+const CONTACT_TAGS = [
+  { key: "industry", label: "Industry", flag: "🎧" },
+  { key: "employer", label: "Employer / manager", flag: "🏢" },
+  { key: "recruiter", label: "Recruiter", flag: "🤝" },
+  { key: "traveller", label: "Met travelling", flag: "🌏" },
+  { key: "other", label: "Other", flag: "👤" },
+];
+/* A professional contact left alone for four months has gone quiet; left alone
+   for a year is a cold contact again. The nudge fires at the first, so it's a
+   prompt rather than a post-mortem. */
+const CONTACT_QUIET_DAYS = 120;
+
+/* Which past employers are worth treating as reachable, and how hard. Kept as
+   data because the honest answer differs per employer, and "message your old
+   contacts" as one instruction is exactly the useless advice this replaces. */
+const RECONNECT_TARGETS = [
+  { company: "Bespoke Events", who: "Dave", warmth: "live", note: "Current employer, so this one isn't networking, it's just asking. The single most valuable thing he can give you is a reference and an honest opinion on which of the Compass paths actually suits you — he's watched you work." },
+  { company: "Cheeky Clucker", who: "Whoever managed you", warmth: "recent", note: "Recent enough that someone there still remembers you, and hospitality turns over fast — so the useful move is getting a personal email or number for a specific manager now, while there's still someone in the building who knows your name." },
+  { company: "Open Room Records", who: "Whoever ran the label", warmth: "dormant", note: "The most valuable dormant contact you have: an actual label, and you were Head of Marketing and Assistant Label Manager, not an intern. Four years of silence feels enormous to you and is close to invisible to them." },
+  { company: "Sleeping Dog Promotions", who: "Whoever you promoted with", warmth: "dormant", note: "Promoters know other promoters, venues and bookers — one reopened relationship here is worth more than its own contact details. Small scene, long memories." },
+  { company: "Bang Bang Merch / Madway Brewery", who: "Whoever you reported to", warmth: "dormant", note: "Lower priority than the two above, but both are real marketing references and both are small enough that the person you worked for is probably still there." },
+  { company: "BIMM Brighton", who: "Course mates, not staff", warmth: "dormant", note: "The one most people forget. A 2022 Music Management cohort is now four years into the industry — they're not contacts to ask for favours, they're peers who are now inside labels, agencies and venues. Easiest possible reconnect, because catching up is the whole reason to message." },
+];
+
+/* LinkedIn sits upstream of the whole reconnect plan: the playbook says to
+   message six people on it, and every one of them will click the profile
+   before deciding whether to reply. Fixing it first is the cheapest thing on
+   this tab, and it's the difference between "someone I worked with, doing
+   well" and "someone I worked with, who seems to have gone quiet". */
+const LINKEDIN_CHECKS = [
+  { done: false, title: "A headline that isn't just your job title", body: "The default is whatever your current role is called, which for you says almost nothing. The headline is the line that follows your name everywhere on LinkedIn — in search results, in a connection request, on a comment — so it's the one bit of the profile most people will ever read. Use it to say what you do and what you're pointed at." },
+  { done: false, title: "A photo, and the banner behind it", body: "A profile with no photo reads as abandoned, which is exactly the wrong signal when you're reconnecting after four years. It doesn't need to be a studio shot — good light, plain background, you looking like yourself. The banner behind it is free space almost nobody uses: a photo from an event you worked does more than the default blue." },
+  { done: false, title: "An About section written in first person", body: "Three short paragraphs beats one long one: what you do now, what you've done before, what you're looking for. Recruiters read the first two lines before it truncates, so put the useful part at the top rather than building to it. There's a draft below to start from." },
+  { done: false, title: "Every role listed, with what you actually did", body: "The jobs from 2019–22 matter more than they feel like they do — Head of Marketing & Assistant Label Manager is a real title and it's invisible if it isn't on there. Two or three lines each on what you were responsible for, not a copy of the job description." },
+  { done: false, title: "Skills, because search runs on them", body: "Recruiters filter by skill keywords, so an empty Skills section makes you unfindable regardless of how good the rest is. Add the ones you'd actually claim: event operations, logistics, hospitality management, artist management, marketing, promotions, team leadership, stakeholder management." },
+  { done: false, title: "Open to work, set privately", body: "You can tell recruiters you're open without the green banner and without your employer seeing it — that's the \"Recruiters only\" option. Worth switching on well before you're actually ready to move, because it costs nothing and it makes you appear in searches you'd otherwise miss." },
+  { done: false, title: "A custom URL", body: "The default has a string of random characters on the end. Editing it to your name takes ten seconds and it's what goes on a CV, in an email signature, and in the message you send someone you haven't spoken to since 2022." },
+];
+
+function linkedinHeadline() {
+  const company = (profile.currentCompany || "").split(" (")[0];
+  return `Events & Operations${company ? ` at ${company}` : ""} · Music Management BA (BIMM) · Artist management, label & live events background`;
+}
+function linkedinAbout() {
+  const company = (profile.currentCompany || "").split(" (")[0];
+  const name = profile.name || "I";
+  return [
+    `Events and operations all-rounder${company ? `, currently at ${company}` : ""} — the person who handles deliveries in and outside normal hours, gets sites set up and packed down, and turns up wherever the event actually needs someone. I like the jobs where the plan changes on the day.`,
+    `Before this: a BA in Business (Music Management) from BIMM Brighton, alongside real industry roles rather than just the degree — Head of Marketing & Assistant Label Manager at Open Room Records, Artist Manager & Promoter at Sleeping Dog Promotions, and marketing at Bang Bang Merch and Madway Brewery. I also led the bar on its own floor at Cheeky Clucker, regularly as supervisor and often running it solo including closing, and held supervisor and shift-leader roles at Foot Asylum and Tesco.`,
+    `I'm planning an extended working-holiday run through Australia, New Zealand and Canada, and I'm interested in event production, operations and artist management work — here, there, or both. Always happy to hear from people working in live events and music.`,
+  ].join("\n\n");
+}
+
+const NETWORK_PLAYBOOK = [
+  {
+    icon: "💬",
+    title: "Reopening an old one beats making a new one",
+    body: "Four years of not speaking feels, from the inside, like the relationship is gone and getting in touch would be weird. From the other side it's an ordinary message from someone they remember. Nobody keeps a ledger of who owes whom a message. This is the cheapest network-building available to you and it's the one that feels hardest, which is why it's first.",
+    steps: [
+      "Find them on LinkedIn — that's what it's for, and a connection request from a former colleague needs no justification",
+      "Don't open with an ask. Open with the fact that you're getting back into it and wondered what they're up to now",
+      "Say what you're doing now, concretely — Bespoke Events, and that you're looking at going travelling — because a specific person is easier to help than a vague one",
+      "Ask nothing on the first message. If it goes well, the ask is the second conversation, not the first",
+      "Log them on this tab the moment you send it, whether or not they reply",
+    ],
+  },
+  {
+    icon: "✍️",
+    title: "The message, roughly",
+    body: "The reason most reconnects don't happen is not knowing what to type. So: “Hi [name] — it’s Rob, I worked with you at [company] back in 2021/22 doing [the thing]. Bit out of the blue, but I’ve been working at a live-audio and events company for a while now and I’m getting properly back into the events/music side, so I’m reconnecting with people I used to work with. Would be good to hear what you’re up to these days.” That’s it. No CV attached, no favour asked, no apology for the gap.",
+    steps: [],
+  },
+  {
+    icon: "🎪",
+    title: "Working next to people beats meeting them",
+    body: "For events and music specifically, the reliable way in as an outsider isn't an event where you introduce yourself — it's a shift. Crewing a festival puts you next to production managers, stage managers and promoters for three days, doing a job with them. That's a real relationship; a business card is not. This is also the one thing on this list you're already qualified for.",
+    steps: [
+      "Register with crewing agencies before you need the work — the same ones the Jobs tab names for Australia work the same way in the UK",
+      "Volunteer crew at a UK festival for one season before you go — Boomtown, which you already go to, runs volunteer crew",
+      "Every shift, get one name and one contact — that's the entire objective, on top of the pay",
+      "Log it here the same night, while you still remember which Sam it was",
+    ],
+  },
+  {
+    icon: "🏛️",
+    title: "Two organisations that will let you in the door",
+    body: "The Music Managers Forum (musicmanagersforum.co.uk) and the Association of Independent Music (aim.org.uk) both run member communities, directories and online events. Previously this app framed them as a way to stay connected — with no live industry contacts they're better understood as the way to get connected in the first place, because they're among the few places you can pay a modest fee and be in the room without knowing anyone already.",
+    steps: [
+      "Check both for the entry-level or associate tier — they're aimed at exactly your position",
+      "Go to online events specifically: lower stakes than a room, and you can do them from any country on the route",
+      "Use the member directories the way they're meant to be used — as a list of people it's normal to approach",
+    ],
+  },
+  {
+    icon: "🤝",
+    title: "Recruiters are a free network for the corporate paths",
+    body: "For the Project Coordinator, Procurement, Business Operations, Recruitment and Marketing Coordinator paths on the Compass, you don't have to build a network at all to start — recruitment consultants at Hays, Reed, Michael Page, Adecco and Randstad are paid to find people, will take a call from a stranger, and will tell you honestly what your CV is currently worth. That's market intelligence you can't get any other way, and it costs nothing.",
+    steps: [
+      "Register with two or three, not one — they see different roles",
+      "Ask directly what would make you a stronger candidate for the role you want; they will tell you",
+      "Log each consultant here with the date — they move agencies constantly, and the relationship is with the person, not the firm",
+    ],
+  },
+  {
+    icon: "🌏",
+    title: "The travel years are the network, if you write it down",
+    body: "Five years across three countries, mostly in hospitality and events, means meeting a very large number of people who work in the industries you're aiming at. The only difference between coming home with a network and coming home with a camera roll is whether the names got written down at the time. Nobody remembers, in year five, the name of the production manager from a festival in year two.",
+    steps: [
+      "One rule: anyone whose job you'd want, or who could hire you, gets logged that night",
+      "Get the thing you can actually reach them on later — a personal number, an Instagram, a LinkedIn — not the venue's email",
+      "Note where you met them, not just who they are; that's what makes a message years later land",
+      "Check this tab's quiet list every few months and send two messages. That's the whole maintenance cost",
+    ],
+  },
 ];
 
 const TOOLKIT_CHECKLIST_TEMPLATE = [
@@ -810,7 +1047,9 @@ const TOOLKIT_CHECKLIST_TEMPLATE = [
   { id: "cv-corporate", label: "Build a second CV suited to corporate applications (project/procurement/ops/marketing roles)" },
   { id: "linkedin", label: "Set up or update a LinkedIn profile that matches the CV" },
   { id: "photo", label: "Sort a proper professional photo for LinkedIn/CV" },
-  { id: "references", label: "Line up two references (e.g. Dave at TreebySound, a manager from Cheeky Clucker or Foot Asylum) and give them a heads-up" },
+  { id: "references", label: "Ask Dave at Bespoke Events to be a referee — properly, not assumed" },
+  { id: "references-2", label: "Get a named manager's personal contact at Cheeky Clucker, before the people who remember you move on" },
+  { id: "reconnect", label: "Send the first three reconnect messages (see the People tab for who, and roughly what to say)" },
   { id: "portfolio", label: "Add the first entry to your Experience Log below — start the habit early" },
   { id: "bank", label: "Set up a fee-free international bank card" },
   { id: "checkin", label: "Set a 6-monthly check-in with yourself: still on the right country/lane?" },
@@ -850,6 +1089,7 @@ const K = {
   palette: PFX + "palette", lowlight: PFX + "lowlight", contrast: PFX + "contrast",
   bright: PFX + "bright", usePrevious: PFX + "use-previous", layout: PFX + "layout",
   applications: PFX + "applications", experience: PFX + "experience", customEvidence: PFX + "custom-evidence",
+  contacts: PFX + "contacts",
 };
 function storeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function storeSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
@@ -888,7 +1128,22 @@ function saveExperienceLog(list) { storeSet(K.experience, JSON.stringify(list));
    staying fixed to what was known when this was built. */
 function loadCustomEvidence() { try { return JSON.parse(storeGet(K.customEvidence) || "[]"); } catch { return []; } }
 function saveCustomEvidence(list) { storeSet(K.customEvidence, JSON.stringify(list)); }
+/* People. Starting from a network of effectively one live contact, the thing
+   that decides whether five years abroad produces a network or a camera roll
+   is whether names got written down at the time — so this is a tool for
+   doing that, not a directory of people already known. */
+function loadContacts() { try { return JSON.parse(storeGet(K.contacts) || "[]"); } catch { return []; } }
+function saveContacts(list) { storeSet(K.contacts, JSON.stringify(list)); }
 
+/* A platform chip. Anything carrying a URL becomes a real, tappable link;
+   anything without one stays a plain name to search for, because a link that
+   404s two years into a trip is worse than no link at all. */
+function linkChip(item) {
+  const name = typeof item === "string" ? item : item.name;
+  const url = typeof item === "string" ? "" : item.url;
+  if (!url) return `<span class="flag-chip">${esc(name)}</span>`;
+  return `<a class="flag-chip link" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(name)}<span aria-hidden="true"> ↗</span></a>`;
+}
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 function addMonths(d, m) { const r = new Date(d); r.setMonth(r.getMonth() + m); return r; }
 function fmtDate(d) { return d.toLocaleDateString(undefined, { year: "numeric", month: "short" }); }
@@ -971,6 +1226,16 @@ function latestViableStart(built, cutoff) {
   return { date: addMonths(cutoff, -offsetMonths), leg: last, offsetMonths };
 }
 
+/* The app scrolls inside .webshell, not the window — everything that wants to
+   jump back to the top has to talk to that one element. (scrollIntoView on a
+   descendant finds the right scroller on its own, so only explicit
+   top-of-page jumps need this.) */
+function appScroller() { return document.querySelector(".webshell"); }
+function scrollAppTop() {
+  const el = appScroller();
+  if (el) el.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 let profile = loadProfile();
 let toastTimer = null;
 function toast(msg) {
@@ -981,7 +1246,7 @@ function toast(msg) {
 }
 
 /* ===================================== COLOUR ENGINE =====================================
-   Ported from TreebySound's Appearance panel, but generative rather than one
+   Ported from Bespoke Events' Appearance panel, but generative rather than one
    hand-written CSS block per theme: give it a hue (and whether it's a muted
    or dark run) and it derives the whole token set — page/card/line surfaces,
    three ink weights, and four accent colours each with a text and a tint
@@ -1092,7 +1357,22 @@ applyLayout();
   cogBtn.addEventListener("click", openPanel);
   closeBtn.addEventListener("click", closePanel);
   sheetOverlay.addEventListener("click", closePanel);
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && panel.classList.contains("open")) closePanel(); });
+  /* Anything that wants to open Settings from elsewhere in the app goes
+     through here rather than reaching into this closure. */
+  window.openSettings = openPanel;
+  document.addEventListener("keydown", (e) => {
+    if (!panel.classList.contains("open")) return;
+    if (e.key === "Escape") { closePanel(); return; }
+    /* It says aria-modal, so Tab has to actually stay inside it — otherwise
+       focus wanders off behind the backdrop onto controls you can't see. */
+    if (e.key !== "Tab") return;
+    const items = [...panel.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+      .filter(el => !el.disabled && el.offsetParent !== null);
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
 
   /* palette swatches — each renders its own light-mode preview colour */
   const paletteRow = document.getElementById("paletteRow");
@@ -1307,6 +1587,7 @@ const TABS = [
   { key: "roadmap", label: "Route", icon: ICONS.route },
   { key: "jobs", label: "Jobs", icon: ICONS.ticket },
   { key: "apply", label: "Apply", icon: ICONS.send },
+  { key: "people", label: "People", icon: ICONS.people },
   { key: "toolkit", label: "Kit", icon: ICONS.check },
   { key: "profile", label: "You", icon: ICONS.user },
 ];
@@ -1327,8 +1608,7 @@ function switchTab(id, fromHistory) {
   document.querySelectorAll(".navbtn, .sidenavbtn").forEach(b => b.classList.remove("active"));
   document.getElementById(`view-${id}`).classList.add("active");
   document.querySelectorAll(`[data-tab="${id}"]`).forEach(b => b.classList.add("active"));
-  document.getElementById("main").scrollTo({ top: 0, behavior: "smooth" });
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollAppTop();
   /* Installed on a home screen there's no browser chrome to go back with, so
      the phone's own back gesture is the only one there is — without this it
      closes the app from any tab. Putting each tab in history makes back mean
@@ -1362,6 +1642,9 @@ function renderHome() {
      one thing on this dashboard that's actually asking for something back. */
   const todayKey = new Date().toISOString().slice(0, 10);
   const dueApps = apps.filter(a => a.nextAction && a.nextAction <= todayKey && !["rejected", "withdrawn", "offer"].includes(a.status || "not-sent"));
+  const contacts = loadContacts();
+  const quietContacts = contacts.filter(contactIsQuiet);
+  const refereeCount = contacts.filter(c => c.isReferee).length;
   el.innerHTML = `
     <section class="hero">
       <div class="hero-eyebrow">Personal plan · updated for what you told us</div>
@@ -1373,6 +1656,7 @@ function renderHome() {
         ${apps.length ? `<span class="hero-stat">📨 ${apps.length} application${apps.length === 1 ? "" : "s"} saved</span>` : ""}
         ${log.length ? `<span class="hero-stat">📒 ${log.length} logged</span>` : ""}
         ${dueApps.length ? `<span class="hero-stat">⏰ ${dueApps.length} follow-up${dueApps.length === 1 ? "" : "s"} due</span>` : ""}
+        ${contacts.length ? `<span class="hero-stat">👥 ${contacts.length} contact${contacts.length === 1 ? "" : "s"}${refereeCount ? ` · ${refereeCount} referee${refereeCount === 1 ? "" : "s"}` : ""}</span>` : ""}
       </div>
     </section>
 
@@ -1385,6 +1669,17 @@ function renderHome() {
         </div>
       </div>
     </section>
+
+    ${!refereeCount ? `
+    <section>
+      <div class="callout mustard">
+        ${ICONS.people}
+        <div>
+          <h3>No referees lined up yet</h3>
+          <p>The jobs that ended around 2022 aren't live contacts any more, so references are the thing most likely to catch you out — after an interview has already gone well. Dave at Bespoke Events is the obvious first ask, and Cheeky Clucker is worth pinning down while people who remember you are still there. The <strong>People</strong> tab has the rest.</p>
+        </div>
+      </div>
+    </section>` : ""}
 
     ${dueApps.length ? `
     <section>
@@ -1404,6 +1699,7 @@ function renderHome() {
         <button class="nav-card" data-goto="roadmap">${ICONS.route}<strong>Travel Route</strong><span>5 years, visa-checked</span></button>
         <button class="nav-card" data-goto="jobs">${ICONS.ticket}<strong>Casual Jobs</strong><span>What funds the trip</span></button>
         <button class="nav-card" data-goto="apply">${ICONS.send}<strong>Apply</strong><span>${apps.length ? `${apps.length} application${apps.length === 1 ? "" : "s"} tracked` : "Match a job spec"}</span></button>
+        <button class="nav-card" data-goto="people">${ICONS.people}<strong>People</strong><span>${contacts.length ? `${contacts.length} logged${quietContacts.length ? `, ${quietContacts.length} gone quiet` : ""}` : "Build a network from zero"}</span></button>
         <button class="nav-card" data-goto="toolkit">${ICONS.check}<strong>Prep Kit</strong><span>Checklist, log &amp; notes</span></button>
       </div>
     </section>
@@ -1429,7 +1725,7 @@ function renderCareer() {
   el.innerHTML = `
     <div class="eyebrow">${ICONS.compass} Long-term</div>
     <h1 class="page-title">Career Compass</h1>
-    <p class="page-lede">Long-term is still open — that's normal. Here are ${CAREER_PATHS.length} real directions that build on what's already happening at TreebySound, the Music Management degree from BIMM, the label/promotions and marketing roles, and leading a bar solo at Cheeky Clucker — from the obvious next step and the ambitious long shot, to a wider set of generalist corporate options that don't need years of retraining to start.</p>
+    <p class="page-lede">Long-term is still open — that's normal. Here are ${CAREER_PATHS.length} real directions that build on what's already happening at Bespoke Events, the Music Management degree from BIMM, the label/promotions and marketing roles, and leading a bar solo at Cheeky Clucker — from the obvious next step and the ambitious long shot, to a wider set of generalist corporate options that don't need years of retraining to start.</p>
 
     <section>
       <div class="section-head"><h2>Skills already in hand</h2></div>
@@ -1688,8 +1984,8 @@ function renderRoadmap() {
       <div class="callout sky" style="margin-top:14px;">
         ${ICONS.linkedin}
         <div>
-          <h3>Staying connected to the UK music industry while you're away</h3>
-          <p>The Artist Management/Label path doesn't need to go cold for five years. The Music Managers Forum (<strong>musicmanagersforum.co.uk</strong>) and the Association of Independent Music (<strong>aim.org.uk</strong>) both run member communities, directories and online events you can dip into from anywhere — worth keeping a membership or at least following both throughout the trip, so reconnecting with Open Room Records- and Sleeping Dog Promotions-style contacts on return is a warm re-entry, not a cold restart.</p>
+          <h3>Building a UK music-industry network while you're away</h3>
+          <p>Worth being straight about the starting point: the Open Room Records and Sleeping Dog Promotions relationships haven't been live since around 2022, so there isn't a warm network sitting in the UK waiting for you to come back to it. That's fixable, and five years is a long time to fix it in. The Music Managers Forum (<strong>musicmanagersforum.co.uk</strong>) and the Association of Independent Music (<strong>aim.org.uk</strong>) both run member communities, directories and online events you can join from any country on this route — so the UK industry connection gets <em>built</em> across the trip rather than decaying across it. The <strong>People</strong> tab is where to start and where to keep track.</p>
         </div>
       </div>
     </section>
@@ -1805,8 +2101,13 @@ function renderJobs() {
             ${j.countries.map(c => `<span class="flag-chip">${COUNTRY_META[c].flag} ${COUNTRY_META[c].short}</span>`).join("")}
             ${j.drivingHelps ? `<span class="drive-chip">${ICONS.car} Driving licence helps</span>` : ""}
           </div>
+          ${j.links && j.links.length ? `
+          <div class="apply-at">
+            <span class="apply-at-label">Apply here</span>
+            <div class="country-row">${j.links.map(l => linkChip(l)).join("")}</div>
+          </div>` : ""}
           <details class="disclose">
-            <summary>${ICONS.chevron} Why it fits, where to apply &amp; certs needed</summary>
+            <summary>${ICONS.chevron} Why it fits, how to start &amp; certs needed</summary>
             <p style="font-size:0.84rem; color:var(--ink-soft); margin-top:8px;"><strong>Why it fits:</strong> ${esc(j.fit)}</p>
             <p style="font-size:0.84rem; color:var(--ink-soft);"><strong>How to start:</strong> ${esc(j.howTo)}</p>
             ${j.whereTo ? `<p style="font-size:0.84rem; color:var(--ink-soft);"><strong>Where to actually apply:</strong> ${esc(j.whereTo)}</p>` : ""}
@@ -2033,25 +2334,39 @@ function renderApply() {
   el.innerHTML = `
     <div class="eyebrow">${ICONS.send} Job applications</div>
     <h1 class="page-title">Apply</h1>
-    <p class="page-lede">Paste a real job ad below and it's checked against your actual background — TreebySound, Cheeky Clucker, Foot Asylum, Tesco, the BIMM degree, the label/promotions and marketing work, and anything added on the <strong>You</strong> tab — to show what to lead with and what's worth covering off first.</p>
+    <p class="page-lede">Paste a real job ad below and it's checked against your actual background — Bespoke Events, Cheeky Clucker, Foot Asylum, Tesco, the BIMM degree, the label/promotions and marketing work, and anything added on the <strong>You</strong> tab — to show what to lead with and what's worth covering off first.</p>
 
     <div class="callout sky" style="margin-bottom:22px;">
       ${ICONS.linkedin}
       <div>
         <h3>Before sending anything</h3>
-        <p>A few things that help every application, not just this tool: a <strong>LinkedIn profile</strong> that matches the CV (worth having before applying anywhere, especially abroad where employers check it); a proper <strong>professional photo</strong> for LinkedIn/CV specifically — separate from any personal photo in this app; and two <strong>references lined up and warned in advance</strong> — Dave at TreebySound plus a manager from Cheeky Clucker or Foot Asylum are the obvious pair.</p>
+        <p>A few things that help every application, not just this tool: a <strong>LinkedIn profile</strong> that matches the CV (worth having before applying anywhere, especially abroad where employers check it) and a proper <strong>professional photo</strong> for LinkedIn/CV specifically — separate from any personal photo in this app. Track who you know, and who'd vouch for you, on the <strong>People</strong> tab.</p>
       </div>
     </div>
 
     <section>
+      <div class="section-head"><h2>References, honestly</h2></div>
+      <div class="card">
+        <p style="font-size:0.87rem; color:var(--ink-soft); margin:0 0 10px;">Most employers ask for two, and they ask <em>after</em> the interview has gone well — which is the worst possible moment to discover you can only produce one. Assume the roles that ended around 2022 aren't reachable and work from there:</p>
+        <ul style="margin:0 0 10px; padding-left:18px; font-size:0.87rem; color:var(--ink-soft);">
+          <li><strong>Dave at Bespoke Events is the strong one</strong>, and a current employer is the best kind of referee there is — recent, relevant, and able to speak to how you actually work rather than how you worked four years ago. Ask him properly, now, rather than listing him and hoping.</li>
+          <li><strong>Cheeky Clucker is the realistic second</strong>, and it's time-sensitive: hospitality turns over fast, so the manager who remembers you won't be there forever. Get a personal email or number for a named person while someone in that building still knows you.</li>
+          <li><strong>If a second employer reference genuinely isn't available</strong>, say so early rather than letting it surface at offer stage. Most employers will accept a character or professional reference instead — a tutor from BIMM, a client, someone you crewed for — and plenty only need one real referee plus employment verification, which is just HR confirming dates and doesn't need anyone to remember you at all.</li>
+          <li><strong>Do this before you leave the country.</strong> Getting a referee's personal contact details is a five-minute conversation while you're still in Kent, and a genuinely hard problem from Australia three years later once the work email has bounced.</li>
+        </ul>
+        <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">Mark anyone who's agreed as a referee on the <strong>People</strong> tab and it'll track how many you've actually got lined up.</p>
+      </div>
+    </section>
+
+    <section>
       <div class="section-head"><h2>Where to actually look</h2></div>
-      <p class="page-lede" style="margin-bottom:12px;">Real platforms, not "search online" — worth having accounts set up on the relevant ones before you need them.</p>
+      <p class="page-lede" style="margin-bottom:12px;">Real platforms with the actual address, not "search online" — worth having accounts set up on the relevant ones before you need them, since registering takes a day you won't want to spend in week one. Tap any of them to open it.</p>
       <div class="stack grid-cards">
         ${Object.values(JOB_SEARCH_PLATFORMS).map(p => `
           <div class="card">
             <h3 style="font-size:0.92rem; margin-bottom:8px;">${p.flag} ${esc(p.label)}</h3>
             <div class="country-row">
-              ${p.items.map(i => `<span class="flag-chip">${esc(i)}</span>`).join("")}
+              ${p.items.map(i => linkChip(i)).join("")}
             </div>
           </div>`).join("")}
       </div>
@@ -2183,10 +2498,7 @@ function renderApply() {
       const item = saved[idx];
       applyDraft = { text: item.text, label: item.label, editIndex: idx };
       renderApply();
-      /* In web view it's #main that scrolls, not the window — scrolling only
-         the window here left the reloaded spec off-screen on desktop. */
-      document.getElementById("main").scrollTo({ top: 0, behavior: "smooth" });
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollAppTop();
       toast("Loaded back in");
     }));
     historyEl.querySelectorAll("[data-remove]").forEach(b => b.addEventListener("click", () => {
@@ -2233,6 +2545,256 @@ function renderApply() {
       saveApplications(list);
       renderHome();
       toast(input.value ? "Follow-up set" : "Follow-up cleared");
+    }));
+  }
+}
+
+/* ===================================== PEOPLE ===================================== */
+/* Days since a contact was last spoken to, or since they were added if never. */
+function contactQuietDays(c) {
+  const from = c.lastContacted || c.added;
+  if (!from) return null;
+  const d = new Date(from);
+  if (isNaN(d.getTime())) return null;
+  return Math.floor((new Date() - d) / (1000 * 60 * 60 * 24));
+}
+function contactIsQuiet(c) {
+  const days = contactQuietDays(c);
+  return days !== null && days >= CONTACT_QUIET_DAYS;
+}
+let peopleEditIndex = null;
+
+function renderPeople() {
+  const el = document.getElementById("view-people");
+  const contacts = loadContacts();
+  const quiet = contacts.filter(contactIsQuiet);
+  const referees = contacts.filter(c => c.isReferee);
+  const editing = peopleEditIndex !== null ? contacts[peopleEditIndex] : null;
+  if (peopleEditIndex !== null && !editing) peopleEditIndex = null;
+
+  el.innerHTML = `
+    <div class="eyebrow">${ICONS.people} Contacts</div>
+    <h1 class="page-title">People</h1>
+    <p class="page-lede">Starting close to zero, and that's worth being straight about: the roles at Open Room Records, Sleeping Dog Promotions, Bang Bang Merch, Madway Brewery, Foot Asylum and Tesco all ended around 2022, and none of them is a live relationship now. What you actually have is Dave at Bespoke Events, possibly someone at Cheeky Clucker, and a list of real people who worked with you and would still recognise your name. That's a dormant network, not no network — and reopening one of those is far less work than making a new one from scratch.</p>
+
+    <div class="callout ${referees.length >= 2 ? "teal" : "mustard"}" style="margin-bottom:22px;">
+      ${referees.length >= 2 ? ICONS.check : ICONS.flag}
+      <div>
+        <h3>${referees.length >= 2 ? "References covered" : referees.length === 1 ? "One referee lined up, most employers want two" : "No referees lined up yet"}</h3>
+        <p>${referees.length >= 2
+          ? `You've marked ${referees.length} people as referees below. Worth re-checking their details are current before each application round.`
+          : `This is the thing most likely to catch you out at the worst possible moment — an employer asks for two references after the interview has gone well. Mark anyone below as a referee to track it here. See the Apply tab for what to do when the second one is hard to reach.`}</p>
+      </div>
+    </div>
+
+    ${quiet.length ? `
+    <div class="callout sky" style="margin-bottom:22px;">
+      ${ICONS.send}
+      <div>
+        <h3>${quiet.length === 1 ? "One contact has gone quiet" : `${quiet.length} contacts have gone quiet`}</h3>
+        <p>Nothing for ${CONTACT_QUIET_DAYS}+ days: ${quiet.slice(0, 5).map(c => `<strong>${esc(c.name)}</strong>`).join(", ")}${quiet.length > 5 ? `, and ${quiet.length - 5} more` : ""}. Two messages is the whole maintenance cost of a network — mark the date once you've sent one.</p>
+      </div>
+    </div>` : ""}
+
+    <section>
+      <div class="section-head"><h2>${editing ? "Edit this contact" : "Add someone"}</h2></div>
+      <div class="card">
+        ${editing ? `<p class="save-note" style="margin:0 0 10px;">Editing <strong>${esc(editing.name)}</strong> — saving replaces this entry.</p>` : ""}
+        <div class="field-grid two">
+          <div class="field"><label for="ct-name">Name</label><input type="text" id="ct-name" placeholder="e.g. Sam Whitfield" value="${editing ? esc(editing.name) : ""}" /></div>
+          <div class="field">
+            <label for="ct-tag">Who are they?</label>
+            <select id="ct-tag">${CONTACT_TAGS.map(t => `<option value="${t.key}" ${editing && editing.tag === t.key ? "selected" : ""}>${t.flag} ${t.label}</option>`).join("")}</select>
+          </div>
+        </div>
+        <div class="field"><label for="ct-what">What they do <span class="hint">(and where)</span></label><input type="text" id="ct-what" placeholder="e.g. Production manager, Wildwood Festival" value="${editing ? esc(editing.what || "") : ""}" /></div>
+        <div class="field"><label for="ct-where">Where you met them</label><input type="text" id="ct-where" placeholder="e.g. Crewing the main stage, Aug 2027 — this is what makes a message years later land" value="${editing ? esc(editing.where || "") : ""}" /></div>
+        <div class="field"><label for="ct-how">How to reach them <span class="hint">(the one that'll still work later — personal, not a company address)</span></label><input type="text" id="ct-how" placeholder="e.g. LinkedIn / @samw on Instagram / 07…" value="${editing ? esc(editing.how || "") : ""}" /></div>
+        <div class="field-grid two">
+          <div class="field"><label for="ct-last">Last spoke to them</label><input type="date" id="ct-last" value="${editing ? esc(editing.lastContacted || "") : new Date().toISOString().slice(0, 10)}" /></div>
+          <div class="field">
+            <label for="ct-referee">Could they be a referee?</label>
+            <select id="ct-referee">
+              <option value="0" ${!editing || !editing.isReferee ? "selected" : ""}>Not asked / no</option>
+              <option value="1" ${editing && editing.isReferee ? "selected" : ""}>Yes — agreed to it</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label for="ct-notes">Notes <span class="hint">(optional)</span></label><textarea id="ct-notes" rows="2" placeholder="What you talked about, what they offered, what to follow up on">${editing ? esc(editing.notes || "") : ""}</textarea></div>
+        <div class="btn-row">
+          <button class="btn" id="ct-save">${editing ? `${ICONS.check} Save changes` : `${ICONS.check} Add them`}</button>
+          ${editing ? `<button class="btn ghost" id="ct-cancel">Cancel</button>` : ""}
+        </div>
+      </div>
+    </section>
+
+    ${contacts.length ? `
+    <section>
+      <div class="section-head">
+        <h2>Your contacts</h2>
+        <button class="btn ghost small" id="ct-copy" style="flex:none;">${ICONS.copy} Copy list</button>
+      </div>
+      <p class="page-lede" style="margin-bottom:12px;">${contacts.length} ${contacts.length === 1 ? "person" : "people"}${referees.length ? ` · ${referees.length} referee${referees.length === 1 ? "" : "s"}` : ""}${quiet.length ? ` · ${quiet.length} gone quiet` : ""}.</p>
+      <div class="stack" id="ct-list">
+        ${contacts.map((c, i) => {
+          const tag = CONTACT_TAGS.find(t => t.key === c.tag) || CONTACT_TAGS[CONTACT_TAGS.length - 1];
+          const days = contactQuietDays(c);
+          return `
+          <div class="card ${peopleEditIndex === i ? "editing" : ""}" style="display:flex; gap:12px; align-items:flex-start;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight:650; font-size:0.94rem;">${tag.flag} ${esc(c.name)}${c.isReferee ? ` <span class="src-chip">Referee</span>` : ""}</div>
+              ${c.what ? `<div style="font-size:0.85rem; color:var(--ink-soft); margin-top:3px;">${esc(c.what)}</div>` : ""}
+              ${c.where ? `<div style="font-size:0.8rem; color:var(--ink-faint); margin-top:3px;">Met: ${esc(c.where)}</div>` : ""}
+              ${c.how ? `<div style="font-size:0.8rem; color:var(--ink-faint); margin-top:2px;">Reach: ${esc(c.how)}</div>` : ""}
+              ${c.notes ? `<p style="font-size:0.84rem; color:var(--ink-soft); margin:6px 0 0;">${esc(c.notes)}</p>` : ""}
+              <div style="font-size:0.78rem; margin-top:6px;" class="${contactIsQuiet(c) ? "due-flag" : ""}">${days === null ? "" : days === 0 ? "Spoke today" : `${days} day${days === 1 ? "" : "s"} since you spoke${contactIsQuiet(c) ? " — worth a message" : ""}`}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <button class="btn-mini" data-ct-touch="${i}" title="Mark as spoken to today">↻</button>
+              <button class="btn-mini" data-ct-edit="${i}" title="Edit">✎</button>
+              <button class="btn-mini" data-ct-remove="${i}" title="Delete">✕</button>
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
+    </section>` : `<section><p class="page-lede">Nobody logged yet. The list below is where to start — and the first one is the hardest only because it's first.</p></section>`}
+
+    <section>
+      <div class="section-head"><h2>Fix the profile before you send anything</h2></div>
+      <div class="callout sky" style="margin-bottom:16px;">
+        ${ICONS.linkedin}
+        <div>
+          <h3>This comes first, and it takes an evening</h3>
+          <p>Every person on the list below will click your profile before deciding whether to reply — that's just what people do with a message from someone they haven't heard from in four years. A profile that's thin or four years stale answers the question "what happened to Rob" badly, before you've had a chance to answer it yourself. Sort it first, then send the messages.</p>
+        </div>
+      </div>
+      <div class="stack">
+        ${LINKEDIN_CHECKS.map(c => `
+          <div class="card">
+            <h3 style="font-size:0.94rem; margin-bottom:5px;">${esc(c.title)}</h3>
+            <p style="font-size:0.86rem; color:var(--ink-soft); margin:0;">${esc(c.body)}</p>
+          </div>`).join("")}
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h3 style="font-size:0.95rem; margin-bottom:6px;">A headline to start from</h3>
+        <p class="mono-quote" id="li-headline">${esc(linkedinHeadline())}</p>
+        <button class="btn ghost small" id="li-copy-headline">${ICONS.copy} Copy headline</button>
+      </div>
+      <div class="card" style="margin-top:12px;">
+        <h3 style="font-size:0.95rem; margin-bottom:6px;">An About section to start from</h3>
+        <p style="font-size:0.83rem; color:var(--ink-faint); margin:0 0 8px;">Built from your actual history below — edit it into your own voice rather than pasting it flat, and drop anything that stops being true.</p>
+        <p class="mono-quote" id="li-about" style="white-space:pre-wrap;">${esc(linkedinAbout())}</p>
+        <button class="btn ghost small" id="li-copy-about">${ICONS.copy} Copy About section</button>
+      </div>
+      <div class="country-row" style="margin-top:12px;">
+        ${linkChip({ name: "Open LinkedIn", url: "https://www.linkedin.com" })}
+        ${linkChip({ name: "Edit your public profile URL", url: "https://www.linkedin.com/public-profile/settings" })}
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Who's actually worth messaging first</h2></div>
+      <p class="page-lede" style="margin-bottom:12px;">Real names from your own work history, in the order worth doing them — not "reach out to your network".</p>
+      <div class="stack">
+        ${RECONNECT_TARGETS.map(t => `
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; gap:10px; align-items:baseline; flex-wrap:wrap;">
+              <h3 style="font-size:0.94rem;">${esc(t.company)} <span style="color:var(--ink-faint); font-weight:500;">— ${esc(t.who)}</span></h3>
+              <span class="warmth ${t.warmth}">${t.warmth === "live" ? "Live" : t.warmth === "recent" ? "Recent" : "Dormant"}</span>
+            </div>
+            <p style="font-size:0.85rem; color:var(--ink-soft); margin:6px 0 0;">${esc(t.note)}</p>
+          </div>`).join("")}
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Building one from here</h2></div>
+      <div class="stack">
+        ${NETWORK_PLAYBOOK.map(pb => `
+          <div class="card">
+            <h3 style="font-size:0.98rem; margin-bottom:6px;">${pb.icon} ${esc(pb.title)}</h3>
+            <p style="font-size:0.87rem; color:var(--ink-soft); margin:0;">${esc(pb.body)}</p>
+            ${pb.steps.length ? `<ul style="margin:10px 0 0; padding-left:18px; font-size:0.86rem; color:var(--ink-soft);">${pb.steps.map(x => `<li style="margin-bottom:4px;">${esc(x)}</li>`).join("")}</ul>` : ""}
+          </div>`).join("")}
+      </div>
+    </section>
+  `;
+
+  function readForm() {
+    const name = document.getElementById("ct-name").value.trim();
+    if (!name) { toast("Give them a name first"); return null; }
+    return {
+      name,
+      tag: document.getElementById("ct-tag").value,
+      what: document.getElementById("ct-what").value.trim(),
+      where: document.getElementById("ct-where").value.trim(),
+      how: document.getElementById("ct-how").value.trim(),
+      lastContacted: document.getElementById("ct-last").value,
+      isReferee: document.getElementById("ct-referee").value === "1",
+      notes: document.getElementById("ct-notes").value.trim(),
+    };
+  }
+  document.getElementById("ct-save").addEventListener("click", () => {
+    const data = readForm();
+    if (!data) return;
+    const list = loadContacts();
+    if (peopleEditIndex !== null && list[peopleEditIndex]) {
+      list[peopleEditIndex] = { ...list[peopleEditIndex], ...data };
+      peopleEditIndex = null;
+      toast("Saved");
+    } else {
+      list.unshift({ id: `contact-${Date.now()}`, added: new Date().toISOString().slice(0, 10), ...data });
+      toast("Added");
+    }
+    saveContacts(list);
+    renderPeople();
+    renderHome();
+  });
+  const ctCancel = document.getElementById("ct-cancel");
+  if (ctCancel) ctCancel.addEventListener("click", () => { peopleEditIndex = null; renderPeople(); });
+
+  const liH = document.getElementById("li-copy-headline");
+  if (liH) liH.addEventListener("click", () => copyText(linkedinHeadline(), liH));
+  const liA = document.getElementById("li-copy-about");
+  if (liA) liA.addEventListener("click", () => copyText(linkedinAbout(), liA));
+
+  const ctCopy = document.getElementById("ct-copy");
+  if (ctCopy) ctCopy.addEventListener("click", () => {
+    const lines = loadContacts().map(c => {
+      const tag = CONTACT_TAGS.find(t => t.key === c.tag) || CONTACT_TAGS[CONTACT_TAGS.length - 1];
+      return [`${c.name}${c.isReferee ? " (referee)" : ""} — ${tag.label}`, c.what, c.where ? `Met: ${c.where}` : "", c.how ? `Reach: ${c.how}` : "", c.notes].filter(Boolean).join("\n  ");
+    });
+    copyText(lines.join("\n\n"), ctCopy);
+  });
+
+  const ctList = document.getElementById("ct-list");
+  if (ctList) {
+    ctList.querySelectorAll("[data-ct-touch]").forEach(b => b.addEventListener("click", () => {
+      const list = loadContacts();
+      const idx = parseInt(b.dataset.ctTouch, 10);
+      if (!list[idx]) return;
+      list[idx].lastContacted = new Date().toISOString().slice(0, 10);
+      saveContacts(list);
+      renderPeople();
+      renderHome();
+      toast("Marked as spoken to today");
+    }));
+    ctList.querySelectorAll("[data-ct-edit]").forEach(b => b.addEventListener("click", () => {
+      peopleEditIndex = parseInt(b.dataset.ctEdit, 10);
+      renderPeople();
+      document.getElementById("ct-name").scrollIntoView({ behavior: "smooth", block: "center" });
+    }));
+    ctList.querySelectorAll("[data-ct-remove]").forEach(b => b.addEventListener("click", () => {
+      const list = loadContacts();
+      const idx = parseInt(b.dataset.ctRemove, 10);
+      if (!confirm(`Delete ${list[idx].name} from your contacts? This can't be undone.`)) return;
+      list.splice(idx, 1);
+      if (peopleEditIndex === idx) peopleEditIndex = null;
+      else if (peopleEditIndex !== null && peopleEditIndex > idx) peopleEditIndex--;
+      saveContacts(list);
+      renderPeople();
+      renderHome();
     }));
   }
 }
@@ -2502,6 +3064,19 @@ function renderProfile() {
     </section>
 
     <section>
+      <div class="section-head"><h2>Settings &amp; appearance</h2></div>
+      <p class="page-lede" style="margin-bottom:12px;">Colours, brightness, low-light and high-contrast modes, layout, and the backup you'd need to move to a new phone — all in one place. Also reachable any time from the ⚙ button at the top of every screen.</p>
+      <button class="settings-link" id="open-settings" type="button">
+        <span class="settings-link-icon">${ICONS.sparkle}</span>
+        <span>
+          <strong>Open settings</strong>
+          <span>Theme, brightness, low-light, high contrast, layout, backup &amp; restore</span>
+        </span>
+        <span class="settings-link-chev">${ICONS.chevron}</span>
+      </button>
+    </section>
+
+    <section>
       <div class="section-head"><h2>Country order</h2></div>
       <p class="page-lede" style="margin-bottom:12px;">First, second, third — reorder it and the Route tab shifts to match.</p>
       <div class="card">
@@ -2518,6 +3093,10 @@ function renderProfile() {
       </div>
     </section>
   `;
+
+  document.getElementById("open-settings").addEventListener("click", () => {
+    if (typeof window.openSettings === "function") window.openSettings();
+  });
 
   document.getElementById("p-save").addEventListener("click", () => {
     profile = {
@@ -2634,7 +3213,7 @@ function renderAll() {
   document.getElementById("strip-sub").textContent = `Hey ${profile.name} · career & travel plan`;
   const apName = document.getElementById("apName");
   if (apName && document.activeElement !== apName) apName.value = profile.name;
-  renderHome(); renderCareer(); renderRoadmap(); renderJobs(); renderApply(); renderToolkit(); renderProfile();
+  renderHome(); renderCareer(); renderRoadmap(); renderJobs(); renderApply(); renderPeople(); renderToolkit(); renderProfile();
 }
 renderNav();
 renderAll();
