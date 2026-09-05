@@ -2,7 +2,7 @@ const CACHE = 'robajobbob-v1';
 const PAGE_URL = './index.html';
 const PREV_URL = './__prev_index__';
 const FLAG_URL = './__use_previous__';
-const OTHER_ASSETS = ['./', './robajobbob-icon.png', './manifest.webmanifest'];
+const OTHER_ASSETS = ['./', './robajobbob-icon-v2.png', './manifest.webmanifest'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
