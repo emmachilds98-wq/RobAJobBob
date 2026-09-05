@@ -87,7 +87,12 @@ Zealand's case has to exist *before* the tax number can be issued, and health co
 what a UK passport holder would assume — Medicare via the UK–Australia reciprocal agreement, a
 much narrower arrangement in New Zealand, and in Canada no reciprocal agreement at all plus a
 provincial waiting period. Each step says whether it can be started from the UK, what it costs,
-and what it costs to skip. Two entries carry real money rather than admin: Australian
+and what it costs to skip. Each country also opens on its proof-of-funds
+requirement — previously named once in passing and never explained — including
+the part that isn't the number: it's assessed as money genuinely available to
+him, an onward or return ticket can be asked for on top, and Canada checks it
+at the border rather than at application, in the same conversation as the
+insurance. Two entries carry real money rather than admin: Australian
 superannuation is reclaimable on departure and is a four-figure sum after a year of full-time
 hospitality, provided he keeps one fund instead of letting each employer open a new one; and
 Canada's IEC insurance rule is the only item anywhere in the app that can shorten a visa already
@@ -148,7 +153,9 @@ GitHub Pages, and easy to hand-edit without a build step.
     cover, plus the country-specific traps). Each step carries an `order` that is a real
     dependency chain rather than a preference — NZ's bank account genuinely gates the IRD
     number, Canada's work permit gates the SIN — and a `when` of `before` / `either` / `after`
-    saying whether it can be started from the UK.
+    saying whether it can be started from the UK. The number rendered against each step is its
+    position in the sorted list, not its `order`, so a step can be slotted in on a fractional
+    order without renumbering the ones after it.
   - `FACTS_LAST_VERIFIED` — the date every fee, scheme length and tax rule below it was last
     checked against an official source. The Route tab prints it, and once it's older than
     `FACTS_STALE_AFTER_MONTHS` the tab shows a "these were checked N months ago" warning of its
