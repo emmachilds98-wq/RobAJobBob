@@ -4,6 +4,6 @@
   "start_url": "./",
   "display": "standalone",
   "background_color": "#FAF6EE",
-  "theme_color": "#182338",
+  "theme_color": "#12182B",
   "icons": [{"src":"robajobbob-icon.png","sizes":"1024x1024","type":"image/png","purpose":"any maskable"}]
 }
