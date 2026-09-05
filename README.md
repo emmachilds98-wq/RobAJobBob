@@ -123,9 +123,11 @@ GitHub Pages, and easy to hand-edit without a build step.
   - `JOB_SEARCH_PLATFORMS` — real job boards/agencies, grouped UK-corporate vs AU/NZ/Canada
   - `CAREER_PATHS`, `CASUAL_JOBS`, `VISA_DEFAULTS`, `TOOLKIT_CHECKLIST_TEMPLATE` — the rest of
     the content. **These are the blocks to edit** if specifics change.
-- `manifest.webmanifest` / `sw.js` / `robajobbob-icon.png` — makes it an installable,
+- `manifest.webmanifest` / `sw.js` / `robajobbob-icon-v2.png` — makes it an installable,
   offline-capable PWA. `sw.js` also powers the Settings panel's "use previous version"
   rollback by keeping one snapshot of the app from before the last update.
+- `robajobbob-icon-v2.svg` — the editable source of the home-screen icon. The `.png` is that
+  file rendered at 1024×1024; edit the SVG and re-render rather than touching the bitmap.
 
 ## The Apply tab
 
@@ -175,6 +177,22 @@ and two references lined up in advance. A "Where to actually look" card names re
 LinkedIn Jobs, Indeed UK, Reed.co.uk, Totaljobs, CV-Library and Hays/Reed Specialist
 Recruitment/Michael Page/Adecco/Randstad for UK corporate roles now, plus Seek.com.au, Seek.co.nz,
 Trade Me Jobs, Indeed.ca and Job Bank Canada for once he's travelling.
+
+## The look
+
+The icon is a sunrise over a road with a flight path arcing across it, framed as a passport
+stamp — the whole app in one picture: somewhere to get to, a way of getting there, and a
+deadline stamped around the edge. Inside, the app is styled as a warm travel print rather than
+a form: an illustrated night-into-sunrise hero on the home screen, colour-coded tiles on the
+navigation cards, section headings with an accent rule, hand-drawn underlines under page
+titles, passport-stamp marks on the route tickets, and a light paper grain over the whole page.
+
+All of it is derived from the same design tokens the colour engine sets, so every one of the
+fifteen themes, low-light mode and the brightness slider still work exactly as before —
+and **high contrast switches the decoration off entirely** (no grain, no gradients, no tinted
+surfaces) so legibility always wins when it's asked for. Motion is equally optional: the
+staggered entrance, the drifting plane and the two confetti moments — finishing the Prep Kit
+checklist, and marking an application as an offer — are all off under `prefers-reduced-motion`.
 
 ## Settings (the cog, top right)
 
